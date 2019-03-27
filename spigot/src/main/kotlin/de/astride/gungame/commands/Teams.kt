@@ -1,0 +1,54 @@
+package de.astride.gungame.commands
+
+import de.astride.gungame.functions.isAllowTeams
+import de.astride.gungame.functions.sendScoreBoard
+import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendSubTitle
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTimings
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTitle
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Utils
+import org.bukkit.Bukkit
+import org.bukkit.command.CommandSender
+import org.bukkit.plugin.java.JavaPlugin
+import java.util.concurrent.TimeUnit
+
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
+ * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+ */
+class Teams(javaPlugin: JavaPlugin) : Command(
+    javaPlugin,
+    "teams",
+    "gungame.commands.teams"
+) {
+
+    private var lastUse = 0L
+
+    override fun perform(sender: CommandSender, args: Array<String>) {
+
+        if (lastUse < System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5)) {
+            sender.sendMessage("${Messages.PREFIX}${TEXT}Teams kann nur alle ${IMPORTANT}5 Minuten ${TEXT}genutzt werden")
+            return
+        }
+
+        lastUse = System.currentTimeMillis()
+
+        val a = if (isAllowTeams) "erlaubt" else "verboten"
+        isAllowTeams = !isAllowTeams
+
+        Utils.goThroughAllPlayers {
+            it.sendTitle("${IMPORTANT}Teams")
+            it.sendSubTitle("${TEXT}sind jetzt $a")
+            it.sendTimings(10, 40, 10)
+            it.sendScoreBoard()
+        }
+        Bukkit.broadcastMessage("${Messages.PREFIX}${TEXT}Teams sind jetzt $a")
+
+    }
+
+}

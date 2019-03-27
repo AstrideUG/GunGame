@@ -1,0 +1,5 @@
+name: @name@
+version: @version@
+main: @group@.@lowerName@.@name@
+author: Lars Artmann aka. LartyHD
+website: CraftPlugin.net

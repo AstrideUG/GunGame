@@ -1,0 +1,9 @@
+/*
+ * © Copyright - Lars Artmann aka. LartyHD 2019.
+ */
+
+dependencies {
+
+    compileOnly("org.spigotmc:spigot-api:${versions_spigot}")
+
+}
