@@ -9,14 +9,13 @@ import de.astride.gungame.commands.Team
 import de.astride.gungame.commands.Teams
 import de.astride.gungame.commands.Top
 import de.astride.gungame.functions.changeColor
+import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.gameMap
 import de.astride.gungame.listener.InGameListener
 import de.astride.gungame.listener.MoneyListener
 import de.astride.gungame.listener.RegionsListener
-import de.astride.gungame.shop.ShopManager
-import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
-import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
-import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
+import de.astride.gungame.services.ConfigService
+import de.astride.gungame.shop.ShopListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
@@ -26,51 +25,42 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.utils.MapsUtils
 import org.bukkit.Bukkit
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
+import org.bukkit.plugin.ServicePriority
+import kotlin.random.Random
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 27.03.2019)
+ * Current Version: 1.0 (17.02.2018 - 29.03.2019)
  */
 class GunGame : DarkPlugin() {
 
     override fun onLoad() = onLoad {
+        Bukkit.getServicesManager().register(
+            ConfigService::class.java,
+            ConfigService(dataFolder),
+            this,
+            ServicePriority.Normal
+        ) //Important for ConfigService.instance
+
         Messages.NAME.message = "GunGame"
-        EventsListener.autoRespawn = true
+
     }
 
     override fun onEnable() {
 
-//        val loadMapNames = MapsUtils.loadMapNames(dataFolder)
-//        val mapName = MapsUtils.getRandomMap(loadMapNames)
-//        val map = MapsUtils.loadMap(mapName)
+        EventsListener.autoRespawn = true
 
-        gameMap = MapsUtils.getMapAndLoad(
-            BukkitGsonConfig(ConfigData(dataFolder, "data.json")),
-            JsonObject()
-        ) { _, _ -> }
-
-        //TODO: Add Map Vote
-//        Saves.setVoteAPI(object : VoteAPI(Saves.getMapNames(), Messages.getPrefix()) {
-//            fun finishVotes(winner: String) {
-//                getResult()
-//            }
-//        })
-
-//        if (Saves.getVoteAPI().getVoteList().size() > 3) {
-//            Saves.setMapVoteCountdown(MapVoteCountdown(Messages.getPrefix(), this))
-//            MapVoteManager(this, Messages.getPrefix())
-//        } else {
-//            Saves.setVoteAPI(null)
-//        }
-
+        val config = configService.maps
+        val jsonObject = config.maps[Random.nextInt(config.maps.size() - 1)] as? JsonObject ?: return
+        gameMap = MapsUtils.getMapAndLoad(config.config, jsonObject) { _, _ -> }
 
         initListener()
 //        initStats()
         initCommands()
         spawnShop()
 
-        ShopManager(this)
+        ShopListener(this)
     }
 
     private fun initListener() {
@@ -80,7 +70,6 @@ class GunGame : DarkPlugin() {
             MoneyListener(this)
             logger.info("Hooking to Vault")
         } else logger.warning("Vault not found")
-//        RegionsListener(this, name)
     }
 
     private fun initCommands() {
@@ -90,25 +79,18 @@ class GunGame : DarkPlugin() {
         Top(this)
     }
 
-    private fun spawnShop() {
+    private fun spawnShop() = configService.shops.locations.forEach {
 
-        val configData = ConfigData(dataFolder, "shops.json")
-        val shops = GsonService.loadAsJsonArray(configData)
-        val bukkitGsonConfig = BukkitGsonConfig(configData)
-        val locations = shops.map { bukkitGsonConfig.getLocation(it.asJsonObject) }
-        locations.forEach {
+        val armorStand = it.world.spawnEntity(it, EntityType.ARMOR_STAND) as ArmorStand
+        armorStand.apply {
 
-            (it.world.spawnEntity(it, EntityType.ARMOR_STAND) as ArmorStand).apply {
-
-                customName = "${SECONDARY}Shop"
-                isCustomNameVisible = true
-                setGravity(false)
-                isVisible = false
-                isSmall = true
-                helmet = Items.CHEST.itemStack
-                changeColor()
-
-            }
+            customName = "${SECONDARY}Shop"
+            isCustomNameVisible = true
+            setGravity(false)
+            isVisible = false
+            isSmall = true
+            helmet = Items.CHEST.itemStack
+            changeColor()
 
         }
 

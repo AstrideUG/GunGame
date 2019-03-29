@@ -24,9 +24,9 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:32.
- * Current Version: 1.0 (19.02.2018 - 27.03.2019)
+ * Current Version: 1.0 (19.02.2018 - 29.03.2019)
  */
-class ShopManager(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
+class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
     private val inventory: Inventory = InventoryBuilder(InventoryType.HOPPER, "${SECONDARY}Shop").setDesign().build()
     private val items: List<ShopItemListener> =

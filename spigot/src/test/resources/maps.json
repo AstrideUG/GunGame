@@ -1,0 +1,45 @@
+[
+  {
+    "name": "TestGunGameMap",
+    "world": "GameWorld",
+    "worldBoarder": {
+      "size": 400.0,
+      "center": {
+        "x": 0.0,
+        "z": 0.0
+      },
+      "damage": {
+        "buffer": 0.0,
+        "amount": 100.0
+      },
+      "warning": {
+        "time": 0,
+        "distance": 0
+      }
+    },
+    "spawn": {
+      "x": 0.0,
+      "y": 100.0,
+      "z": 0.0,
+      "yaw": 0.0,
+      "pitch": 0.0
+    },
+    "hologram": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "region": {
+      "pos1": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "pos2": {
+        "x": 5.0,
+        "y": 10.0,
+        "z": 5.0
+      }
+    }
+  }
+]
