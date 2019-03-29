@@ -11,6 +11,7 @@ import de.astride.gungame.commands.Top
 import de.astride.gungame.functions.changeColor
 import de.astride.gungame.functions.gameMap
 import de.astride.gungame.listener.InGameListener
+import de.astride.gungame.listener.MoneyListener
 import de.astride.gungame.listener.RegionsListener
 import de.astride.gungame.shop.ShopManager
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
@@ -22,6 +23,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.MapsUtils
+import org.bukkit.Bukkit
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 
@@ -74,6 +76,10 @@ class GunGame : DarkPlugin() {
     private fun initListener() {
         InGameListener(this)
         RegionsListener(this)
+        if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
+            MoneyListener(this)
+            logger.info("Hooking to Vault")
+        } else logger.warning("Vault not found")
 //        RegionsListener(this, name)
     }
 

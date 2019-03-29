@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerEvent
  */
 class GunGamePlayerShopHasEnoughMoneyEvent(who: Player, val price: Double) : PlayerEvent(who), Cancellable {
 
-    private var isCancelled = false
+    private var isCancelled = true
 
     override fun setCancelled(cancel: Boolean) {
         isCancelled = cancel
