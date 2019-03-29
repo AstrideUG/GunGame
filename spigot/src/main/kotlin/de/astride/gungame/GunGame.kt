@@ -11,6 +11,7 @@ import de.astride.gungame.commands.Top
 import de.astride.gungame.functions.changeColor
 import de.astride.gungame.functions.gameMap
 import de.astride.gungame.listener.InGameListener
+import de.astride.gungame.listener.RegionsListener
 import de.astride.gungame.shop.ShopManager
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
@@ -72,6 +73,7 @@ class GunGame : DarkPlugin() {
 
     private fun initListener() {
         InGameListener(this)
+        RegionsListener(this)
 //        RegionsListener(this, name)
     }
 
