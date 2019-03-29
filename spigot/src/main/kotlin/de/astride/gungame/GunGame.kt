@@ -17,7 +17,7 @@ import de.astride.gungame.listener.RegionsListener
 import de.astride.gungame.services.ConfigService
 import de.astride.gungame.shop.ShopListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
@@ -44,6 +44,7 @@ class GunGame : DarkPlugin() {
         ) //Important for ConfigService.instance
 
         Messages.NAME.message = "GunGame"
+        Messages.PREFIX.message = "$PRIMARY$EXTRA${Messages.NAME}$IMPORTANT | $RESET"
 
     }
 
@@ -52,15 +53,17 @@ class GunGame : DarkPlugin() {
         EventsListener.autoRespawn = true
 
         val config = configService.maps
-        val jsonObject = config.maps[Random.nextInt(config.maps.size() - 1)] as? JsonObject ?: return
+        if (config.maps.size() < 1) throw IllegalStateException("No Maps are configured")
+        val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return
         gameMap = MapsUtils.getMapAndLoad(config.config, jsonObject) { _, _ -> }
 
         initListener()
 //        initStats()
         initCommands()
-        spawnShop()
 
         ShopListener(this)
+
+        Bukkit.getScheduler().runTaskLater(this, { spawnShops() }, 5)
     }
 
     private fun initListener() {
@@ -79,7 +82,7 @@ class GunGame : DarkPlugin() {
         Top(this)
     }
 
-    private fun spawnShop() = configService.shops.locations.forEach {
+    private fun spawnShops() = configService.shops.locations.forEach {
 
         val armorStand = it.world.spawnEntity(it, EntityType.ARMOR_STAND) as ArmorStand
         armorStand.apply {

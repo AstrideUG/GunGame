@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 29.03.2019)
  */
 class Teams(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -31,8 +31,10 @@ class Teams(javaPlugin: JavaPlugin) : Command(
 
     override fun perform(sender: CommandSender, args: Array<String>) {
 
-        if (lastUse < System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5)) {
-            sender.sendMessage("${Messages.PREFIX}${TEXT}Teams kann nur alle ${IMPORTANT}5 Minuten ${TEXT}genutzt werden")
+        val l = lastUse + TimeUnit.MINUTES.toMillis(5) - System.currentTimeMillis()
+        if (l > 0) {
+            val time = Utils.getTime(l / 1000)
+            sender.sendMessage("${Messages.PREFIX}${TEXT}Teams kann nur alle ${IMPORTANT}5 Minuten ${TEXT}genutzt werden ($IMPORTANT$time$TEXT)")
             return
         }
 

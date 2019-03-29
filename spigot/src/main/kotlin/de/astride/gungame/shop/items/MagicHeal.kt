@@ -22,7 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 29.03.2019)
  */
 class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -48,7 +48,7 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     fun onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) {
 
         val player = event.entity as? Player ?: return
-        if (player.lastHealerUse + 1000 > System.currentTimeMillis()) return
+        if (player.lastHealerUse + 1000 < System.currentTimeMillis()) return
         event.damage = 0.0
 
     }
@@ -56,7 +56,7 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     @EventHandler
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
 
-        if (event.item.clone().apply { amount = 1 } == itemStack) return
+        if (event.item?.clone()?.apply { amount = 1 } != itemStack) return
         if (event.action != Action.RIGHT_CLICK_BLOCK && event.action != Action.RIGHT_CLICK_AIR) return
         event.cancel()
         event.player.apply {

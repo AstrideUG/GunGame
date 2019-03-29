@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 16:33. (KitManager)
- * Current Version: 1.0 (17.02.2018 - 27.03.2019)
+ * Current Version: 1.0 (17.02.2018 - 29.03.2019)
  */
 
 /**
@@ -53,14 +53,16 @@ fun Player.downgrade() {
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 05:34.
- * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 29.03.2019)
  */
 fun Player.upgrade() {
 
     val isNotCancelled = !GunGamePlayerUpgradeLevelEvent(this).call().isCancelled
-    if (isNotCancelled && gunGameLevel < Kits.values().size) gunGameLevel++
+    if (isNotCancelled && gunGameLevel < Kits.values().size) {
+        gunGameLevel++
+        playBuySound()
+    }
 
-    playBuySound()
     setKit()
 }
 
@@ -108,7 +110,7 @@ var Player.lastHealerUse
  */
 fun Player.heal() {
     val delay = 10000 //TODO add config
-    if (health <= 0.0 || lastHealerUse < System.currentTimeMillis() + delay) return
+    if (health <= 0.0 || lastHealerUse + delay > System.currentTimeMillis()) return
     lastHealerUse = System.currentTimeMillis()
     thread {
         for (i in 1..maxHealth.toInt()) {

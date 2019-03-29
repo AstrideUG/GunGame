@@ -85,7 +85,7 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
     fun onPlayerMoveEvent(event: PlayerMoveEvent) {
         val inventory = event.player.inventory
         if (region.isInside(event.from) && !region.isInside(event.to)) inventory.setItem(leaveSlot, null)
-        else inventory.setLeave()
+        else if (!region.isInside(event.from) && region.isInside(event.to)) inventory.setLeave()
     }
 
     /**
@@ -94,7 +94,7 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
      * Current Version: 1.0 (29.03.2019 - 29.03.2019)
      */
     @EventHandler
-    fun onRespawn(event: PlayerRespawnEvent) = event.player.inventory.setLeave()
+    fun onPlayerRespawnEvent(event: PlayerRespawnEvent) = event.player.inventory.setLeave()
 
     /**
      * @author Lars Artmann | LartyHD
@@ -109,7 +109,7 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
          * Created by Lars Artmann | LartyHD on 29.03.2019 13:10.
          * Current Version: 1.0 (29.03.2019 - 29.03.2019)
          */
-        private val leaveSlot = 8
+        private const val leaveSlot = 8
     }
 
 }

@@ -19,6 +19,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Utils
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -35,7 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:32.
- * Current Version: 1.0 (17.02.2018 - 27.03.2019)
+ * Current Version: 1.0 (17.02.2018 - 29.03.2019)
  */
 class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
@@ -64,15 +65,15 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
                 setItem(8, Items.LEAVE.itemStack)
             }
 
+            gameMode = GameMode.SURVIVAL
             health = maxHealth
-            teleport(location.randomLook())
+            teleport(gameMap.spawn.randomLook())
 
             setKit()
             sendScoreBoard()
             showAll()
 
         }
-
 
     }
 
