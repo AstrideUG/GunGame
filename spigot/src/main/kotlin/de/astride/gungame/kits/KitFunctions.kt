@@ -93,7 +93,6 @@ fun Player.setKit() {
  */
 fun Player.updateLevel() = Bukkit.getScheduler().scheduleSyncDelayedTask(javaPlugin, { level = gunGameLevel }, 3)
 
-
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 05:58.

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:33.
- * Current Version: 1.0 (19.02.2018 - 29.03.2019)
+ * Current Version: 1.0 (19.02.2018 - 30.03.2019)
  */
 abstract class ShopItemListener protected constructor(
     javaPlugin: JavaPlugin,
@@ -30,8 +30,24 @@ abstract class ShopItemListener protected constructor(
 
     /**
      * @author Lars Artmann | LartyHD
-     * Created by Lars Artmann | LartyHD on 27.03.2019 08:44.
+     * Created by Lars Artmann | LartyHD on 30.03.2019 11:06.
+     * Current Version: 1.0 (30.03.2019 - 30.03.2019)
+     */
+    private val metadataKey = "lastItemUse-${javaClass.simpleName}"
+
+    /**
+     * @author Lars Artmann | LartyHD
+     * Created by Lars Artmann | LartyHD on 27.03.2019 07:20.
      * Current Version: 1.0 (27.03.2019 - 29.03.2019)
+     */
+    private var Player.lastItemUse: Long
+        get() = getMetadata(metadataKey).firstOrNull()?.asLong() ?: 0
+        set(value) = setMetadata(metadataKey, FixedMetadataValue(javaPlugin, value))
+
+    /**
+     * @author Lars Artmann | LartyHD
+     * Created by Lars Artmann | LartyHD on 27.03.2019 08:44.
+     * Current Version: 1.0 (27.03.2019 - 30.03.2019)
      */
     init {
 
@@ -40,15 +56,6 @@ abstract class ShopItemListener protected constructor(
         }
 
     }
-
-    /**
-     * @author Lars Artmann | LartyHD
-     * Created by Lars Artmann | LartyHD on 27.03.2019 07:20.
-     * Current Version: 1.0 (27.03.2019 - 29.03.2019)
-     */
-    private var Player.lastItemUse
-        get() = getMetadata("lastItemUse-${javaClass.simpleName}").firstOrNull()?.asLong() ?: 0
-        set(value) = setMetadata("lastItemUse-${javaClass.simpleName}", FixedMetadataValue(javaPlugin, value))
 
     /**
      * @author Lars Artmann | LartyHD
@@ -77,7 +84,7 @@ abstract class ShopItemListener protected constructor(
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 27.03.2019 08:19.
-     * Current Version: 1.0 (27.03.2019 - 29.03.2019)
+     * Current Version: 1.0 (27.03.2019 - 30.03.2019)
      */
     private fun Player.delayed(): Boolean {
         val l = (lastItemUse + TimeUnit.SECONDS.toMillis(delay)) - System.currentTimeMillis()
@@ -86,10 +93,34 @@ abstract class ShopItemListener protected constructor(
             false
         } else {
             val time = Utils.getTime(l / 1000)
-            "${Messages.PREFIX}${TEXT}Du kannst $SECONDARY${itemStack.itemMeta.displayName}$TEXT in ${time} wieder kaufen"
+            "${Messages.PREFIX}${TEXT}Du kannst $SECONDARY${itemStack.itemMeta.displayName}$TEXT in $time wieder kaufen"
                 .sendTo(this)
             true
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ShopItemListener) return false
+
+        if (itemStack != other.itemStack) return false
+        if (delay != other.delay) return false
+        if (price != other.price) return false
+        if (metadataKey != other.metadataKey) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = itemStack.hashCode()
+        result = 31 * result + delay.hashCode()
+        result = 31 * result + price
+        result = 31 * result + metadataKey.hashCode()
+        return result
+    }
+
+    override fun toString(): String =
+        "${javaClass.simpleName}(itemStack=$itemStack, delay=$delay, price=$price, metadataKey='$metadataKey')"
+
 
 }

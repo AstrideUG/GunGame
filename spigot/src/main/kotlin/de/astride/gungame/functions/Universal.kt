@@ -36,7 +36,6 @@ lateinit var gameMap: Map
 fun ArmorStand.changeColor() {
     val itemStack = LeatherArmorItemBuilder(Material.LEATHER_CHESTPLATE)
         .setColor(Color.fromRGB(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256)))
-        .addAllItemFlags()
         .build()
 
     chestplate = itemStack

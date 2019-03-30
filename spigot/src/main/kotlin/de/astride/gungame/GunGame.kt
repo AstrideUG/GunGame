@@ -99,7 +99,7 @@ class GunGame : DarkPlugin() {
 
     }
 //    private fun initStats() {
-//        val stats = setOf(
+//        val statistics = setOf(
 //            "Punkte",
 //            "Kills",
 //            "MaxKillStreak",
@@ -110,7 +110,7 @@ class GunGame : DarkPlugin() {
 //            "Used.Killer",
 //            "Used.KeepInventory"
 //        )
-//        Saves.setStatsAPI(StatsAPI(Messages.getName(), stats, Utils.connectMySQL("Stats", "mysql.properties")))
+//        Saves.setStatsAPI(StatsAPI(Messages.getName(), statistics, Utils.connectMySQL("Stats", "mysql.properties")))
 //    }
 
 }

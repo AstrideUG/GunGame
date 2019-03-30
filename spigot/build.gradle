@@ -8,5 +8,4 @@ dependencies {
 // https://mvnrepository.com/artifact/net.milkbowl.vault/VaultAPI
     compileOnly group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.6'
 
-
 }

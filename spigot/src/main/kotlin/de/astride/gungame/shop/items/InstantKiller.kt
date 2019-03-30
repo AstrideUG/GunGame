@@ -1,6 +1,7 @@
 package de.astride.gungame.shop.items
 
 import de.astride.gungame.functions.playBuySound
+import de.astride.gungame.functions.removedLore
 import de.astride.gungame.shop.ShopItemListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors
@@ -32,7 +33,7 @@ class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
 
     override fun Player.buy() {
 
-        inventory.addItem(ItemBuilder(itemStack).removeLore(0).build())
+        inventory.addItem(itemStack.removedLore())
         playBuySound()
         closeInventory()
 

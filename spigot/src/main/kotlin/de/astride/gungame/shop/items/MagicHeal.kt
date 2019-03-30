@@ -1,6 +1,7 @@
 package de.astride.gungame.shop.items
 
 import de.astride.gungame.functions.playBuySound
+import de.astride.gungame.functions.removedLore
 import de.astride.gungame.kits.heal
 import de.astride.gungame.kits.lastHealerUse
 import de.astride.gungame.shop.ShopItemListener
@@ -39,7 +40,7 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     override fun Player.buy() = if (inventory.hasItems(Material.INK_SACK) >= 3)
         sendMessage("${Messages.PREFIX}${TEXT}Du darfst nur drei ${itemStack.itemMeta.displayName} ${TEXT}im ${IMPORTANT}Inventar ${TEXT}haben")
     else {
-        inventory.addItem(ItemBuilder(itemStack).removeLore(0).build())
+        inventory.addItem(itemStack.removedLore())
         playBuySound()
         closeInventory()
     }
@@ -56,7 +57,7 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     @EventHandler
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
 
-        if (event.item?.clone()?.apply { amount = 1 } != itemStack) return
+        if (event.item?.clone()?.apply { amount = 1 } != itemStack.removedLore()) return
         if (event.action != Action.RIGHT_CLICK_BLOCK && event.action != Action.RIGHT_CLICK_AIR) return
         event.cancel()
         event.player.apply {
