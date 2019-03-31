@@ -37,7 +37,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:32.
- * Current Version: 1.0 (17.02.2018 - 30.03.2019)
+ * Current Version: 1.0 (17.02.2018 - 31.03.2019)
  */
 class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
@@ -45,11 +45,12 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
     override fun onPlayerMoveEvent(event: PlayerMoveEvent) {
         super.onPlayerMoveEvent(event)
         val type = event.to.block.type
+        if (event.player.health <= 0.0) return
         if (type == Material.WATER ||
             type == Material.STATIONARY_WATER ||
             type == Material.LAVA ||
             type == Material.STATIONARY_LAVA
-        ) event.player.damage(event.player.health)
+        ) event.player.health = 0.0
     }
 
     @EventHandler
@@ -66,7 +67,7 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
                 setItem(8, Items.LEAVE.itemStack)
             }
 
-            gameMode = GameMode.SURVIVAL
+            gameMode = GameMode.ADVENTURE
             health = maxHealth
             teleport(gameMap.spawn.randomLook())
 
