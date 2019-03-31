@@ -23,7 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 30.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 31.03.2019)
  */
 class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -37,12 +37,14 @@ class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
     500
 ) {
 
-    override fun Player.buy() = if (inventory.hasItems(Material.FIREBALL) >= 1)
+    override fun Player.buy() = if (inventory.hasItems(Material.FIREBALL) >= 1) {
         sendMessage("${Messages.PREFIX}${TEXT}Du darfst nur ein ${itemStack.itemMeta.displayName} ${TEXT}im ${Colors.IMPORTANT}Inventar ${TEXT}haben")
-    else {
+        false
+    } else {
         inventory.addItem(itemStack.removedLore())
         playBuySound()
         closeInventory()
+        true
     }
 
     @EventHandler(ignoreCancelled = true)

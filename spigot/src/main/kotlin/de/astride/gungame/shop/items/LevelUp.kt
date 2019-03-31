@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 30.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 31.03.2019)
  */
 class LevelUp(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -30,8 +30,8 @@ class LevelUp(javaPlugin: JavaPlugin) : ShopItemListener(
 
     override fun Player.buy() = if (Kits.values().size == player.gunGameLevel) {
         sendMessage("${Messages.PREFIX}${TEXT}Du hast schon das maximahle Level ($IMPORTANT${Kits.values().size}$TEXT) erreicht")
+        false
     } else {
-
         thread {
             for (i in 0..4) {
                 upgrade()
@@ -44,7 +44,7 @@ class LevelUp(javaPlugin: JavaPlugin) : ShopItemListener(
         }
         playBuySound()
         closeInventory()
-
+        true
     }
 
 }

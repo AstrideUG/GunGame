@@ -26,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 30.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 31.03.2019)
  */
 class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -38,12 +38,14 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     50
 ) {
 
-    override fun Player.buy() = if (inventory.hasItems(Material.INK_SACK) >= 3)
+    override fun Player.buy() = if (inventory.hasItems(Material.INK_SACK) >= 3) {
         sendMessage("${Messages.PREFIX}${TEXT}Du darfst nur drei ${itemStack.itemMeta.displayName} ${TEXT}im ${IMPORTANT}Inventar ${TEXT}haben")
-    else {
+        false
+    } else {
         inventory.addItem(itemStack.removedLore())
         playBuySound()
         closeInventory()
+        true
     }
 
     @EventHandler

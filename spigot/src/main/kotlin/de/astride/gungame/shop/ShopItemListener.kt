@@ -62,9 +62,9 @@ abstract class ShopItemListener protected constructor(
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 27.03.2019 08:22.
-     * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+     * Current Version: 1.0 (27.03.2019 - 31.03.2019)
      */
-    abstract fun Player.buy()
+    abstract fun Player.buy(): Boolean
 
     /**
      * @author Lars Artmann | LartyHD
@@ -73,8 +73,7 @@ abstract class ShopItemListener protected constructor(
      */
     fun checkedBuy(player: Player) = player.run {
         if (delayed() || !enoughMoney()) return@run
-        uniqueId.actions += Action(this@ShopItemListener.javaClass.simpleName, mapOf("player" to this))
-        buy()
+        if (buy()) uniqueId.actions += Action(this@ShopItemListener.javaClass.simpleName, mapOf("player" to this))
     }
 
     /**

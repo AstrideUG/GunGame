@@ -35,15 +35,16 @@ class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
     500
 ) {
 
-    override fun Player.buy() {
+    override fun Player.buy(): Boolean {
 
         sendMessage("${Messages.PREFIX}${TEXT}Du hast ${Colors.IMPORTANT}KeepInventory $TEXT${if (keepInventory) "schon " else ""}aktiviert")
 
-        if (!keepInventory) {
+        return if (!keepInventory) {
             keepInventory = true
             playBuySound()
             closeInventory()
-        }
+            true
+        } else false
 
     }
 
