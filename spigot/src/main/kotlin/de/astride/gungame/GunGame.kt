@@ -52,7 +52,7 @@ class GunGame : DarkPlugin() {
         val config = configService.maps
         if (config.maps.size() < 1) throw IllegalStateException("No Maps are configured")
         val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return
-        gameMap = MapsUtils.getMapAndLoad(config.config, jsonObject) { _, _ -> }
+        gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { _, _ -> }
 
         initListener()
 //        initStats()

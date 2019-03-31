@@ -1,6 +1,7 @@
 package de.astride.gungame.services
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
@@ -14,21 +15,44 @@ import java.io.File
  */
 class ConfigService(private val directory: File) {
 
+    val config by lazy { Config() }
     val shops by lazy { Shops() }
     val maps by lazy { Maps() }
 
+    inner class Config internal constructor() {
+
+        /* Main */
+        private val configData = ConfigData(directory, "config.json")
+        private val jsonObject = GsonService.loadAsJsonObject(configData)
+
+        /* SubClass */
+        val files by lazy { Files(jsonObject[Files::class.java.simpleName]?.asJsonObject) }
+
+        inner class Files internal constructor(jsonObject: JsonObject?) {
+
+            /* Values */
+            val maps by lazy { jsonObject?.get("maps")?.asString ?: "maps.json" }
+            val shops by lazy { jsonObject?.get("shops")?.asString ?: "shops.json" }
+
+        }
+
+    }
+
     inner class Maps internal constructor() {
 
-        private val configData = ConfigData(directory, "maps.json")
-        val config = BukkitGsonConfig(configData)
+        /* Main */
+        private val configData = ConfigData(directory, config.files.maps)
         val maps = GsonService.load(configData) as? JsonArray ?: JsonArray()
+
+        /* Values */
+        val bukkitGsonConfig = BukkitGsonConfig(configData)
 
     }
 
     inner class Shops internal constructor() {
 
         /* Main */
-        private val configData = ConfigData(directory, "shops.json")
+        private val configData = ConfigData(directory, config.files.shops)
         private val jsonArray = GsonService.load(configData) as? JsonArray ?: JsonArray()
         private val bukkitGsonConfig = BukkitGsonConfig(configData)
 
