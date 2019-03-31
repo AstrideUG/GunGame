@@ -4,6 +4,7 @@ import de.astride.gungame.functions.activeActions
 import de.astride.gungame.functions.count
 import de.astride.gungame.functions.points
 import de.astride.gungame.functions.rank
+import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.isPlayer
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
@@ -37,7 +38,10 @@ class Stats(javaPlugin: JavaPlugin) : Command(
         val deaths = uuid.count("PlayerDeathEvent")
         val kills = uuid.count("PlayerRespawnEvent")
         val kd = kills.toFloat() / deaths.toFloat()
+        val name = Fetcher.getName(uuid)
         "$PREFIX$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}STATS$IMPORTANT ]$DESIGN                         "
+            .sendTo(sender)
+        "$PREFIX$IMPORTANT$DESIGN                   $IMPORTANT[ $TEXT$PRIMARY$name$IMPORTANT ]$DESIGN                   "
             .sendTo(sender)
         "$PREFIX${TEXT}Rang$IMPORTANT: $PRIMARY${uuid.rank}".sendTo(sender)
         "$PREFIX${TEXT}Points$IMPORTANT: $PRIMARY${uuid.points()}".sendTo(sender)
@@ -50,11 +54,13 @@ class Stats(javaPlugin: JavaPlugin) : Command(
         "$PREFIX${TEXT}MaxDeathStreak$IMPORTANT: $PRIMARY${"TODO"}".sendTo(sender)//TODO Add MaxDeathSteak
         "$PREFIX${TEXT}MaxKillStreak$IMPORTANT: $PRIMARY${"TODO"}".sendTo(sender) //TODO Add MaxKillStreak
         uuid.toPlayer()?.apply {
-            val count = uuid.count("PlayerDeathEvent", uuid.activeActions.takeWhile { it.id != "PlayerRespawnEvent" })
+            val count =
+                uuid.count("PlayerDeathEvent", uuid.activeActions.takeLastWhile { it.id != "PlayerRespawnEvent" })
             "$PREFIX${TEXT}DeathStreak$IMPORTANT: $PRIMARY$count".sendTo(sender)
         }
         uuid.toPlayer()?.apply {
-            val count = uuid.count("PlayerRespawnEvent", uuid.activeActions.takeWhile { it.id != "PlayerDeathEvent" })
+            val count =
+                uuid.count("PlayerRespawnEvent", uuid.activeActions.takeLastWhile { it.id != "PlayerDeathEvent" })
             "$PREFIX${TEXT}KillStreak$IMPORTANT: $PRIMARY$count".sendTo(sender)
         }
         "$PREFIX$TEXT$DESIGN                                                               ".sendTo(sender)
