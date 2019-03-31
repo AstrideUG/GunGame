@@ -6,7 +6,8 @@ import de.astride.gungame.functions.removedLore
 import de.astride.gungame.shop.ShopItemListener
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.hasItems
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItemInHand
@@ -25,14 +26,14 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
-    ItemBuilder(Material.FIREBALL)
-        .setName("${SECONDARY}Instant Killer")
-        .setLore("${TEXT}Töte einen Spieler sofort")
+    ItemBuilder(config.material, damage = config.damage)
+        .setName(config.name)
+        .setLore(config.lore)
         .addEnchant(Enchantment.DAMAGE_ALL, 1000, true)
         .addItemFlags(ItemFlag.HIDE_ENCHANTS)
         .build(),
-    300,
-    500
+    config.delay,
+    config.price
 ) {
 
     override fun Player.buy() = if (inventory.hasItems(Material.FIREBALL) >= 1) {
@@ -53,6 +54,10 @@ class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
         damager.removeItemInHand()
         damager.uniqueId.actions += Action("used-${javaClass.simpleName}", mapOf("player" to damager))
 
+    }
+
+    companion object {
+        private val config get() = shopItems.instantKiller
     }
 
 }

@@ -11,10 +11,8 @@ import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerRespawnEvent
@@ -28,12 +26,12 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
-    ItemBuilder(Material.PAPER)
-        .setName("${SECONDARY}KeepInventory")
-        .setLore("${TEXT}Behalte nach deinem Tot deine Items")
+    ItemBuilder(config.material, damage = config.damage)
+        .setName(config.name)
+        .setLore(config.lore)
         .build(),
-    300,
-    500
+    config.delay,
+    config.price
 ) {
 
     override fun Player.buy(): Boolean {
@@ -73,6 +71,10 @@ class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
             uniqueId.actions += Action("used-${this@KeepInventory.javaClass.simpleName}", mapOf("player" to this))
         }
 
+    }
+
+    companion object {
+        private val config get() = shopItems.keepInventory
     }
 
 }

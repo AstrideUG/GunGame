@@ -6,7 +6,11 @@ import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
 import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMaterial
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import java.io.File
 
 /**
@@ -29,12 +33,13 @@ class ConfigService(private val directory: File) {
         /* SubClass */
         val files by lazy { Files(jsonObject[Files::class.java.simpleName]?.asJsonObject) }
         val commands by lazy { Commands(jsonObject[Commands::class.java.simpleName]?.asJsonObject) }
+        val shopItems by lazy { ShopItems(jsonObject[ShopItems::class.java.simpleName]?.asJsonObject) }
 
         inner class Files internal constructor(jsonObject: JsonObject?) {
 
             /* Values */
-            val maps by lazy { jsonObject?.get("maps")?.asString ?: "maps.json" }
-            val shops by lazy { jsonObject?.get("shops")?.asString ?: "shops.json" }
+            val maps by lazy { jsonObject?.get("maps")?.asString() ?: "maps.json" }
+            val shops by lazy { jsonObject?.get("shops")?.asString() ?: "shops.json" }
 
         }
 
@@ -50,8 +55,8 @@ class ConfigService(private val directory: File) {
             inner class Stats internal constructor(jsonObject: JsonObject?) {
 
                 /* Values */
-                val name by lazy { jsonObject?.get("name")?.asString ?: "Stats" }
-                val permission by lazy { jsonObject?.get("permission")?.asString ?: "gungame.commands.stats" }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "Stats" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.stats" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
@@ -62,8 +67,8 @@ class ConfigService(private val directory: File) {
             inner class StatsReset internal constructor(jsonObject: JsonObject?) {
 
                 /* Values */
-                val name by lazy { jsonObject?.get("name")?.asString ?: "StatsReset" }
-                val permission by lazy { jsonObject?.get("permission")?.asString ?: "gungame.commands.statsReset" }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "StatsReset" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.statsReset" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
@@ -74,8 +79,8 @@ class ConfigService(private val directory: File) {
             inner class Team internal constructor(jsonObject: JsonObject?) {
 
                 /* Values */
-                val name by lazy { jsonObject?.get("name")?.asString ?: "Team" }
-                val permission by lazy { jsonObject?.get("permission")?.asString ?: "gungame.commands.team" }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "Team" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.team" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
@@ -86,8 +91,8 @@ class ConfigService(private val directory: File) {
             inner class Teams internal constructor(jsonObject: JsonObject?) {
 
                 /* Values */
-                val name by lazy { jsonObject?.get("name")?.asString ?: "Teams" }
-                val permission by lazy { jsonObject?.get("permission")?.asString ?: "gungame.commands.teams" }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "Teams" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.teams" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
@@ -98,12 +103,90 @@ class ConfigService(private val directory: File) {
             inner class Top internal constructor(jsonObject: JsonObject?) {
 
                 /* Values */
-                val name by lazy { jsonObject?.get("name")?.asString ?: "Top" }
-                val permission by lazy { jsonObject?.get("permission")?.asString ?: "gungame.commands.top" }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "Top" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.top" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
                 }
+
+            }
+
+        }
+
+        inner class ShopItems internal constructor(jsonObject: JsonObject?) {
+
+            /* SubClass */
+            val instantKiller by lazy { InstantKiller(jsonObject?.get(Commands.Stats::class.java.simpleName)?.asJsonObject) }
+            val keepInventory by lazy { KeepInventory(jsonObject?.get(Commands.StatsReset::class.java.simpleName)?.asJsonObject) }
+            val levelUp by lazy { LevelUp(jsonObject?.get(Commands.Team::class.java.simpleName)?.asJsonObject) }
+            val magicHeal by lazy { MagicHeal(jsonObject?.get(Commands.Teams::class.java.simpleName)?.asJsonObject) }
+
+            inner class InstantKiller(jsonObject: JsonObject?) {
+
+                /* Values */
+                val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.FIREBALL }
+                val damage by lazy { jsonObject?.get("damage")?.asShort ?: 0 }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "${SECONDARY}Instant Killer" }
+                val lore by lazy {
+                    val element = jsonObject?.get("lore")
+                    val jsonArray = element as? JsonArray
+                    val single = element?.asString() ?: "${TEXT}Töte einen Spieler sofort"
+                    jsonArray?.mapNotNull { it.asString() } ?: listOf(single)
+                }
+                val delay by lazy { jsonObject?.get("delay")?.asLong ?: 300 }
+                val price by lazy { jsonObject?.get("price")?.asInt ?: 500 }
+
+            }
+
+            inner class KeepInventory(jsonObject: JsonObject?) {
+
+                /* Values */
+                val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.PAPER }
+                val damage by lazy { jsonObject?.get("damage")?.asShort ?: 0 }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "${SECONDARY}KeepInventory" }
+                val lore by lazy {
+                    val element = jsonObject?.get("lore")
+                    val jsonArray = element as? JsonArray
+                    val single = element?.asString() ?: "${TEXT}Behalte nach deinem Tot deine Items"
+                    jsonArray?.mapNotNull { it.asString() } ?: listOf(single)
+                }
+                val delay by lazy { jsonObject?.get("delay")?.asLong ?: 300 }
+                val price by lazy { jsonObject?.get("price")?.asInt ?: 500 }
+
+            }
+
+            inner class LevelUp(jsonObject: JsonObject?) {
+
+                /* Values */
+                val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.DIAMOND }
+                val damage by lazy { jsonObject?.get("damage")?.asShort ?: 0 }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "${SECONDARY}LevelUp" }
+                val lore by lazy {
+                    val element = jsonObject?.get("lore")
+                    val jsonArray = element as? JsonArray
+                    val single = element?.asString() ?: "${TEXT}Erhöht dein Level um 5"
+                    jsonArray?.mapNotNull { it.asString() } ?: listOf(single)
+                }
+                val delay by lazy { jsonObject?.get("delay")?.asLong ?: 60 }
+                val price by lazy { jsonObject?.get("price")?.asInt ?: 100 }
+
+            }
+
+            inner class MagicHeal(jsonObject: JsonObject?) {
+
+                /* Values */
+                val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.INK_SACK }
+                val damage by lazy { jsonObject?.get("damage")?.asShort ?: 0 }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "${SECONDARY}Magic Heal" }
+                val lore by lazy {
+                    val element = jsonObject?.get("lore")
+                    val jsonArray = element as? JsonArray
+                    val single = element?.asString() ?: "${TEXT}Er regeneriert dich sofort"
+                    jsonArray?.mapNotNull { it.asString() } ?: listOf(single)
+                }
+                val delay by lazy { jsonObject?.get("delay")?.asLong ?: 30 }
+                val price by lazy { jsonObject?.get("price")?.asInt ?: 50 }
 
             }
 

@@ -9,7 +9,8 @@ import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.hasItems
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItemInHand
@@ -30,12 +31,12 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
-    ItemBuilder(Material.INK_SACK, damage = 1)
-        .setName("${SECONDARY}Magic Heal")
-        .setLore("${TEXT}Er regeneriert dich sofort")
+    ItemBuilder(config.material, damage = config.damage)
+        .setName(config.name)
+        .setLore(config.lore)
         .build(),
-    30,
-    50
+    config.delay,
+    config.price
 ) {
 
     /**
@@ -80,6 +81,10 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
             } else "${Messages.PREFIX}${TEXT}Du hast eine Behandlung echt nicht nötig ;)".sendTo(this)
         }
 
+    }
+
+    companion object {
+        private val config get() = shopItems.magicHeal
     }
 
 }

@@ -6,9 +6,9 @@ import de.astride.gungame.kits.gunGameLevel
 import de.astride.gungame.kits.upgrade
 import de.astride.gungame.shop.ShopItemListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.concurrent.thread
@@ -20,12 +20,12 @@ import kotlin.concurrent.thread
  */
 class LevelUp(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
-    ItemBuilder(Material.DIAMOND)
-        .setName("${SECONDARY}Level Up")
-        .setLore("${TEXT}Erhöht dein Level um 5")
+    ItemBuilder(config.material, damage = config.damage)
+        .setName(config.name)
+        .setLore(config.lore)
         .build(),
-    60,
-    100
+    config.delay,
+    config.price
 ) {
 
     override fun Player.buy() = if (Kits.values().size == player.gunGameLevel) {
@@ -44,6 +44,10 @@ class LevelUp(javaPlugin: JavaPlugin) : ShopItemListener(
         }
         playBuySound()
         true
+    }
+
+    companion object {
+        private val config get() = shopItems.levelUp
     }
 
 }

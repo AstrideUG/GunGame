@@ -5,6 +5,7 @@ package de.astride.gungame.shop
 
 import de.astride.gungame.event.GunGamePlayerShopHasEnoughMoneyEvent
 import de.astride.gungame.functions.actions
+import de.astride.gungame.functions.configService
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.Listener
@@ -130,5 +131,8 @@ abstract class ShopItemListener protected constructor(
     override fun toString(): String =
         "${javaClass.simpleName}(itemStack=$itemStack, delay=$delay, price=$price, metadataKey='$metadataKey')"
 
+    companion object {
+        internal val shopItems get() = configService.config.shopItems
+    }
 
 }
