@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 16:33. (KitManager)
- * Current Version: 1.0 (17.02.2018 - 30.03.2019)
+ * Current Version: 1.0 (17.02.2018 - 31.03.2019)
  */
 
 /**
@@ -105,20 +105,20 @@ var Player.lastHealerUse
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 09:09.
- * Current Version: 1.0 (27.03.2019 - 30.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 31.03.2019)
  */
 fun Player.heal() {
     val delay = 10000 //TODO add config
     if (health <= 0.0 || lastHealerUse + delay > System.currentTimeMillis()) return
     lastHealerUse = System.currentTimeMillis()
     thread {
-        for (i in 1..maxHealth.toInt()) {
+        for (i in health.toInt()..maxHealth.toInt()) {
             try {
                 Thread.sleep(50)
             } catch (ex: InterruptedException) {
                 ex.printStackTrace()
             }
-            if (health >= maxHealth) return@thread
+            if (health + 1 >= maxHealth) return@thread
             health++
         }
     }
