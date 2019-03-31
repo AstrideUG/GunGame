@@ -6,6 +6,7 @@ package de.astride.gungame.listener
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.gameMap
 import de.astride.gungame.functions.sendScoreBoard
+import de.astride.gungame.functions.setLeave
 import de.astride.gungame.kits.downgrade
 import de.astride.gungame.kits.heal
 import de.astride.gungame.kits.setKit
@@ -55,7 +56,6 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
     @EventHandler
     override fun onPlayerJoinEvent(event: PlayerJoinEvent) {
-//        statsAPI.createAccount(uniqueId)
 
         event.player.apply {
 
@@ -64,9 +64,11 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
             inventory.apply {
                 clear()
                 armorContents = null
-                setItem(8, Items.LEAVE.itemStack)
+                setLeave()
             }
 
+            exp = 0f
+            level = 0
             gameMode = GameMode.ADVENTURE
             health = maxHealth
             teleport(gameMap.spawn.randomLook())
@@ -119,22 +121,6 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
         }
 
-//        statsAPI.add(uniqueId, 1, "tode", {
-//            statsAPI.remove(uniqueId, 5, "Punkte", {
-//                statsAPI.get(uniqueId, "Punkte", { punkte ->
-//        if (punkte < 0) statsAPI.set(uniqueId, 0, "Punkte")
-
-//        statsAPI.get(killerUniqueId, "MaxKillStreak", { result1 ->
-//        if (killStreak > result1) statsAPI.set(killerUniqueId, killStreak, "MaxKillStreak")
-//        statsAPI.add(killerUniqueId, 1, "Kills")
-//        statsAPI.add(killerUniqueId, 10, "Punkte")
-//        killer.sendMessage(coinsAPI.addCoins(killerUniqueId, "5", { result2 ->
-
-//        }))
-//        })
-//                })
-//            })
-//        })
     }
 
     @EventHandler

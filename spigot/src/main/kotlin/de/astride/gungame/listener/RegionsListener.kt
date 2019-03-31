@@ -4,12 +4,13 @@
 package de.astride.gungame.listener
 
 import de.astride.gungame.functions.gameMap
+import de.astride.gungame.functions.leaveSlot
+import de.astride.gungame.functions.setLeave
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.Listener
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
-import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -17,7 +18,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerRespawnEvent
-import org.bukkit.inventory.Inventory
 import org.bukkit.plugin.java.JavaPlugin
 
 
@@ -69,13 +69,13 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 29.03.2019 13:07.
-     * Current Version: 1.0 (29.03.2019 - 29.03.2019)
+     * Current Version: 1.0 (29.03.2019 - 31.03.2019)
      */
     @EventHandler
     fun onPlayerMoveEvent(event: PlayerMoveEvent) {
         val inventory = event.player.inventory
-        if (region.isInside(event.from) && !region.isInside(event.to)) inventory.setItem(leaveSlot, null)
-        else if (!region.isInside(event.from) && region.isInside(event.to)) inventory.setLeave()
+        if (inventory.getItem(leaveSlot) != null && !region.isInside(event.to)) inventory.setItem(leaveSlot, null)
+        else if (inventory.getItem(leaveSlot) == null && region.isInside(event.to)) inventory.setLeave()
     }
 
     /**
@@ -85,21 +85,5 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
      */
     @EventHandler
     fun onPlayerRespawnEvent(event: PlayerRespawnEvent) = event.player.inventory.setLeave()
-
-    /**
-     * @author Lars Artmann | LartyHD
-     * Created by Lars Artmann | LartyHD on 29.03.2019 13:08.
-     * Current Version: 1.0 (29.03.2019 - 29.03.2019)
-     */
-    private fun Inventory.setLeave() = setItem(leaveSlot, Items.LEAVE.itemStack)
-
-    companion object {
-        /**
-         * @author Lars Artmann | LartyHD
-         * Created by Lars Artmann | LartyHD on 29.03.2019 13:10.
-         * Current Version: 1.0 (29.03.2019 - 29.03.2019)
-         */
-        private const val leaveSlot = 8
-    }
 
 }
