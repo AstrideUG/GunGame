@@ -4,11 +4,12 @@ import de.astride.gungame.functions.*
 import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.isPlayer
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toPlayer
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages.PREFIX
+import org.bukkit.Material
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 
@@ -27,49 +28,58 @@ class Stats(javaPlugin: JavaPlugin) : Command(
 
     override fun perform(sender: CommandSender, args: Array<String>) = if (args.isEmpty()) sender.isPlayer({
         sendStats(sender, it.uniqueId)
-    }, { "Nutze als nicht Spieler: /$commandName <Spieler>".sendTo(sender) })
+    }, { "Nutze als nicht Spieler: /$commandName <Spieler>" })
     else getTarget(sender, args[0]) { sendStats(sender, it.uniqueId) }
 
     private fun sendStats(sender: CommandSender, uuid: UUID) {
 
+        val name = Fetcher.getName(uuid) ?: uuid
         val deaths = uuid.count("PlayerDeathEvent")
         val kills = uuid.count("PlayerRespawnEvent")
         val kd = kills.toFloat() / deaths.toFloat()
-        val name = Fetcher.getName(uuid)
         val deathStreak = uuid.maxStreak("PlayerDeathEvent", "PlayerRespawnEvent")
         val killStreak = uuid.maxStreak("PlayerRespawnEvent", "PlayerDeathEvent")
+        val waterKills = uuid.count("PlayerRespawnEvent", uuid.activeActions.filter {
+            val value = it.meta["player"] as? Player ?: return@filter false
+            value.location.block.type == Material.WATER
+        })
 
-        "$PREFIX$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}STATS$IMPORTANT ]$DESIGN                         "
-            .sendTo(sender)
-        "$PREFIX$IMPORTANT$DESIGN                   $IMPORTANT[ $TEXT$PRIMARY$name$IMPORTANT ]$DESIGN                   "
-            .sendTo(sender)
-        "$PREFIX${TEXT}Rang$IMPORTANT: $PRIMARY${uuid.rank}".sendTo(sender)
-        "$PREFIX${TEXT}Points$IMPORTANT: $PRIMARY${uuid.points()}".sendTo(sender)
-        "$PREFIX$TEXT$DESIGN                                                               ".sendTo(sender)
-        "$PREFIX${TEXT}Deaths$IMPORTANT: $PRIMARY$deaths".sendTo(sender)
-        "$PREFIX${TEXT}Kills$IMPORTANT: $PRIMARY$kills".sendTo(sender)
-        //TODO: "$PREFIX${TEXT}Kills by water$IMPORTANT: $PRIMARY${uuid.count("PlayerRespawnEvent")}"
-        "$PREFIX${TEXT}K/D$IMPORTANT: $PRIMARY$kd".sendTo(sender)
-        "$PREFIX$TEXT$DESIGN                                                               ".sendTo(sender)
-        "$PREFIX${TEXT}MaxDeathStreak$IMPORTANT: $PRIMARY$deathStreak".sendTo(sender)
-        "$PREFIX${TEXT}MaxKillStreak$IMPORTANT: $PRIMARY$killStreak".sendTo(sender)
-        uuid.toPlayer()?.apply {
-            val count =
-                uuid.count("PlayerDeathEvent", uuid.activeActions.takeLastWhile { it.id != "PlayerRespawnEvent" })
-            "$PREFIX${TEXT}DeathStreak$IMPORTANT: $PRIMARY$count".sendTo(sender)
-        }
-        uuid.toPlayer()?.apply {
-            val count =
-                uuid.count("PlayerRespawnEvent", uuid.activeActions.takeLastWhile { it.id != "PlayerDeathEvent" })
-            "$PREFIX${TEXT}KillStreak$IMPORTANT: $PRIMARY$count".sendTo(sender)
-        }
-        "$PREFIX$TEXT$DESIGN                                                               ".sendTo(sender)
-        "$PREFIX${TEXT}Bought LevelUps$IMPORTANT: $PRIMARY${uuid.count("LevelUp")}".sendTo(sender)
-        "$PREFIX${TEXT}Bought MagicHeal$IMPORTANT: $PRIMARY${uuid.count("MagicHeal")}".sendTo(sender)
-        "$PREFIX${TEXT}Bought InstantKiller$IMPORTANT: $PRIMARY${uuid.count("InstantKiller")}".sendTo(sender)
-        "$PREFIX${TEXT}Bought KeepInventory$IMPORTANT: $PRIMARY${uuid.count("KeepInventory")}".sendTo(sender)
-        "$PREFIX$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}STATS$IMPORTANT ]$DESIGN                         "
-            .sendTo(sender)
+        val textPrefix = "$PREFIX$TEXT"
+        val separator = "$IMPORTANT: $PRIMARY"
+        val lineSeparator = "$PREFIX$TEXT$DESIGN                                                               "
+        val messages = arrayOf(
+            "$PREFIX$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}STATS$IMPORTANT ]$DESIGN                         ",
+            "$PREFIX$IMPORTANT$DESIGN                   $IMPORTANT[ $PRIMARY$EXTRA$name$IMPORTANT ]$DESIGN                   ",
+            "${textPrefix}Rang$separator${uuid.rank}",
+            "${textPrefix}Points$separator${uuid.points()}",
+            lineSeparator,
+            "${textPrefix}Deaths$separator$deaths",
+            "${textPrefix}Kills$separator$kills",
+            "${textPrefix}Kills by water$separator$waterKills",
+            "${textPrefix}K/D$separator$kd",
+            lineSeparator,
+            uuid.toPlayer()?.run {
+                "${textPrefix}DeathStreak$separator${uuid.streak("PlayerDeathEvent", "PlayerRespawnEvent")}"
+            },
+            uuid.toPlayer()?.run {
+                "${textPrefix}KillStreak$separator${uuid.streak("PlayerRespawnEvent", "PlayerDeathEvent")}"
+            },
+            lineSeparator,
+            "${textPrefix}MaxDeathStreak$separator$deathStreak",
+            "${textPrefix}MaxKillStreak$separator$killStreak",
+            lineSeparator,
+            "${textPrefix}Bought LevelUps$separator${uuid.count("bought-LevelUp")}",
+            "${textPrefix}Bought MagicHeal$separator${uuid.count("bought-MagicHeal")}",
+            "${textPrefix}Bought InstantKiller$separator${uuid.count("bought-InstantKiller")}",
+            "${textPrefix}Bought KeepInventory$separator${uuid.count("bought-KeepInventory")}",
+            lineSeparator,
+            "${textPrefix}Used MagicHeal$separator${uuid.count("used-MagicHeal")}",
+            "${textPrefix}Used InstantKiller$separator${uuid.count("used-InstantKiller")}",
+            "${textPrefix}Used KeepInventory$separator${uuid.count("used-KeepInventory")}",
+            "$PREFIX$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}STATS$IMPORTANT ]$DESIGN                         "
+        )
+        sender.sendMessage(messages)
+
     }
 
 }

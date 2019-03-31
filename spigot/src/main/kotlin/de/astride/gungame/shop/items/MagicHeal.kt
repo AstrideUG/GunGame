@@ -67,7 +67,7 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
                 removeItemInHand()
                 heal()
                 lastHealerUse = System.currentTimeMillis()
-                uniqueId.actions += Action("${this@MagicHeal.javaClass.simpleName}-used", mapOf("player" to this))
+                uniqueId.actions += Action("used-${this@MagicHeal.javaClass.simpleName}", mapOf("player" to this))
             } else "${Messages.PREFIX}${TEXT}Du hast eine Behandlung echt nicht nötig ;)".sendTo(this)
         }
 

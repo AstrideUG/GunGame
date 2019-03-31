@@ -74,7 +74,10 @@ abstract class ShopItemListener protected constructor(
     fun checkedBuy(player: Player) = player.run {
         player.closeInventory()
         if (delayed() || !enoughMoney()) return@run
-        if (buy()) uniqueId.actions += Action(this@ShopItemListener.javaClass.simpleName, mapOf("player" to this))
+        if (buy()) uniqueId.actions += Action(
+            "bought-${this@ShopItemListener.javaClass.simpleName}",
+            mapOf("player" to this)
+        )
         else lastItemUse = 0
     }
 

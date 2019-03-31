@@ -87,3 +87,10 @@ fun UUID.maxStreak(check1: String, runNew: String): Int {
     for (i in 0 until counts.size) if (counts[i] > b) b = counts[i]
     return b
 }
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 31.03.2019 21:19.
+ * Current Version: 1.0 (31.03.2019 - 31.03.2019)
+ */
+fun UUID.streak(check1: String, runNew: String): Int = count(check1, activeActions.takeLastWhile { it.id != runNew })

@@ -69,7 +69,7 @@ class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
             if (!keepInventory) return
             keepInventory = false
             updateLevel()
-            uniqueId.actions += Action("${this@KeepInventory.javaClass.simpleName}-used", mapOf("player" to this))
+            uniqueId.actions += Action("used-${this@KeepInventory.javaClass.simpleName}", mapOf("player" to this))
         }
 
     }

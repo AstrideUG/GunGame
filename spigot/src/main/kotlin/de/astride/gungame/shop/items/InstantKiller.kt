@@ -51,7 +51,7 @@ class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
         if (damager.itemInHand?.clone()?.apply { amount = 1 } != itemStack.removedLore()) return
 //        if (event.entity !is Player) return
         damager.removeItemInHand()
-        damager.uniqueId.actions += Action("${javaClass.simpleName}-used", mapOf("player" to damager))
+        damager.uniqueId.actions += Action("used-${javaClass.simpleName}", mapOf("player" to damager))
 
     }
 
