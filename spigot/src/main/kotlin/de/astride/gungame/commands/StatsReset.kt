@@ -60,13 +60,13 @@ class StatsReset(javaPlugin: JavaPlugin) : Command(
 
     private fun CommandSender.successMessagePlayer() {
         sendMessage("")
-        sendMessage("${Messages.PREFIX}${TEXT}Deine$IMPORTANT GunGame Stats$TEXT wurden zurückzusetzen")
+        sendMessage("${Messages.PREFIX}${TEXT}Deine$IMPORTANT GunGame Stats$TEXT wurden zurückgesetzt")
         sendMessage("")
     }
 
     private fun CommandSender.successMessageTarget(name: String) {
         sendMessage("")
-        sendMessage("${Messages.PREFIX}${TEXT}Du hast die$IMPORTANT GunGame Stats$TEXT von$IMPORTANT $name$TEXT zurückzusetzen")
+        sendMessage("${Messages.PREFIX}${TEXT}Du hast die$IMPORTANT GunGame Stats$TEXT von$IMPORTANT $name$TEXT zurückgesetzt")
         sendMessage("")
     }
 

@@ -17,7 +17,7 @@ import java.util.*
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (19.08.2017  - 27.03.2019)
+ * Current Version: 1.0 (19.08.2017 - 31.03.2019)
  */
 class Stats(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -47,14 +47,14 @@ class Stats(javaPlugin: JavaPlugin) : Command(
         //TODO: "$PREFIX${TEXT}Kills by water$IMPORTANT: $PRIMARY${uuid.count("PlayerRespawnEvent")}"
         "$PREFIX${TEXT}K/D$IMPORTANT: $PRIMARY$kd".sendTo(sender)
         "$PREFIX$TEXT$DESIGN                                                               ".sendTo(sender)
-        "$PREFIX${TEXT}MaxDeathSteak$IMPORTANT: $PRIMARY${"TODO"}".sendTo(sender)//TODO Add MaxDeathSteak
+        "$PREFIX${TEXT}MaxDeathStreak$IMPORTANT: $PRIMARY${"TODO"}".sendTo(sender)//TODO Add MaxDeathSteak
         "$PREFIX${TEXT}MaxKillStreak$IMPORTANT: $PRIMARY${"TODO"}".sendTo(sender) //TODO Add MaxKillStreak
         uuid.toPlayer()?.apply {
-            val count = uuid.count("PlayerDeathEvent", uuid.activeActions.takeWhile { it.id == "PlayerRespawnEvent" })
-            "$PREFIX${TEXT}DeathSteak$IMPORTANT: $PRIMARY$count".sendTo(sender)
+            val count = uuid.count("PlayerDeathEvent", uuid.activeActions.takeWhile { it.id != "PlayerRespawnEvent" })
+            "$PREFIX${TEXT}DeathStreak$IMPORTANT: $PRIMARY$count".sendTo(sender)
         }
         uuid.toPlayer()?.apply {
-            val count = uuid.count("PlayerRespawnEvent", uuid.activeActions.takeWhile { it.id == "PlayerDeathEvent" })
+            val count = uuid.count("PlayerRespawnEvent", uuid.activeActions.takeWhile { it.id != "PlayerDeathEvent" })
             "$PREFIX${TEXT}KillStreak$IMPORTANT: $PRIMARY$count".sendTo(sender)
         }
         "$PREFIX$TEXT$DESIGN                                                               ".sendTo(sender)
