@@ -1,10 +1,9 @@
 package de.astride.gungame.shop.items
 
 import de.astride.gungame.functions.actions
+import de.astride.gungame.functions.heal
 import de.astride.gungame.functions.playBuySound
 import de.astride.gungame.functions.removedLore
-import de.astride.gungame.kits.heal
-import de.astride.gungame.kits.lastHealerUse
 import de.astride.gungame.shop.ShopItemListener
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
@@ -21,12 +20,13 @@ import org.bukkit.event.block.Action.RIGHT_CLICK_AIR
 import org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 31.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 01.04.2019)
  */
 class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -37,6 +37,15 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     30,
     50
 ) {
+
+    /**
+     * @author Lars Artmann | LartyHD
+     * Created by Lars Artmann | LartyHD on 27.03.2019 05:58.
+     * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+     */
+    private var Player.lastHealerUse
+        get() = getMetadata("lastHealerUse").firstOrNull()?.asLong() ?: 0
+        set(value) = setMetadata("lastHealerUse", FixedMetadataValue(javaPlugin, value))
 
     override fun Player.buy() = if (inventory.hasItems(Material.INK_SACK) >= 3) {
         sendMessage("${Messages.PREFIX}${TEXT}Du darfst nur drei ${itemStack.itemMeta.displayName} ${TEXT}im ${IMPORTANT}Inventar ${TEXT}haben")

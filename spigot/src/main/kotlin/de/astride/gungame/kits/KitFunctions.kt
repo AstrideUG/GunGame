@@ -11,7 +11,6 @@ import net.darkdevelopers.darkbedrock.darkness.universal.functions.call
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
-import kotlin.concurrent.thread
 
 /*
  * @author Lars Artmann | LartyHD
@@ -93,34 +92,5 @@ fun Player.setKit() {
  */
 fun Player.updateLevel() = Bukkit.getScheduler().scheduleSyncDelayedTask(javaPlugin, { level = gunGameLevel }, 3)
 
-/**
- * @author Lars Artmann | LartyHD
- * Created by Lars Artmann | LartyHD on 27.03.2019 05:58.
- * Current Version: 1.0 (27.03.2019 - 27.03.2019)
- */
-var Player.lastHealerUse
-    get() = getMetadata("lastHealerUse").firstOrNull()?.asLong() ?: 0
-    set(value) = setMetadata("lastHealerUse", FixedMetadataValue(javaPlugin, value))
-
-/**
- * @author Lars Artmann | LartyHD
- * Created by Lars Artmann | LartyHD on 27.03.2019 09:09.
- * Current Version: 1.0 (27.03.2019 - 01.04.2019)
- */
-fun Player.heal() {
-    if (health <= 0.0 || health.toInt() == maxHealth.toInt()) return
-    thread {
-        for (i in health.toInt()..maxHealth.toInt()) {
-            try {
-                Thread.sleep(50)
-            } catch (ex: InterruptedException) {
-                ex.printStackTrace()
-            }
-            if (health + 1 >= maxHealth) return@thread
-            health++
-        }
-    }
-
-}
 
 

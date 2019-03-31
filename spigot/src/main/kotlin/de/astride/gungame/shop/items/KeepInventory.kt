@@ -3,7 +3,7 @@ package de.astride.gungame.shop.items
 import de.astride.gungame.event.GunGamePlayerDowngradeLevelEvent
 import de.astride.gungame.event.GunGamePlayerUpgradeLevelEvent
 import de.astride.gungame.functions.actions
-import de.astride.gungame.functions.keepInventory
+import de.astride.gungame.functions.javaPlugin
 import de.astride.gungame.functions.playBuySound
 import de.astride.gungame.kits.updateLevel
 import de.astride.gungame.shop.ShopItemListener
@@ -18,6 +18,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerRespawnEvent
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -75,3 +76,15 @@ class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
     }
 
 }
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 27.03.2019 08:14.
+ * Current Version: 1.0 (27.03.2019 - 01.04.2019)
+ */
+var Player.keepInventory
+    get() = hasMetadata("keep-inventory")
+    set(value) {
+        if (!value) removeMetadata("keep-inventory", javaPlugin)
+        else setMetadata("keep-inventory", FixedMetadataValue(javaPlugin, value))
+    }
