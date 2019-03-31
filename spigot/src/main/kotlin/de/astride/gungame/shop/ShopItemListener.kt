@@ -87,7 +87,7 @@ abstract class ShopItemListener protected constructor(
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 27.03.2019 08:19.
-     * Current Version: 1.0 (27.03.2019 - 30.03.2019)
+     * Current Version: 1.0 (27.03.2019 - 31.03.2019)
      */
     private fun Player.delayed(): Boolean {
         val l = (lastItemUse + TimeUnit.SECONDS.toMillis(delay)) - System.currentTimeMillis()
@@ -98,6 +98,7 @@ abstract class ShopItemListener protected constructor(
             val time = Utils.getTime(l / 1000)
             "${Messages.PREFIX}${TEXT}Du kannst $SECONDARY${itemStack.itemMeta.displayName}$TEXT in $time wieder kaufen"
                 .sendTo(this)
+            closeInventory()
             true
         }
     }
