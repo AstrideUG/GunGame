@@ -3,8 +3,6 @@
  */
 package de.astride.gungame.shop
 
-import de.astride.gungame.functions.actions
-import de.astride.gungame.functions.activeActions
 import de.astride.gungame.functions.changeColor
 import de.astride.gungame.shop.items.InstantKiller
 import de.astride.gungame.shop.items.KeepInventory
@@ -20,14 +18,13 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
-import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:32.
- * Current Version: 1.0 (19.02.2018 - 30.03.2019)
+ * Current Version: 1.0 (19.02.2018 - 31.03.2019)
  */
 class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
@@ -57,12 +54,6 @@ class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
         event.cancel()
         if (!event.player.isSneaking) event.player.openInventory(inventory)
 
-    }
-
-    @EventHandler
-    fun on(event: PlayerToggleSneakEvent) {
-        println(event.player.uniqueId.activeActions)
-        println(event.player.uniqueId.actions)
     }
 
 }
