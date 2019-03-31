@@ -1,9 +1,6 @@
 package de.astride.gungame.commands
 
-import de.astride.gungame.functions.activeActions
-import de.astride.gungame.functions.count
-import de.astride.gungame.functions.points
-import de.astride.gungame.functions.rank
+import de.astride.gungame.functions.*
 import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.isPlayer
@@ -39,6 +36,9 @@ class Stats(javaPlugin: JavaPlugin) : Command(
         val kills = uuid.count("PlayerRespawnEvent")
         val kd = kills.toFloat() / deaths.toFloat()
         val name = Fetcher.getName(uuid)
+        val deathStreak = uuid.maxStreak("PlayerDeathEvent", "PlayerRespawnEvent")
+        val killStreak = uuid.maxStreak("PlayerRespawnEvent", "PlayerDeathEvent")
+
         "$PREFIX$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}STATS$IMPORTANT ]$DESIGN                         "
             .sendTo(sender)
         "$PREFIX$IMPORTANT$DESIGN                   $IMPORTANT[ $TEXT$PRIMARY$name$IMPORTANT ]$DESIGN                   "
@@ -51,8 +51,8 @@ class Stats(javaPlugin: JavaPlugin) : Command(
         //TODO: "$PREFIX${TEXT}Kills by water$IMPORTANT: $PRIMARY${uuid.count("PlayerRespawnEvent")}"
         "$PREFIX${TEXT}K/D$IMPORTANT: $PRIMARY$kd".sendTo(sender)
         "$PREFIX$TEXT$DESIGN                                                               ".sendTo(sender)
-        "$PREFIX${TEXT}MaxDeathStreak$IMPORTANT: $PRIMARY${"TODO"}".sendTo(sender)//TODO Add MaxDeathSteak
-        "$PREFIX${TEXT}MaxKillStreak$IMPORTANT: $PRIMARY${"TODO"}".sendTo(sender) //TODO Add MaxKillStreak
+        "$PREFIX${TEXT}MaxDeathStreak$IMPORTANT: $PRIMARY$deathStreak".sendTo(sender)
+        "$PREFIX${TEXT}MaxKillStreak$IMPORTANT: $PRIMARY$killStreak".sendTo(sender)
         uuid.toPlayer()?.apply {
             val count =
                 uuid.count("PlayerDeathEvent", uuid.activeActions.takeLastWhile { it.id != "PlayerRespawnEvent" })

@@ -71,3 +71,19 @@ fun UUID.points(): Int {
  * Current Version: 1.0 (30.03.2019 - 31.03.2019)
  */
 fun ranks() = allActions.keys.sortedBy { it.points() }.map { Fetcher.getName(it) ?: "unknown" }
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 31.03.2019 19:25.
+ * Current Version: 1.0 (31.03.2019 - 31.03.2019)
+ */
+fun UUID.maxStreak(check1: String, runNew: String): Int {
+    val counts = mutableListOf(0)
+    activeActions.forEach {
+        if (it.id == check1) counts[counts.size - 1]++
+        else if (it.id == runNew) counts += 0
+    }
+    var b = 0
+    for (i in 0 until counts.size) if (counts[i] > b) b = counts[i]
+    return b
+}
