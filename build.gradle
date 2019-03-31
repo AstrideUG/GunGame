@@ -54,7 +54,6 @@ subprojects {
 
         compileOnly(fileTree(libsDirName))
 
-
         compileOnly "org.jetbrains.kotlin:kotlin-stdlib"
         compileOnly "org.jetbrains.kotlin:kotlin-reflect"
         compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1"
