@@ -14,7 +14,6 @@ import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerRespawnEvent
@@ -25,7 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 07.08.2017 03:20.
- * Current Version: 1.0 (07.08.2017 - 29.03.2019)
+ * Current Version: 1.0 (07.08.2017 - 31.03.2019)
  */
 class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
@@ -33,20 +32,8 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
     /**
      * @author Lars Artmann | LartyHD
-     * Created by Lars Artmann | LartyHD on 29.03.2019 12:55.
-     * Current Version: 1.0 (29.03.2019 - 29.03.2019)
-     */
-    @EventHandler
-    fun onEntityDamageEvent(event: EntityDamageEvent) {
-        if (event.entity !is Player) return
-        if (!region.isInside(event.entity.location)) return
-        event.cancel()
-    }
-
-    /**
-     * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 29.03.2019 12:56.
-     * Current Version: 1.0 (29.03.2019 - 29.03.2019)
+     * Current Version: 1.0 (29.03.2019 - 31.03.2019)
      */
     @EventHandler
     fun onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) {
@@ -54,10 +41,13 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
         if (event.entity !is Player) return
 
         val damager = event.damager ?: return
-        if (region.isInside(event.entity.location)) damager
-            .sendMessage("${Messages.PREFIX}$IMPORTANT${event.entity.name}$TEXT befindet sich im ${IMPORTANT}Spawn-Bereich")
-        else if (region.isInside(damager.location)) damager
-            .sendMessage("${Messages.PREFIX}${TEXT}Du befindet sich im ${IMPORTANT}Spawn-Bereich")
+        when {
+            region.isInside(event.entity.location) -> damager
+                .sendMessage("${Messages.PREFIX}$IMPORTANT${event.entity.name}$TEXT befindet sich im ${IMPORTANT}Spawn-Bereich")
+            region.isInside(damager.location) -> damager
+                .sendMessage("${Messages.PREFIX}${TEXT}Du befindet sich im ${IMPORTANT}Spawn-Bereich")
+            else -> return
+        }
 
         event.cancel()
     }
