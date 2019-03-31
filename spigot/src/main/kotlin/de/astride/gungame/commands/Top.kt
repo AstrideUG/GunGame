@@ -13,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30
- * Current Version: 1.0 (19.08.2017 - 29.03.2019)
+ * Current Version: 1.0 (19.08.2017 - 31.03.2019)
  */
 class Top(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -25,8 +25,10 @@ class Top(javaPlugin: JavaPlugin) : Command(
 
         "${Messages.PREFIX}$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}TOP 10$IMPORTANT ]$DESIGN                         "
             .sendTo(sender)
-        ranks().take(10).withIndex().forEach {
-            "${Messages.PREFIX}$TEXT#${it.index}$IMPORTANT: $PRIMARY${it.value}$TEXT ($IMPORTANT${Fetcher.getUUID(it.value).points()}$TEXT)"
+        val ranks = ranks().asReversed()
+        println(ranks)
+        ranks.take(10).withIndex().forEach {
+            "${Messages.PREFIX}$TEXT#${it.index + 1}$IMPORTANT: $PRIMARY${it.value}$TEXT ($IMPORTANT${Fetcher.getUUID(it.value).points()}$TEXT)"
                 .sendTo(sender)
         }
         "${Messages.PREFIX}$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}TOP 10$IMPORTANT ]$DESIGN                         "

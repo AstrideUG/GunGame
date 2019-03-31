@@ -36,7 +36,7 @@ val UUID.activeActions: List<Action> get() = actions.takeLastWhile { it.id != "S
  * Created by Lars Artmann | LartyHD on 31.03.2019 01:01.
  * Current Version: 1.0 (31.03.2019 - 31.03.2019)
  */
-val UUID.rank get() = ranks().takeWhile { it != Fetcher.getName(this) }.count()
+val UUID.rank get() = ranks().asReversed().takeWhile { it != Fetcher.getName(this) }.count() + 1
 
 /**
  * @author Lars Artmann | LartyHD
