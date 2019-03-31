@@ -1,10 +1,12 @@
 package de.astride.gungame.shop.items
 
+import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.playBuySound
 import de.astride.gungame.functions.removedLore
 import de.astride.gungame.kits.heal
 import de.astride.gungame.kits.lastHealerUse
 import de.astride.gungame.shop.ShopItemListener
+import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
@@ -15,7 +17,8 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItemInHand
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.block.Action
+import org.bukkit.event.block.Action.RIGHT_CLICK_AIR
+import org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.plugin.java.JavaPlugin
@@ -56,13 +59,14 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
 
         if (event.item?.clone()?.apply { amount = 1 } != itemStack.removedLore()) return
-        if (event.action != Action.RIGHT_CLICK_BLOCK && event.action != Action.RIGHT_CLICK_AIR) return
+        if (event.action != RIGHT_CLICK_BLOCK && event.action != RIGHT_CLICK_AIR) return
         event.cancel()
         event.player.apply {
             if (health.toInt() != maxHealth.toInt()) {
                 removeItemInHand()
                 heal()
                 lastHealerUse = System.currentTimeMillis()
+                uniqueId.actions += Action("${this@MagicHeal.javaClass.simpleName}-used", mapOf("player" to this))
             } else "${Messages.PREFIX}${TEXT}Du hast eine Behandlung echt nicht nötig ;)".sendTo(this)
         }
 

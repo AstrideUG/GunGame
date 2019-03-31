@@ -2,10 +2,12 @@ package de.astride.gungame.shop.items
 
 import de.astride.gungame.event.GunGamePlayerDowngradeLevelEvent
 import de.astride.gungame.event.GunGamePlayerUpgradeLevelEvent
+import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.keepInventory
 import de.astride.gungame.functions.playBuySound
 import de.astride.gungame.kits.updateLevel
 import de.astride.gungame.shop.ShopItemListener
+import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors
@@ -21,7 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 30.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 31.03.2019)
  */
 class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -35,13 +37,13 @@ class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
 
     override fun Player.buy() {
 
+        sendMessage("${Messages.PREFIX}${TEXT}Du hast ${Colors.IMPORTANT}KeepInventory $TEXT${if (keepInventory) "schon " else ""}aktiviert")
+
         if (!keepInventory) {
             keepInventory = true
             playBuySound()
             closeInventory()
         }
-
-        sendMessage("${Messages.PREFIX}${TEXT}Du hast ${Colors.IMPORTANT}KeepInventory $TEXT${if (keepInventory) "schon " else ""}aktiviert")
 
     }
 
@@ -67,6 +69,7 @@ class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
             if (!keepInventory) return
             keepInventory = false
             updateLevel()
+            uniqueId.actions += Action("${this@KeepInventory.javaClass.simpleName}-used", mapOf("player" to this))
         }
 
     }

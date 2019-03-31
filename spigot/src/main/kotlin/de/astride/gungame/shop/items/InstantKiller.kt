@@ -1,8 +1,10 @@
 package de.astride.gungame.shop.items
 
+import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.playBuySound
 import de.astride.gungame.functions.removedLore
 import de.astride.gungame.shop.ShopItemListener
+import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
@@ -50,6 +52,7 @@ class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
         if (damager.itemInHand?.clone()?.apply { amount = 1 } != itemStack.removedLore()) return
 //        if (event.entity !is Player) return
         damager.removeItemInHand()
+        damager.uniqueId.actions += Action("${javaClass.simpleName}-used", mapOf("player" to damager))
 
     }
 
