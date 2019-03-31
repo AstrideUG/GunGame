@@ -48,18 +48,18 @@ fun UUID.count(key: String, actions: List<Action> = activeActions): Int = action
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 30.03.2019 23:49.
- * Current Version: 1.0 (30.03.2019 - 30.03.2019)
+ * Current Version: 1.0 (30.03.2019 - 31.03.2019)
  */
-fun UUID.points() = activeActions.mapNotNull {
-    when (it.id) {
-        "PlayerDeathEvent" -> -5
-        "PlayerRespawnEvent" -> 10
-        else -> null
-    }
-}.run {
+fun UUID.points(): Int {
     var count = 0
-    forEach { count += it }
-    count
+    activeActions.forEach {
+        count += when {
+            it.id == "PlayerDeathEvent" -> if (count > 5) -5 else count * -1
+            it.id == "PlayerRespawnEvent" -> 10
+            else -> 0
+        }
+    }
+    return count
 }
 
 /**
