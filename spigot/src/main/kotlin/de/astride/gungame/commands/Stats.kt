@@ -16,14 +16,15 @@ import java.util.*
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (19.08.2017 - 31.03.2019)
+ * Current Version: 1.0 (19.08.2017 - 01.04.2019)
  */
 class Stats(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
-    "Stats",
-    "gungame.commands.stats",
+    commandName = config.name,
+    permission = config.permission,
     usage = "[Spieler]",
-    maxLength = 1
+    maxLength = 1,
+    aliases = *config.aliases
 ) {
 
     override fun perform(sender: CommandSender, args: Array<String>) = if (args.isEmpty()) sender.isPlayer({
@@ -80,6 +81,10 @@ class Stats(javaPlugin: JavaPlugin) : Command(
         )
         sender.sendMessage(messages)
 
+    }
+
+    companion object {
+        private val config = configService.config.commands.stats
     }
 
 }

@@ -1,5 +1,6 @@
 package de.astride.gungame.commands
 
+import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.points
 import de.astride.gungame.functions.ranks
 import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
@@ -13,12 +14,13 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30
- * Current Version: 1.0 (19.08.2017 - 31.03.2019)
+ * Current Version: 1.0 (19.08.2017 - 01.04.2019)
  */
 class Top(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
-    "Top",
-    "gungame.commands.top"
+    commandName = config.name,
+    permission = config.permission,
+    aliases = *config.aliases
 ) {
 
     override fun perform(sender: CommandSender, args: Array<String>) {
@@ -32,6 +34,10 @@ class Top(javaPlugin: JavaPlugin) : Command(
         "${Messages.PREFIX}$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}TOP 10$IMPORTANT ]$DESIGN                         "
             .sendTo(sender)
 
+    }
+
+    companion object {
+        private val config = configService.config.commands.top
     }
 
 }

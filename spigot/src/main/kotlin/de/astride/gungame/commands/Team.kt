@@ -1,6 +1,8 @@
 package de.astride.gungame.commands
 
+import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.isAllowTeams
+import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
@@ -11,16 +13,17 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (19.08.2017 - 27.03.2019)
+ * Current Version: 1.0 (19.08.2017 - 01.04.2019)
  */
 //TODO: impl Team with
-class Team(javaPlugin: JavaPlugin) : net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command(
+class Team(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
-    "team",
-    "gungame.commands.team",
+    commandName = config.name,
+    permission = config.permission,
     usage = "<Spieler>",
     minLength = 1,
-    maxLength = 1
+    maxLength = 1,
+    aliases = *config.aliases
 ) {
 
     override fun perform(sender: CommandSender, args: Array<String>) = sender.isPlayer {
@@ -35,6 +38,10 @@ class Team(javaPlugin: JavaPlugin) : net.darkdevelopers.darkbedrock.darkness.spi
                 .sendTo(sender)
         } else "${Messages.PREFIX}${Colors.TEXT}Teams sind grade verboten".sendTo(sender)
 
+    }
+
+    companion object {
+        private val config = configService.config.commands.team
     }
 
 }

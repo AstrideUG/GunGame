@@ -1,5 +1,6 @@
 package de.astride.gungame.commands
 
+import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.isAllowTeams
 import de.astride.gungame.functions.sendScoreBoard
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
@@ -20,12 +21,13 @@ import java.util.concurrent.TimeUnit
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (27.03.2019 - 29.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 01.04.2019)
  */
 class Teams(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
-    "teams",
-    "gungame.commands.teams"
+    commandName = config.name,
+    permission = config.permission,
+    aliases = *config.aliases
 ) {
 
     private var lastUse = 0L
@@ -53,6 +55,10 @@ class Teams(javaPlugin: JavaPlugin) : Command(
         }
         Bukkit.broadcastMessage("${Messages.PREFIX}${TEXT}Teams sind jetzt $a")
 
+    }
+
+    companion object {
+        private val config = configService.config.commands.teams
     }
 
 }
