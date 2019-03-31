@@ -96,14 +96,14 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
     }
 
     @EventHandler
-    fun onPlayerRespawnEvent(event: PlayerRespawnEvent) {
+    override fun onPlayerRespawnEvent(event: PlayerRespawnEvent) {
 
         event.respawnLocation = gameMap.spawn.randomLook()
         event.player.apply player@{
 
-            killer?.apply {
+            this@InGameListener.killer[uniqueId]?.apply {
 
-                if (uniqueId == player.uniqueId) return
+                if (this@player.uniqueId == uniqueId) return
 
                 uniqueId.actions += Action(event.javaClass.simpleName, mapOf("player" to this, "killed" to this@player))
 
@@ -120,6 +120,8 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
             sendScoreBoard()
 
         }
+
+        super.onPlayerRespawnEvent(event)
 
     }
 
