@@ -1,9 +1,10 @@
 package de.astride.gungame.commands
 
+import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.keepInventory
-import de.astride.gungame.functions.killStreak
 import de.astride.gungame.kits.gunGameLevel
 import de.astride.gungame.kits.upgrade
+import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
@@ -16,7 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (19.08.2017 - 27.03.2019)
+ * Current Version: 1.0 (19.08.2017 - 30.03.2019)
  */
 class StatsReset(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -50,28 +51,27 @@ class StatsReset(javaPlugin: JavaPlugin) : Command(
 
     private fun Player.reset() {
 
-        killStreak = 0
         keepInventory = false
         gunGameLevel = 0
         upgrade()
 
-//        Saves.getStatsMySQL().update("")
+        uniqueId.actions += Action(this@StatsReset.javaClass.simpleName, mapOf("player" to this))
     }
 
     private fun CommandSender.successMessagePlayer() {
         sendMessage("")
-        sendMessage("${Messages.PREFIX}${TEXT}Deine$IMPORTANT GunGame Stats$TEXT wurden unwiderruflich zurückzusetzen")
+        sendMessage("${Messages.PREFIX}${TEXT}Deine$IMPORTANT GunGame Stats$TEXT wurden zurückzusetzen")
         sendMessage("")
     }
 
     private fun CommandSender.successMessageTarget(name: String) {
         sendMessage("")
-        sendMessage("${Messages.PREFIX}${TEXT}Du hast die$IMPORTANT GunGame Stats$TEXT von$IMPORTANT $name$TEXT unwiderruflich zurückzusetzen")
+        sendMessage("${Messages.PREFIX}${TEXT}Du hast die$IMPORTANT GunGame Stats$TEXT von$IMPORTANT $name$TEXT zurückzusetzen")
         sendMessage("")
     }
 
     private fun CommandSender.sendConfirm() =
-        sendMessage("${Messages.PREFIX}${TEXT}Nutze $IMPORTANT\"/$commandName [Spieler] confirmed\"$TEXT um deine$IMPORTANT GunGame Stats$TEXT unwiderruflich zurückzusetzen")
+        sendMessage("${Messages.PREFIX}${TEXT}Nutze $IMPORTANT\"/$commandName [Spieler] confirmed\"$TEXT um deine$IMPORTANT GunGame Stats$TEXT zurückzusetzen")
 
 
 }

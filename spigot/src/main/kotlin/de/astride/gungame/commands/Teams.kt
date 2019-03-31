@@ -11,6 +11,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Utils
 import org.bukkit.Bukkit
+import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.concurrent.TimeUnit
@@ -40,10 +41,11 @@ class Teams(javaPlugin: JavaPlugin) : Command(
 
         lastUse = System.currentTimeMillis()
 
-        val a = if (isAllowTeams) "erlaubt" else "verboten"
         isAllowTeams = !isAllowTeams
+        val a = if (isAllowTeams) "erlaubt" else "verboten"
 
         Utils.goThroughAllPlayers {
+            it.playSound(it.location, Sound.ENDERDRAGON_DEATH, 100f, 1f)
             it.sendTitle("${IMPORTANT}Teams")
             it.sendSubTitle("${TEXT}sind jetzt $a")
             it.sendTimings(10, 40, 10)

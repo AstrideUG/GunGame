@@ -3,13 +3,14 @@
  */
 package de.astride.gungame.listener
 
+import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.gameMap
-import de.astride.gungame.functions.killStreak
 import de.astride.gungame.functions.sendScoreBoard
 import de.astride.gungame.kits.downgrade
 import de.astride.gungame.kits.heal
 import de.astride.gungame.kits.setKit
 import de.astride.gungame.kits.upgrade
+import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.PlayerDisconnectEvent
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.randomLook
@@ -36,7 +37,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:32.
- * Current Version: 1.0 (17.02.2018 - 29.03.2019)
+ * Current Version: 1.0 (17.02.2018 - 30.03.2019)
  */
 class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
@@ -87,30 +88,33 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
         super.onPlayerDeathEvent(event)
         event.keepInventory = true
         event.droppedExp = 0
+
+        event.entity.uniqueId.actions += Action(event.javaClass.simpleName, mapOf("player" to event.entity))
     }
 
     @EventHandler
     fun onPlayerRespawnEvent(event: PlayerRespawnEvent) {
 
         event.respawnLocation = gameMap.spawn.randomLook()
-        event.player.apply {
-
-            playSound(location, Sound.GHAST_DEATH, 2f, 1f)
-            killStreak = 0
-            downgrade()
-            sendScoreBoard()
+        event.player.apply player@{
 
             killer?.apply {
 
                 if (uniqueId == player.uniqueId) return
 
+                uniqueId.actions += Action(event.javaClass.simpleName, mapOf("player" to this, "killed" to this@player))
+
                 playSound(location, Sound.ENDERMAN_HIT, 2f, 1f)
-                broadcastKillStreak(killStreak++, this)
+//                broadcastKillStreak(killStreak++, this) TODO: Add broadcastKillStreak
                 sendScoreBoard()
                 upgrade()
                 heal()
 
             }
+
+            playSound(location, Sound.GHAST_DEATH, 2f, 1f)
+            downgrade()
+            sendScoreBoard()
 
         }
 

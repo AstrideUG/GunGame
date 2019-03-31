@@ -16,15 +16,13 @@ import kotlin.concurrent.thread
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 30.03.2019)
  */
 class LevelUp(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
     ItemBuilder(Material.DIAMOND)
         .setName("${SECONDARY}Level Up")
         .setLore("${TEXT}Erhöht dein Level um 5")
-        .setUnbreakable()
-        .addAllItemFlags()
         .build(),
     60,
     100

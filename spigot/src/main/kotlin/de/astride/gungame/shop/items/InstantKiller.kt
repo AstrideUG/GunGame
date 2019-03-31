@@ -5,48 +5,51 @@ import de.astride.gungame.functions.removedLore
 import de.astride.gungame.shop.ShopItemListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors
-import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItems
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.hasItems
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItemInHand
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 30.03.2019)
  */
 class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
     ItemBuilder(Material.FIREBALL)
-        .setName("${Colors.SECONDARY}Instant Killer")
-        .setLore("${Colors.TEXT}Töte einen Spieler sofort")
-        .addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1000)
-        .setUnbreakable()
-        .addAllItemFlags()
+        .setName("${SECONDARY}Instant Killer")
+        .setLore("${TEXT}Töte einen Spieler sofort")
+        .addEnchant(Enchantment.DAMAGE_ALL, 1000, true)
+        .addItemFlags(ItemFlag.HIDE_ENCHANTS)
         .build(),
     300,
     500
 ) {
 
-    override fun Player.buy() {
-
+    override fun Player.buy() = if (inventory.hasItems(Material.FIREBALL) >= 1)
+        sendMessage("${Messages.PREFIX}${TEXT}Du darfst nur ein ${itemStack.itemMeta.displayName} ${TEXT}im ${Colors.IMPORTANT}Inventar ${TEXT}haben")
+    else {
         inventory.addItem(itemStack.removedLore())
         playBuySound()
         closeInventory()
-
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) {
 
         val damager = event.damager as? Player ?: return
-        if (damager.itemInHand.type != Material.FIREBALL) return
-        if (event.isCancelled) return
-        if (event.entity !is Player) return
-        damager.removeItems(Material.FIREBALL, 1)
+        if (damager.itemInHand?.clone()?.apply { amount = 1 } != itemStack.removedLore()) return
+//        if (event.entity !is Player) return
+        damager.removeItemInHand()
 
     }
 

@@ -1,205 +1,69 @@
 package de.astride.gungame.commands
 
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
+import de.astride.gungame.functions.activeActions
+import de.astride.gungame.functions.count
+import de.astride.gungame.functions.points
+import de.astride.gungame.functions.rank
+import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.isPlayer
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toPlayer
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages.PREFIX
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
  * Current Version: 1.0 (19.08.2017  - 27.03.2019)
  */
-class Stats(javaPlugin: JavaPlugin) : net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command(
+class Stats(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
     "Stats",
     "gungame.commands.stats",
     usage = "[Spieler]",
     maxLength = 1
 ) {
-    override fun perform(sender: CommandSender, args: Array<String>) {
-        sender.sendMessage("${Messages.PREFIX}${TEXT}not impl")
-//        if (args.isEmpty()) {
-//            if (sender !is Player) {
-//                sender.sendMessage(Messages.getOnlyPlayer())
-//                sender.sendMessage("Nutze als nicht Spieler: /Stats <Spieler>")
-//            }
-//            sendStats(sender, sender.uniqueId, sender.getName())
-//        }
-//        if (args.size == 1) {
-//            val target = Bukkit.getPlayer(args[0])
-//            if (target == null) {
-//                //				UUID uuid = Saves.getStatsAPI().getUUID(args[0]);
-//                //				if (uuid == null)
-//                //				{
-//                //					sender.sendMessage(Messages.getPlayerNotInDataBase());
-//                //					return true;
-//                //				}
-//                sender.sendMessage(Messages.getNotOnline())
-//                //				ResultSet resultSet = Saves.getMySQL().query("SELECT `uuid` FROM Stats WHERE `name` = '" + args[0] + "'");
-//                //				try
-//                //				{
-//                //					if (!resultSet.next())
-//                //					{
-//                //						sender.sendMessage(Messages.getPlayerNotInDataBase());
-//                //						return true;
-//                //					}
-//                //				} catch (SQLException ex)
-//                //				{
-//                //					ex.printStackTrace();
-//                //				}
-//                //				sendOfflineStats(sender, uuid);
-//            }
-//            sendStats(sender, target.uniqueId, target.name)
-//        }
-//        sender.sendMessage(Messages.PREFIX.toString() + TEXT + "/Stats [Spieler]")
+
+    override fun perform(sender: CommandSender, args: Array<String>) = if (args.isEmpty()) sender.isPlayer({
+        sendStats(sender, it.uniqueId)
+    }, { "Nutze als nicht Spieler: /$commandName <Spieler>".sendTo(sender) })
+    else getTarget(sender, args[0]) { sendStats(sender, it.uniqueId) }
+
+    private fun sendStats(sender: CommandSender, uuid: UUID) {
+
+        val deaths = uuid.count("PlayerDeathEvent")
+        val kills = uuid.count("PlayerRespawnEvent")
+        val kd = kills.toFloat() / deaths.toFloat()
+        "$PREFIX$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}STATS$IMPORTANT ]$DESIGN                         "
+            .sendTo(sender)
+        "$PREFIX${TEXT}Rang$IMPORTANT: $PRIMARY${uuid.rank}".sendTo(sender)
+        "$PREFIX${TEXT}Points$IMPORTANT: $PRIMARY${uuid.points()}".sendTo(sender)
+        "$PREFIX$TEXT$DESIGN                                                               ".sendTo(sender)
+        "$PREFIX${TEXT}Deaths$IMPORTANT: $PRIMARY$deaths".sendTo(sender)
+        "$PREFIX${TEXT}Kills$IMPORTANT: $PRIMARY$kills".sendTo(sender)
+        //TODO: "$PREFIX${TEXT}Kills by water$IMPORTANT: $PRIMARY${uuid.count("PlayerRespawnEvent")}"
+        "$PREFIX${TEXT}K/D$IMPORTANT: $PRIMARY$kd".sendTo(sender)
+        "$PREFIX$TEXT$DESIGN                                                               ".sendTo(sender)
+        "$PREFIX${TEXT}MaxDeathSteak$IMPORTANT: $PRIMARY${"TODO"}".sendTo(sender)//TODO Add MaxDeathSteak
+        "$PREFIX${TEXT}MaxKillStreak$IMPORTANT: $PRIMARY${"TODO"}".sendTo(sender) //TODO Add MaxKillStreak
+        uuid.toPlayer()?.apply {
+            val count = uuid.count("PlayerDeathEvent", uuid.activeActions.takeWhile { it.id == "PlayerRespawnEvent" })
+            "$PREFIX${TEXT}DeathSteak$IMPORTANT: $PRIMARY$count".sendTo(sender)
+        }
+        uuid.toPlayer()?.apply {
+            val count = uuid.count("PlayerRespawnEvent", uuid.activeActions.takeWhile { it.id == "PlayerDeathEvent" })
+            "$PREFIX${TEXT}KillStreak$IMPORTANT: $PRIMARY$count".sendTo(sender)
+        }
+        "$PREFIX$TEXT$DESIGN                                                               ".sendTo(sender)
+        "$PREFIX${TEXT}Bought LevelUps$IMPORTANT: $PRIMARY${uuid.count("LevelUp")}".sendTo(sender)
+        "$PREFIX${TEXT}Bought MagicHeal$IMPORTANT: $PRIMARY${uuid.count("MagicHeal")}".sendTo(sender)
+        "$PREFIX${TEXT}Bought InstantKiller$IMPORTANT: $PRIMARY${uuid.count("InstantKiller")}".sendTo(sender)
+        "$PREFIX${TEXT}Bought KeepInventory$IMPORTANT: $PRIMARY${uuid.count("KeepInventory")}".sendTo(sender)
+        "$PREFIX$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}STATS$IMPORTANT ]$DESIGN                         "
+            .sendTo(sender)
     }
 
-
-//    private fun sendStats(sender: CommandSender, uuid: UUID, playerName: String) {
-//        val kd = Saves.getStatsAPI().get(uuid, "Kills") as Float / Saves.getStatsAPI().get(uuid, "Tode") as Float
-//        sender.sendMessage(Messages.PREFIX.toString() + TEXT + "Hir sind die Stats von " + IMPORTANT + playerName + TEXT + " (Online) ...")
-//        sender.sendMessage(Messages.PREFIX.toString() + IMPORTANT + DESIGN + "                         " + IMPORTANT + "[ " + PRIMARY + EXTRA + "STATS" + IMPORTANT + " ]" + DESIGN + "                         ")
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "Rang" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().getRank(
-//                uuid,
-//                "Punkte"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "Punkte" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "Punkte"
-//            )
-//        )
-//        sender.sendMessage(Messages.PREFIX.toString() + TEXT + DESIGN + "                                                               ")
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "Tode" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "Tode"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "WasserTode" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "WasserTode"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "Kills" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "Kills"
-//            )
-//        )
-//        sender.sendMessage(Messages.PREFIX.toString() + TEXT + "K/D" + IMPORTANT + ": " + PRIMARY + kd)
-//        sender.sendMessage(Messages.PREFIX.toString() + TEXT + DESIGN + "                                                               ")
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "KillStreak" + IMPORTANT + ": " + PRIMARY + Saves.getKillStreak().get(
-//                playerName
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "MaxKillStreak" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "MaxKillStreak"
-//            )
-//        )
-//        sender.sendMessage(Messages.PREFIX.toString() + TEXT + DESIGN + "                                                               ")
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "UsedLevelUps" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "UsedLevelUps"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "UsedHealer" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "UsedHealer"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "UsedKiller" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "UsedKiller"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "UsedKeepInventory" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "UsedKeepInventory"
-//            )
-//        )
-//        sender.sendMessage(Messages.PREFIX.toString() + IMPORTANT + DESIGN + "                         " + IMPORTANT + "[ " + PRIMARY + EXTRA + "STATS" + IMPORTANT + " ]" + DESIGN + "                         ")
-//    }
-//
-//    private fun sendOfflineStats(sender: CommandSender, uuid: UUID) {
-//        val kd = Saves.getStatsAPI().get(uuid, "Kills") as Float / Saves.getStatsAPI().get(uuid, "Tode") as Float
-//        sender.sendMessage(Messages.PREFIX.toString() + IMPORTANT + DESIGN + "                         " + IMPORTANT + "[ " + PRIMARY + EXTRA + "STATS" + IMPORTANT + " ]" + DESIGN + "                         ")
-//        sender.sendMessage(Messages.PREFIX.toString() + IMPORTANT + DESIGN + "                       " + IMPORTANT + "[ " + PRIMARY + EXTRA + "STATS" + IMPORTANT + " ]" + DESIGN + "                       ")
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "Rang" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().getRank(
-//                uuid,
-//                "Punkte"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "Punkte" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "Punkte"
-//            )
-//        )
-//        sender.sendMessage(Messages.PREFIX.toString() + TEXT + DESIGN + "                                                               ")
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "Tode" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "Tode"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "WasserTode" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "WasserTode"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "Kills" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "Kills"
-//            )
-//        )
-//        sender.sendMessage(Messages.PREFIX.toString() + TEXT + "K/D" + IMPORTANT + ": " + PRIMARY + kd)
-//        sender.sendMessage(Messages.PREFIX.toString() + TEXT + DESIGN + "                                                               ")
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "MaxKillStreak" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "MaxKillStreak"
-//            )
-//        )
-//        sender.sendMessage(Messages.PREFIX.toString() + TEXT + DESIGN + "                                                               ")
-//        sender.sendMessage(
-//            "${Messages.PREFIX}${TEXT}UsedLevelUps$IMPORTANT: $PRIMARY" + Saves.getStatsAPI().get(
-//                uuid,
-//                "UsedLevelUps"
-//            )
-//        )
-//        sender.sendMessage(
-//            "${Messages.PREFIX}${TEXT}UsedHealer$IMPORTANT: $PRIMARY" + Saves.getStatsAPI().get(
-//                uuid,
-//                "UsedHealer"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "UsedKiller" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "UsedKiller"
-//            )
-//        )
-//        sender.sendMessage(
-//            Messages.PREFIX.toString() + TEXT + "UsedKeepInventory" + IMPORTANT + ": " + PRIMARY + Saves.getStatsAPI().get(
-//                uuid,
-//                "UsedKeepInventory"
-//            )
-//        )
-//        sender.sendMessage("${Messages.PREFIX}$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}STATS$IMPORTANT ]$DESIGN                         ")
-//    }
 }

@@ -11,7 +11,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.hasItems
-import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItems
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItemInHand
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -23,15 +23,13 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 29.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 30.03.2019)
  */
 class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
     ItemBuilder(Material.INK_SACK, damage = 1)
         .setName("${SECONDARY}Magic Heal")
         .setLore("${TEXT}Er regeneriert dich sofort")
-        .setUnbreakable()
-        .addAllItemFlags()
         .build(),
     30,
     50
@@ -62,9 +60,10 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
         event.cancel()
         event.player.apply {
             if (health.toInt() != maxHealth.toInt()) {
-                removeItems(Material.INK_SACK, 1)
+                removeItemInHand()
                 heal()
-            } else "${Messages.PREFIX}${TEXT}Du hast schon volle Herzen".sendTo(this)
+                lastHealerUse = System.currentTimeMillis()
+            } else "${Messages.PREFIX}${TEXT}Du hast eine Behandlung echt nicht nötig ;)".sendTo(this)
         }
 
     }

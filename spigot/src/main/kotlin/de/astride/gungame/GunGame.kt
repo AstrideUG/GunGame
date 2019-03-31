@@ -4,10 +4,7 @@
 package de.astride.gungame
 
 import com.google.gson.JsonObject
-import de.astride.gungame.commands.Stats
-import de.astride.gungame.commands.Team
-import de.astride.gungame.commands.Teams
-import de.astride.gungame.commands.Top
+import de.astride.gungame.commands.*
 import de.astride.gungame.functions.changeColor
 import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.gameMap
@@ -31,7 +28,7 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 29.03.2019)
+ * Current Version: 1.0 (17.02.2018 - 31.03.2019)
  */
 class GunGame : DarkPlugin() {
 
@@ -64,6 +61,7 @@ class GunGame : DarkPlugin() {
         ShopListener(this)
 
         Bukkit.getScheduler().runTaskLater(this, { spawnShops() }, 5)
+//        ranksUpdater()
     }
 
     private fun initListener() {
@@ -79,6 +77,7 @@ class GunGame : DarkPlugin() {
         Teams(this)
         Team(this)
         Stats(this)
+        StatsReset(this)
         Top(this)
     }
 
@@ -98,19 +97,9 @@ class GunGame : DarkPlugin() {
         }
 
     }
-//    private fun initStats() {
-//        val statistics = setOf(
-//            "Punkte",
-//            "Kills",
-//            "MaxKillStreak",
-//            "Tode",
-//            "Tode.Water",
-//            "Used.LevelUps",
-//            "Used.Healer",
-//            "Used.Killer",
-//            "Used.KeepInventory"
-//        )
-//        Saves.setStatsAPI(StatsAPI(Messages.getName(), statistics, Utils.connectMySQL("Stats", "mysql.properties")))
-//    }
+
+//    private fun ranksUpdater() =
+//        Bukkit.getScheduler().runTaskTimerAsynchronously(this, { ranks = ranks() }, 0, TimeUnit.SECONDS.toMillis(20))
+
 
 }

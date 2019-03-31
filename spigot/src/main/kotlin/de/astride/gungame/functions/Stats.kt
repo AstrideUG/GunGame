@@ -1,35 +1,73 @@
 package de.astride.gungame.functions
 
-import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
-import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonConfig
-import net.darkdevelopers.darkbedrock.darkness.general.databases.mysql.MySQL
-import org.bukkit.entity.Player
+import de.astride.gungame.stats.Action
+import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
 import java.util.*
 
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 30.03.2019 09:19.
- * Current Version: 1.0 (30.03.2019 - 30.03.2019)
+ * Current Version: 1.0 (30.03.2019 - 31.03.2019)
  */
 
 /**
  * @author Lars Artmann | LartyHD
- * Created by Lars Artmann | LartyHD on 30.03.2019 09:16.
+ * Created by Lars Artmann | LartyHD on 30.03.2019 20:22.
  * Current Version: 1.0 (30.03.2019 - 30.03.2019)
  */
-val statistics = mutableMapOf<UUID, MutableMap<String, Int>>()
+val allActions: MutableMap<UUID, MutableList<Action>> = mutableMapOf()
 
 /**
  * @author Lars Artmann | LartyHD
- * Created by Lars Artmann | LartyHD on 30.03.2019 09:19.
+ * Created by Lars Artmann | LartyHD on 30.03.2019 18:49.
  * Current Version: 1.0 (30.03.2019 - 30.03.2019)
  */
-val Player.stats get() = statistics.putIfAbsent(uniqueId, mutableMapOf())!!
-
+val UUID.actions: MutableList<Action> get() = allActions.getOrPut(this) { mutableListOf() }
 
 /**
  * @author Lars Artmann | LartyHD
- * Created by Lars Artmann | LartyHD on 30.03.2019 09:30.
+ * Created by Lars Artmann | LartyHD on 30.03.2019 23:46.
  * Current Version: 1.0 (30.03.2019 - 30.03.2019)
  */
-val mySQL by lazy { MySQL(GsonConfig(ConfigData(javaPlugin.dataFolder, "mysql.json"))) }
+val UUID.activeActions: List<Action> get() = actions.takeLastWhile { it.id != "StatsReset" }
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 31.03.2019 01:01.
+ * Current Version: 1.0 (31.03.2019 - 31.03.2019)
+ */
+val UUID.rank get() = ranks().takeWhile { it != Fetcher.getName(this) }.count()
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 30.03.2019 21:32.
+ * Current Version: 1.0 (30.03.2019 - 31.03.2019)
+ */
+fun UUID.count(key: String, actions: List<Action> = activeActions): Int = actions.filter { it.id == key }.count()
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 30.03.2019 23:49.
+ * Current Version: 1.0 (30.03.2019 - 30.03.2019)
+ */
+fun UUID.points() = activeActions.mapNotNull {
+    when (it.id) {
+        "PlayerDeathEvent" -> -5
+        "PlayerRespawnEvent" -> 10
+        else -> null
+    }
+}.run {
+    var count = 0
+    forEach { count += it }
+    count
+}
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 30.03.2019 23:59.
+ *
+ * Sorted Names
+ *
+ * Current Version: 1.0 (30.03.2019 - 31.03.2019)
+ */
+fun ranks() = allActions.keys.sortedBy { it.points() }.map { Fetcher.getName(it) ?: "unknown" }

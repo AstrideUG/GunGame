@@ -4,6 +4,8 @@
 package de.astride.gungame.shop
 
 import de.astride.gungame.event.GunGamePlayerShopHasEnoughMoneyEvent
+import de.astride.gungame.functions.actions
+import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.Listener
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
@@ -19,7 +21,7 @@ import java.util.concurrent.TimeUnit
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:33.
- * Current Version: 1.0 (19.02.2018 - 30.03.2019)
+ * Current Version: 1.0 (19.02.2018 - 31.03.2019)
  */
 abstract class ShopItemListener protected constructor(
     javaPlugin: JavaPlugin,
@@ -67,10 +69,12 @@ abstract class ShopItemListener protected constructor(
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 27.03.2019 08:22.
-     * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+     * Current Version: 1.0 (27.03.2019 - 31.03.2019)
      */
-    fun checkedBuy(player: Player) {
-        if (!player.delayed() && player.enoughMoney()) player.buy()
+    fun checkedBuy(player: Player) = player.run {
+        if (delayed() || !enoughMoney()) return@run
+        uniqueId.actions += Action(this@ShopItemListener.javaClass.simpleName, mapOf("player" to this))
+        buy()
     }
 
     /**

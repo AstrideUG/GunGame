@@ -1,15 +1,14 @@
 package de.astride.gungame.commands
 
-import de.astride.gungame.functions.mySQL
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import de.astride.gungame.functions.points
+import de.astride.gungame.functions.ranks
 import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
-import java.sql.ResultSet
 
 /**
  * @author Lars Artmann | LartyHD
@@ -24,22 +23,14 @@ class Top(javaPlugin: JavaPlugin) : Command(
 
     override fun perform(sender: CommandSender, args: Array<String>) {
 
-        sender.sendMessage("${Messages.PREFIX}$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}TOP 10$IMPORTANT ]$DESIGN                         ")
-
-        GlobalScope.launch {
-            val resultSet: ResultSet =
-                mySQL.query("SELECT * FROM `GunGame` ORDER BY `GunGame`.`punkte` DESC")
-
-            for (i in 1..10) {
-                if (!resultSet.next()) return@launch
-                val name: String = Fetcher.getName(resultSet.getString("uuid")) ?: "unknown"
-                val points = resultSet.getInt("points")
-                sender.sendMessage("${Messages.PREFIX}$TEXT#$i$IMPORTANT: $PRIMARY$name$TEXT ($IMPORTANT$points$TEXT)")
-            }
-
+        "${Messages.PREFIX}$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}TOP 10$IMPORTANT ]$DESIGN                         "
+            .sendTo(sender)
+        ranks().take(10).withIndex().forEach {
+            "${Messages.PREFIX}$TEXT#${it.index}$IMPORTANT: $PRIMARY${it.value}$TEXT ($IMPORTANT${Fetcher.getUUID(it.value).points()}$TEXT)"
+                .sendTo(sender)
         }
-
-        sender.sendMessage("${Messages.PREFIX}$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}TOP 10$IMPORTANT ]$DESIGN                         ")
+        "${Messages.PREFIX}$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}TOP 10$IMPORTANT ]$DESIGN                         "
+            .sendTo(sender)
 
     }
 

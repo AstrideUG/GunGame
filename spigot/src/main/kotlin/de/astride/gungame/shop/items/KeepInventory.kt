@@ -21,15 +21,13 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 29.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 30.03.2019)
  */
 class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
     ItemBuilder(Material.PAPER)
         .setName("${SECONDARY}KeepInventory")
-        .setUnbreakable()
         .setLore("${TEXT}Behalte nach deinem Tot deine Items")
-        .addAllItemFlags()
         .build(),
     300,
     500
