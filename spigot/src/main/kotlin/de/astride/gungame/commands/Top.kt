@@ -25,9 +25,7 @@ class Top(javaPlugin: JavaPlugin) : Command(
 
         "${Messages.PREFIX}$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}TOP 10$IMPORTANT ]$DESIGN                         "
             .sendTo(sender)
-        val ranks = ranks().asReversed()
-        println(ranks)
-        ranks.take(10).withIndex().forEach {
+        ranks().asReversed().take(10).withIndex().forEach {
             "${Messages.PREFIX}$TEXT#${it.index + 1}$IMPORTANT: $PRIMARY${it.value}$TEXT ($IMPORTANT${Fetcher.getUUID(it.value).points()}$TEXT)"
                 .sendTo(sender)
         }
