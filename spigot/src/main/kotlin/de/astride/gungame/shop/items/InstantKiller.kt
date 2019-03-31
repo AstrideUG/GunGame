@@ -6,9 +6,7 @@ import de.astride.gungame.functions.removedLore
 import de.astride.gungame.shop.ShopItemListener
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.hasItems
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItemInHand
@@ -38,12 +36,11 @@ class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
 ) {
 
     override fun Player.buy() = if (inventory.hasItems(Material.FIREBALL) >= 1) {
-        sendMessage("${Messages.PREFIX}${TEXT}Du darfst nur ein ${itemStack.itemMeta.displayName} ${TEXT}im ${Colors.IMPORTANT}Inventar ${TEXT}haben")
+        sendMessage("${Messages.PREFIX}${TEXT}Du darfst nur ein ${itemStack.itemMeta.displayName} ${TEXT}im ${IMPORTANT}Inventar ${TEXT}haben")
         false
     } else {
         inventory.addItem(itemStack.removedLore())
         playBuySound()
-        closeInventory()
         true
     }
 

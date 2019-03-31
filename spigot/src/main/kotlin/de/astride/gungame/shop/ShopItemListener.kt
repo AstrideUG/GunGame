@@ -72,8 +72,10 @@ abstract class ShopItemListener protected constructor(
      * Current Version: 1.0 (27.03.2019 - 31.03.2019)
      */
     fun checkedBuy(player: Player) = player.run {
+        player.closeInventory()
         if (delayed() || !enoughMoney()) return@run
         if (buy()) uniqueId.actions += Action(this@ShopItemListener.javaClass.simpleName, mapOf("player" to this))
+        else lastItemUse = 0
     }
 
     /**
@@ -98,7 +100,6 @@ abstract class ShopItemListener protected constructor(
             val time = Utils.getTime(l / 1000)
             "${Messages.PREFIX}${TEXT}Du kannst $SECONDARY${itemStack.itemMeta.displayName}$TEXT in $time wieder kaufen"
                 .sendTo(this)
-            closeInventory()
             true
         }
     }

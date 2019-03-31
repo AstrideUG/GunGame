@@ -42,7 +42,6 @@ class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
         return if (!keepInventory) {
             keepInventory = true
             playBuySound()
-            closeInventory()
             true
         } else false
 

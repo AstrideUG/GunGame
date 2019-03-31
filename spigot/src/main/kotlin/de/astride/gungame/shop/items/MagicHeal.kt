@@ -44,7 +44,6 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     } else {
         inventory.addItem(itemStack.removedLore())
         playBuySound()
-        closeInventory()
         true
     }
 

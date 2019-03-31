@@ -43,7 +43,6 @@ class LevelUp(javaPlugin: JavaPlugin) : ShopItemListener(
             }
         }
         playBuySound()
-        closeInventory()
         true
     }
 
