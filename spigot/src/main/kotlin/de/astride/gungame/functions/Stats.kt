@@ -15,7 +15,7 @@ import java.util.*
  * Created by Lars Artmann | LartyHD on 30.03.2019 20:22.
  * Current Version: 1.0 (30.03.2019 - 30.03.2019)
  */
-val allActions: MutableMap<UUID, MutableList<Action>> = mutableMapOf()
+lateinit var allActions: MutableMap<UUID, MutableList<Action>>
 
 /**
  * @author Lars Artmann | LartyHD

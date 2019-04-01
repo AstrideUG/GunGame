@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
+import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService.loadAs
 import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMaterial
@@ -32,7 +33,7 @@ class ConfigService(private val directory: File) {
 
         /* Main */
         private val configData = ConfigData(directory, "config.json")
-        private val jsonObject = GsonService.loadAsJsonObject(configData)
+        private val jsonObject = loadAs(configData) ?: JsonObject()
 
         /* SubClass */
         val files by lazy { Files(jsonObject[Files::class.java.simpleName]?.asJsonObject) }
@@ -225,7 +226,7 @@ class ConfigService(private val directory: File) {
 
         /* Main */
         private val configData = ConfigData(directory, config.files.shops)
-        private val jsonObject = GsonService.loadAsJsonObject(configData)
+        private val jsonObject = loadAs(configData) ?: JsonObject()
 
         /* Values */
         fun load(): MutableMap<UUID, MutableList<Action>> = jsonObject.entrySet().map { (key, value) ->
