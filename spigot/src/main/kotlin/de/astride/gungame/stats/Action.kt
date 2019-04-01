@@ -9,11 +9,4 @@ data class Action(
     val id: String,
     val meta: Map<String, Any?> = mapOf(),
     val timestamp: Long = System.currentTimeMillis()
-) {
-
-    init {
-        if ("id" in meta) throw IllegalArgumentException("\"id\" must not be present in \"meta\"")
-        if ("timestamp" in meta) throw IllegalArgumentException("\"timestamp\" must not be present in \"meta\"")
-    }
-
-}
+)

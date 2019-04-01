@@ -242,7 +242,7 @@ class ConfigService(private val directory: File) {
                 element.asJsonObject.run {
                     Action(
                         this["id"].asString,
-                        entrySet().map { it.key to it.value }.toMap() - "id" - "timestamp",
+                        this["meta"].asJsonObject.entrySet().map { it.toPair() }.toMap(),
                         this["timestamp"].asLong
                     )
                 }
@@ -254,16 +254,18 @@ class ConfigService(private val directory: File) {
 
             input.forEach { (key, actions) ->
                 b.add(key.toString(), JsonArray().apply {
-                    actions.forEach {
+                    actions.forEach { action ->
                         add(JsonObject().apply {
-                            it.meta.forEach {
-                                addProperty(
-                                    it.key,
-                                    it.value.toString()/*GsonBuilder().setPrettyPrinting().create().toJson(it.value)*/
-                                )
-                            }
-                            addProperty("id", it.id)
-                            addProperty("timestamp", it.timestamp)
+                            addProperty("id", action.id)
+                            addProperty("timestamp", action.timestamp)
+                            add("meta", JsonObject().apply {
+                                action.meta.forEach {
+                                    addProperty(
+                                        it.key,
+                                        it.value.toString()/*GsonBuilder().setPrettyPrinting().create().toJson(action.value)*/
+                                    )
+                                }
+                            })
                         })
                     }
                 })
