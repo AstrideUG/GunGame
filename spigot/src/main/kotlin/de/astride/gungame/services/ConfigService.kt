@@ -182,7 +182,7 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.INK_SACK }
-                val damage by lazy { jsonObject?.get("damage")?.asShort ?: 0 }
+                val damage by lazy { jsonObject?.get("damage")?.asShort ?: 1 }
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "${SECONDARY}Magic Heal" }
                 val lore by lazy {
                     val element = jsonObject?.get("lore")
