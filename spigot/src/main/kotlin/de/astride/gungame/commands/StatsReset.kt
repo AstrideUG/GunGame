@@ -1,12 +1,14 @@
 package de.astride.gungame.commands
 
 import de.astride.gungame.functions.actions
+import de.astride.gungame.functions.activeActions
 import de.astride.gungame.functions.configService
 import de.astride.gungame.kits.gunGameLevel
 import de.astride.gungame.kits.upgrade
 import de.astride.gungame.shop.items.keepInventory
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
@@ -36,6 +38,10 @@ class StatsReset(javaPlugin: JavaPlugin) : Command(
                     args.size == 2 && !args[1].equals("confirmed", true) -> sender.sendConfirm()
             args.size == 1 -> sender.isPlayer(
                 {
+                    if (it.uniqueId.activeActions.isEmpty()) {
+                        "${Messages.PREFIX}${TEXT}Du hast keine Stats die man resetten könnte!".sendTo(sender)
+                        return@isPlayer
+                    }
                     it.reset()
                     it.successMessagePlayer()
                 },
@@ -43,6 +49,11 @@ class StatsReset(javaPlugin: JavaPlugin) : Command(
             args.size == 2 && !args[0].equals("confirmed", true) ->
                 hasPermission(sender, "gungame.commands.statsreset.other") {
                     getTarget(sender, args[0]) { target ->
+                        if (target.uniqueId.activeActions.isEmpty()) {
+                            "${Messages.PREFIX}$TEXT${target.name} hat keine Stats die man resetten könnte!"
+                                .sendTo(sender)
+                            return@getTarget
+                        }
                         target.reset()
                         target.successMessagePlayer()
                         sender.successMessageTarget(target.name)
