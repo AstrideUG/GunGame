@@ -253,8 +253,7 @@ class ConfigService(private val directory: File) {
             val b = JsonObject()
 
             input.forEach { (key, actions) ->
-                val jsonObject1 = JsonObject()
-                jsonObject1.add(key.toString(), JsonArray().apply {
+                b.add(key.toString(), JsonArray().apply {
                     actions.forEach {
                         add(JsonObject().apply {
                             it.meta.forEach {
