@@ -2,9 +2,9 @@ package de.astride.gungame.commands
 
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.configService
-import de.astride.gungame.functions.keepInventory
 import de.astride.gungame.kits.gunGameLevel
 import de.astride.gungame.kits.upgrade
+import de.astride.gungame.shop.items.keepInventory
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT

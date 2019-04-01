@@ -1,7 +1,9 @@
 package de.astride.gungame.services
 
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
 import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
@@ -12,6 +14,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import java.io.File
+import java.util.*
 
 /**
  * @author Lars Artmann | LartyHD
@@ -23,6 +26,7 @@ class ConfigService(private val directory: File) {
     val config by lazy { Config() }
     val shops by lazy { Shops() }
     val maps by lazy { Maps() }
+    val actions by lazy { Actions() }
 
     inner class Config internal constructor() {
 
@@ -214,6 +218,49 @@ class ConfigService(private val directory: File) {
 
         /* Values */
         val locations = jsonArray.map { bukkitGsonConfig.getLocation(it.asJsonObject) }
+
+    }
+
+    inner class Actions internal constructor() {
+
+        /* Main */
+        private val configData = ConfigData(directory, config.files.shops)
+        private val jsonObject = GsonService.loadAsJsonObject(configData)
+
+        /* Values */
+        fun load(): MutableMap<UUID, MutableList<Action>> = jsonObject.entrySet().map { (key, value) ->
+            UUID.fromString(key) to value.asJsonArray.map { element ->
+                element.asJsonObject.run {
+                    Action(
+                        this["id"].asString,
+                        entrySet().map { it.key to it.value }.toMap() - "id" - "timestamp",
+                        this["timestamp"].asLong
+                    )
+                }
+            }.toMutableList()
+        }.toMap().toMutableMap()
+
+        fun save(input: MutableMap<UUID, MutableList<Action>>) {
+            val b = JsonObject()
+
+            input.forEach { (key, actions) ->
+                val jsonObject1 = JsonObject()
+                jsonObject1.add(key.toString(), JsonArray().apply {
+                    actions.forEach {
+                        add(JsonObject().apply {
+                            it.meta.forEach {
+                                addProperty(it.key, GsonBuilder().setPrettyPrinting().create().toJson(it.value))
+                            }
+                            addProperty("id", it.id)
+                            addProperty("timestamp", it.timestamp)
+                        })
+                    }
+                })
+            }
+
+            GsonService.save(configData, b)
+        }
+
 
     }
 

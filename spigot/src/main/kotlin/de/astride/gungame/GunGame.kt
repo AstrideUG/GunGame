@@ -5,6 +5,7 @@ package de.astride.gungame
 
 import com.google.gson.JsonObject
 import de.astride.gungame.commands.*
+import de.astride.gungame.functions.allActions
 import de.astride.gungame.functions.changeColor
 import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.gameMap
@@ -54,6 +55,8 @@ class GunGame : DarkPlugin() {
         val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return
         gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { _, _ -> }
 
+        allActions = configService.actions.load()
+
         initListener()
 //        initStats()
         initCommands()
@@ -62,6 +65,10 @@ class GunGame : DarkPlugin() {
 
         Bukkit.getScheduler().runTaskLater(this, { spawnShops() }, 5)
 //        ranksUpdater()
+    }
+
+    override fun onDisable() = onDisable {
+        configService.actions.save(allActions)
     }
 
     private fun initListener() {
