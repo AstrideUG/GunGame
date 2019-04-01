@@ -3,11 +3,13 @@
  */
 package de.astride.gungame.shop
 
+import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.changeColor
 import de.astride.gungame.shop.items.InstantKiller
 import de.astride.gungame.shop.items.KeepInventory
 import de.astride.gungame.shop.items.LevelUp
 import de.astride.gungame.shop.items.MagicHeal
+import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.Listener
@@ -24,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:32.
- * Current Version: 1.0 (19.02.2018 - 31.03.2019)
+ * Current Version: 1.0 (19.02.2018 - 01.04.2019)
  */
 class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
@@ -50,9 +52,12 @@ class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
     fun onPlayerInteractAtEntityEvent(event: PlayerInteractAtEntityEvent) {
 
         val armorStand = event.rightClicked as? ArmorStand ?: return
-        armorStand.changeColor()
+        if (armorStand.customName != "${SECONDARY}Shop") return
+        val player = event.player ?: return
         event.cancel()
-        if (!event.player.isSneaking) event.player.openInventory(inventory)
+        armorStand.changeColor()
+        if (!player.isSneaking) player.openInventory(inventory)
+        player.uniqueId.actions += Action("ArmorStand-changeColor", mapOf("player" to player))
 
     }
 
