@@ -2,6 +2,7 @@ package de.astride.gungame.services
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
@@ -39,7 +40,105 @@ class ConfigService(private val directory: File) {
         val commands by lazy { Commands(jsonObject[Commands::class.java.simpleName]?.asJsonObject) }
         val shopItems by lazy { ShopItems(jsonObject[ShopItems::class.java.simpleName]?.asJsonObject) }
 
-        inner class Files internal constructor(private val jsonObject: JsonObject?) {
+        init {
+            //Very bad code but it works!
+            if (files.jsonObject == null ||
+                commands.jsonObject == null ||
+                commands.stats.jsonObject == null ||
+                commands.statsReset.jsonObject == null ||
+                commands.team.jsonObject == null ||
+                commands.teams.jsonObject == null ||
+                commands.top.jsonObject == null ||
+                shopItems.jsonObject == null ||
+                shopItems.instantKiller.jsonObject == null ||
+                shopItems.keepInventory.jsonObject == null ||
+                shopItems.levelUp.jsonObject == null ||
+                shopItems.magicHeal.jsonObject == null
+            ) {
+
+                GsonService.save(configData, JsonObject().apply {
+                    add(Files::class.simpleName, JsonObject().apply {
+                        addProperty("maps", files.maps)
+                        addProperty("shops", files.shops)
+                        addProperty("actions", files.actions)
+                    })
+                    add(Commands::class.simpleName, JsonObject().apply {
+                        add(Commands.Stats::class.simpleName, JsonObject().apply {
+                            val command = commands.stats
+                            addProperty("name", command.name)
+                            addProperty("permission", command.permission)
+                            add("aliases", command.aliases.toJsonArray())
+                        })
+                        add(Commands.StatsReset::class.simpleName, JsonObject().apply {
+                            val command = commands.statsReset
+
+                            addProperty("name", command.name)
+                            addProperty("permission", command.permission)
+                            add("aliases", command.aliases.toJsonArray())
+                        })
+                        add(Commands.Team::class.simpleName, JsonObject().apply {
+                            val command = commands.team
+                            addProperty("name", command.name)
+                            addProperty("permission", command.permission)
+                            add("aliases", command.aliases.toJsonArray())
+                        })
+                        add(Commands.Teams::class.simpleName, JsonObject().apply {
+                            val command = commands.teams
+                            addProperty("name", command.name)
+                            addProperty("permission", command.permission)
+                            add("aliases", command.aliases.toJsonArray())
+                        })
+                        add(Commands.Top::class.simpleName, JsonObject().apply {
+                            val command = commands.top
+                            addProperty("name", command.name)
+                            addProperty("permission", command.permission)
+                            add("aliases", command.aliases.toJsonArray())
+                        })
+                    })
+                    add(ShopItems::class.simpleName, JsonObject().apply {
+                        add(ShopItems.InstantKiller::class.simpleName, JsonObject().apply {
+                            val item = shopItems.instantKiller
+                            addProperty("material", item.material.name)
+                            addProperty("damage", item.damage)
+                            addProperty("name", item.name)
+                            add("lore", item.lore.toJsonArray())
+                            addProperty("delay", item.delay)
+                            addProperty("price", item.price)
+                        })
+                        add(ShopItems.KeepInventory::class.simpleName, JsonObject().apply {
+                            val item = shopItems.keepInventory
+                            addProperty("material", item.material.name)
+                            addProperty("damage", item.damage)
+                            addProperty("name", item.name)
+                            add("lore", item.lore.toJsonArray())
+                            addProperty("delay", item.delay)
+                            addProperty("price", item.price)
+                        })
+                        add(ShopItems.LevelUp::class.simpleName, JsonObject().apply {
+                            val item = shopItems.levelUp
+                            addProperty("material", item.material.name)
+                            addProperty("damage", item.damage)
+                            addProperty("name", item.name)
+                            add("lore", item.lore.toJsonArray())
+                            addProperty("delay", item.delay)
+                            addProperty("price", item.price)
+                        })
+                        add(ShopItems.MagicHeal::class.simpleName, JsonObject().apply {
+                            val item = shopItems.magicHeal
+                            addProperty("material", item.material.name)
+                            addProperty("damage", item.damage)
+                            addProperty("name", item.name)
+                            add("lore", item.lore.toJsonArray())
+                            addProperty("delay", item.delay)
+                            addProperty("price", item.price)
+                        })
+                    })
+                })
+
+            }
+        }
+
+        inner class Files internal constructor(val jsonObject: JsonObject?) {
 
             /* Values */
             val maps by lazy { file("maps") }
@@ -56,7 +155,7 @@ class ConfigService(private val directory: File) {
 
         }
 
-        inner class Commands internal constructor(jsonObject: JsonObject?) {
+        inner class Commands internal constructor(val jsonObject: JsonObject?) {
 
             /* SubClass */
             val stats by lazy { Stats(jsonObject?.get(Stats::class.java.simpleName)?.asJsonObject) }
@@ -65,7 +164,7 @@ class ConfigService(private val directory: File) {
             val teams by lazy { Teams(jsonObject?.get(Teams::class.java.simpleName)?.asJsonObject) }
             val top by lazy { Top(jsonObject?.get(Top::class.java.simpleName)?.asJsonObject) }
 
-            inner class Stats internal constructor(jsonObject: JsonObject?) {
+            inner class Stats internal constructor(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "Stats" }
@@ -77,7 +176,7 @@ class ConfigService(private val directory: File) {
 
             }
 
-            inner class StatsReset internal constructor(jsonObject: JsonObject?) {
+            inner class StatsReset internal constructor(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "StatsReset" }
@@ -89,7 +188,7 @@ class ConfigService(private val directory: File) {
 
             }
 
-            inner class Team internal constructor(jsonObject: JsonObject?) {
+            inner class Team internal constructor(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "Team" }
@@ -101,7 +200,7 @@ class ConfigService(private val directory: File) {
 
             }
 
-            inner class Teams internal constructor(jsonObject: JsonObject?) {
+            inner class Teams internal constructor(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "Teams" }
@@ -113,7 +212,7 @@ class ConfigService(private val directory: File) {
 
             }
 
-            inner class Top internal constructor(jsonObject: JsonObject?) {
+            inner class Top internal constructor(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "Top" }
@@ -127,7 +226,7 @@ class ConfigService(private val directory: File) {
 
         }
 
-        inner class ShopItems internal constructor(jsonObject: JsonObject?) {
+        inner class ShopItems internal constructor(val jsonObject: JsonObject?) {
 
             /* SubClass */
             val instantKiller by lazy { InstantKiller(jsonObject?.get(Commands.Stats::class.java.simpleName)?.asJsonObject) }
@@ -135,7 +234,7 @@ class ConfigService(private val directory: File) {
             val levelUp by lazy { LevelUp(jsonObject?.get(Commands.Team::class.java.simpleName)?.asJsonObject) }
             val magicHeal by lazy { MagicHeal(jsonObject?.get(Commands.Teams::class.java.simpleName)?.asJsonObject) }
 
-            inner class InstantKiller(jsonObject: JsonObject?) {
+            inner class InstantKiller(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.FIREBALL }
@@ -152,7 +251,7 @@ class ConfigService(private val directory: File) {
 
             }
 
-            inner class KeepInventory(jsonObject: JsonObject?) {
+            inner class KeepInventory(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.PAPER }
@@ -169,7 +268,7 @@ class ConfigService(private val directory: File) {
 
             }
 
-            inner class LevelUp(jsonObject: JsonObject?) {
+            inner class LevelUp(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.DIAMOND }
@@ -186,7 +285,7 @@ class ConfigService(private val directory: File) {
 
             }
 
-            inner class MagicHeal(jsonObject: JsonObject?) {
+            inner class MagicHeal(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.INK_SACK }
@@ -284,3 +383,17 @@ class ConfigService(private val directory: File) {
     }
 
 }
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 01.04.2019 16:20.
+ * Current Version: 1.0 (01.04.2019 - 01.04.2019)
+ */
+private fun Array<String>.toJsonArray() = JsonArray().apply { this@toJsonArray.forEach { add(JsonPrimitive(it)) } }
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 01.04.2019 16:14.
+ * Current Version: 1.0 (01.04.2019 - 01.04.2019)
+ */
+private fun Collection<String>.toJsonArray() = toTypedArray().toJsonArray()
