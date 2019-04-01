@@ -39,11 +39,20 @@ class ConfigService(private val directory: File) {
         val commands by lazy { Commands(jsonObject[Commands::class.java.simpleName]?.asJsonObject) }
         val shopItems by lazy { ShopItems(jsonObject[ShopItems::class.java.simpleName]?.asJsonObject) }
 
-        inner class Files internal constructor(jsonObject: JsonObject?) {
+        inner class Files internal constructor(private val jsonObject: JsonObject?) {
 
             /* Values */
-            val maps by lazy { jsonObject?.get("maps")?.asString() ?: "maps.json" }
-            val shops by lazy { jsonObject?.get("shops")?.asString() ?: "shops.json" }
+            val maps by lazy { file("maps") }
+            val shops by lazy { file("shops") }
+            val actions by lazy { file("actions") }
+
+            /**
+             * @author Lars Artmann | LartyHD
+             * Created by Lars Artmann | LartyHD on 01.04.2019 14:29.
+             * Current Version: 1.0 (01.04.2019 - 01.04.2019)
+             */
+            private fun file(name: String, suffix: String = ".json") =
+                jsonObject?.get(name)?.asString() ?: "$name$suffix"
 
         }
 
@@ -224,7 +233,7 @@ class ConfigService(private val directory: File) {
     inner class Actions internal constructor() {
 
         /* Main */
-        private val configData = ConfigData(directory, config.files.shops)
+        private val configData = ConfigData(directory, config.files.actions)
         private val jsonObject = loadAs(configData) ?: JsonObject()
 
         /* Values */
