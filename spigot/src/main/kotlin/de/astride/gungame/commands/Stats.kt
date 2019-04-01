@@ -7,9 +7,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.functions.isPlayer
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toPlayer
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages.PREFIX
-import org.bukkit.Material
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 
@@ -40,10 +38,6 @@ class Stats(javaPlugin: JavaPlugin) : Command(
         val kd = kills.toFloat() / deaths.toFloat()
         val deathStreak = uuid.maxStreak("PlayerDeathEvent", "PlayerRespawnEvent")
         val killStreak = uuid.maxStreak("PlayerRespawnEvent", "PlayerDeathEvent")
-        val waterKills = uuid.count("PlayerRespawnEvent", uuid.activeActions.filter {
-            val value = it.meta["player"] as? Player ?: return@filter false
-            value.location.block.type == Material.WATER
-        })
 
         val textPrefix = "$PREFIX$TEXT"
         val separator = "$IMPORTANT: $PRIMARY"
@@ -56,7 +50,6 @@ class Stats(javaPlugin: JavaPlugin) : Command(
             lineSeparator,
             "${textPrefix}Deaths$separator$deaths",
             "${textPrefix}Kills$separator$kills",
-            "${textPrefix}Kills by water$separator$waterKills",
             "${textPrefix}K/D$separator$kd",
             lineSeparator,
             uuid.toPlayer()?.run {
