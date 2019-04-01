@@ -1,6 +1,5 @@
 package de.astride.gungame.services
 
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import de.astride.gungame.stats.Action
@@ -250,7 +249,10 @@ class ConfigService(private val directory: File) {
                     actions.forEach {
                         add(JsonObject().apply {
                             it.meta.forEach {
-                                addProperty(it.key, GsonBuilder().setPrettyPrinting().create().toJson(it.value))
+                                addProperty(
+                                    it.key,
+                                    it.value.toString()/*GsonBuilder().setPrettyPrinting().create().toJson(it.value)*/
+                                )
                             }
                             addProperty("id", it.id)
                             addProperty("timestamp", it.timestamp)
