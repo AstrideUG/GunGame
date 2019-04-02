@@ -28,7 +28,7 @@ data class OtherData(
     val isInsideVehicle: Boolean,
 
     val isLeashed: Boolean,
-    val leashHolder: Boolean,
+    val leashHolder: Entity,
 
     val isEmpty: Boolean,
     val passenger: Entity,

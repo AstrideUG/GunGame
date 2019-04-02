@@ -1,6 +1,6 @@
 package de.astride.data
 
-import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.util.*
 
 /**
@@ -9,8 +9,8 @@ import java.util.*
  * Current Version: 1.0 (02.04.2019 - 02.04.2019)
  */
 data class MetaData(
-    val address: InetAddress,
-    val rawAddress: InetAddress,
+    val address: InetSocketAddress,
+    val rawAddress: InetSocketAddress,
     val uniqueId: UUID,
     val hasPlayedBefore: Boolean,
     val lastPlayed: Long,

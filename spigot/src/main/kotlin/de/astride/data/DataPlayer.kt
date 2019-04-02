@@ -1,5 +1,7 @@
 package de.astride.data
 
+import org.bukkit.entity.Player
+
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 01.04.2019 20:07.
@@ -22,7 +24,75 @@ class DataPlayer(
     val speeds: Speeds,
     val targetable: Targetable,
     val whiteAndBlackList: WhiteAndBlackList
-) //{
+)
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 02.04.2019 03:05.
+ * Current Version: 1.0 (02.04.2019 - 02.04.2019)
+ */
+
+fun Player.toDataPlayer(): DataPlayer = DataPlayer(
+    Damageable(maximumNoDamageTicks, noDamageTicks, lastDamage, lastDamageCause),
+    DataExp(level, exp, exhaustion, expToLevel, totalExperience),
+    DataFood(flySpeed, saturation, exhaustion),
+    DataHealth(health, maxHealth, healthScale, isHealthScaled, spigot().isInvulnerable),
+    DataLocation(location, bedSpawnLocation, eyeLocation, eyeHeight, velocity, @Suppress("DEPRECATION") isOnGround),
+    Fireable(fireTicks, maxFireTicks),
+    Flyable(isFlying, allowFlight),
+    Inventories(canPickupItems, equipment, enderChest, openInventory, inventory, itemInHand, itemOnCursor),
+    MetaData(
+        address,
+        spigot().rawAddress,
+        uniqueId,
+        hasPlayedBefore(),
+        lastPlayed,
+        firstPlayed,
+        spigot().locale,
+        entityId,
+        listeningPluginChannels
+    ),
+    Names(name, displayName),
+    OtherData(
+        playerListName,
+        playerTime,
+        playerTimeOffset,
+        playerWeather,
+        isPlayerTimeRelative,
+        isBlocking,
+        isConversing,
+        isCustomNameVisible,
+        isInsideVehicle,
+        isLeashed,
+        leashHolder,
+        isEmpty,
+        passenger,
+        isDead,
+        isValid,
+        isOnline,
+        scoreboard,
+        killer,
+        gameMode,
+        fallDistance,
+        type,
+        vehicle,
+        maximumAir,
+        remainingAir,
+        removeWhenFarAway,
+        server,
+        activePotionEffects,
+        spigot().collidesWithEntities,
+        spigot().hiddenPlayers
+    ),
+    Permissables(isOp, effectivePermissions),
+    Sleepable(isSleeping, isSleepingIgnored),
+    Speeds(isSprinting, isSneaking, walkSpeed, flySpeed),
+    Targetable(spectatorTarget, compassTarget),
+    WhiteAndBlackList(isWhitelisted, isBanned)
+)
+
+
+//{
 
 //    init {
 //        val a: Player? = null

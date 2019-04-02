@@ -1,7 +1,6 @@
 package de.astride.data
 
 import org.bukkit.Location
-import javax.swing.text.html.parser.Entity
 
 /**
  * @author Lars Artmann | LartyHD
@@ -9,6 +8,6 @@ import javax.swing.text.html.parser.Entity
  * Current Version: 1.0 (02.04.2019 - 02.04.2019)
  */
 data class Targetable(
-    val spectatorTarget: Entity?,
+    val spectatorTarget: org.bukkit.entity.Entity,
     val compassTarget: Location
 )

@@ -7,6 +7,6 @@ package de.astride.data
  */
 data class DataFood(
     val foodLevel: Float,
-    val saturation: Int,
-    val exhaustion: Int
+    val saturation: Float,
+    val exhaustion: Float
 )
