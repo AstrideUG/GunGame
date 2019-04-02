@@ -31,7 +31,6 @@ class DataPlayer(
  * Created by Lars Artmann | LartyHD on 02.04.2019 03:05.
  * Current Version: 1.0 (02.04.2019 - 02.04.2019)
  */
-
 fun Player.toDataPlayer(): DataPlayer = DataPlayer(
     Damageable(maximumNoDamageTicks, noDamageTicks, lastDamage, lastDamageCause),
     DataExp(level, exp, exhaustion, expToLevel, totalExperience),
