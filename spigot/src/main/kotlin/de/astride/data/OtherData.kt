@@ -42,7 +42,7 @@ data class OtherData(
     val gameMode: GameMode,
     val fallDistance: Float,
     val type: EntityType,
-    val vehicle: Entity,
+    val vehicle: Entity?,
     val maximumAir: Int,
     val remainingAir: Int,
     val removeWhenFarAway: Boolean,

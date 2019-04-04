@@ -1,5 +1,6 @@
 package de.astride.gungame.commands
 
+import de.astride.data.DataPlayer
 import de.astride.gungame.functions.*
 import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
@@ -70,6 +71,12 @@ class Stats(javaPlugin: JavaPlugin) : Command(
             "${textPrefix}Used MagicHeal$separator${uuid.count("used-MagicHeal")}",
             "${textPrefix}Used InstantKiller$separator${uuid.count("used-InstantKiller")}",
             "${textPrefix}Used KeepInventory$separator${uuid.count("used-KeepInventory")}",
+            lineSeparator,
+            "${textPrefix}Changed Shop Color$separator${uuid.count("shop-change-color")}",
+            "${textPrefix}Shop openings$separator${uuid.count("shop-change-color", uuid.activeActions.filter {
+                val player = it.meta["player"] as? DataPlayer ?: return@filter false
+                !player.speeds.isSneaking
+            })}",
             "$PREFIX$IMPORTANT$DESIGN                         $IMPORTANT[ $PRIMARY${EXTRA}STATS$IMPORTANT ]$DESIGN                         "
         )
         sender.sendMessage(messages)

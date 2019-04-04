@@ -3,6 +3,7 @@
  */
 package de.astride.gungame.shop
 
+import de.astride.data.toDataPlayer
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.changeColor
 import de.astride.gungame.shop.items.InstantKiller
@@ -57,7 +58,7 @@ class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
         event.cancel()
         armorStand.changeColor()
         if (!player.isSneaking) player.openInventory(inventory)
-        player.uniqueId.actions += Action("ArmorStand-changeColor", mapOf("player" to player))
+        player.uniqueId.actions += Action("shop-change-color", mapOf("player" to player.toDataPlayer()))
 
     }
 

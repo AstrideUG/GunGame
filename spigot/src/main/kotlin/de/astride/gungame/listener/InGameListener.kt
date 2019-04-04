@@ -3,6 +3,7 @@
  */
 package de.astride.gungame.listener
 
+import de.astride.data.toDataPlayer
 import de.astride.gungame.functions.*
 import de.astride.gungame.kits.downgrade
 import de.astride.gungame.kits.setKit
@@ -84,7 +85,7 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
         event.keepInventory = true
         event.droppedExp = 0
 
-        event.entity.uniqueId.actions += Action(event.javaClass.simpleName, mapOf("player" to event.entity))
+        event.entity.uniqueId.actions += Action(event.javaClass.simpleName, mapOf("player" to event.entity.serialize()))
     }
 
     @EventHandler
@@ -97,7 +98,10 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
                 if (this@player.uniqueId == uniqueId) return
 
-                uniqueId.actions += Action(event.javaClass.simpleName, mapOf("player" to this, "killed" to this@player))
+                uniqueId.actions += Action(
+                    event.javaClass.simpleName,
+                    mapOf("player" to this, "killed" to this@player.toDataPlayer())
+                )
 
                 playSound(location, Sound.ENDERMAN_HIT, 2f, 1f)
 //                broadcastKillStreak(killStreak++, this) TODO: Add broadcastKillStreak

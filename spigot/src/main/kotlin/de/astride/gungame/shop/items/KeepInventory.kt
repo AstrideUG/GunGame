@@ -1,5 +1,6 @@
 package de.astride.gungame.shop.items
 
+import de.astride.data.toDataPlayer
 import de.astride.gungame.event.GunGamePlayerDowngradeLevelEvent
 import de.astride.gungame.event.GunGamePlayerUpgradeLevelEvent
 import de.astride.gungame.functions.actions
@@ -68,7 +69,10 @@ class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
             if (!keepInventory) return
             keepInventory = false
             updateLevel()
-            uniqueId.actions += Action("used-${this@KeepInventory.javaClass.simpleName}", mapOf("player" to this))
+            uniqueId.actions += Action(
+                "used-${this@KeepInventory.javaClass.simpleName}",
+                mapOf("player" to this.toDataPlayer())
+            )
         }
 
     }

@@ -1,5 +1,6 @@
 package de.astride.gungame.shop.items
 
+import de.astride.data.toDataPlayer
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.equals
 import de.astride.gungame.functions.playBuySound
@@ -56,7 +57,7 @@ class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
         if (damager.itemInHand?.clone()?.apply { amount = 1 } != itemStack.removedLore()) return
 //        if (event.entity !is Player) return
         damager.removeItemInHand()
-        damager.uniqueId.actions += Action("used-${javaClass.simpleName}", mapOf("player" to damager))
+        damager.uniqueId.actions += Action("used-${javaClass.simpleName}", mapOf("player" to damager.toDataPlayer()))
 
     }
 

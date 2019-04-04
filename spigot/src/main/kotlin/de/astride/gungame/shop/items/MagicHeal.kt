@@ -1,5 +1,6 @@
 package de.astride.gungame.shop.items
 
+import de.astride.data.toDataPlayer
 import de.astride.gungame.functions.*
 import de.astride.gungame.shop.ShopItemListener
 import de.astride.gungame.stats.Action
@@ -77,7 +78,10 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
                 removeItemInHand()
                 heal()
                 lastHealerUse = System.currentTimeMillis()
-                uniqueId.actions += Action("used-${this@MagicHeal.javaClass.simpleName}", mapOf("player" to this))
+                uniqueId.actions += Action(
+                    "used-${this@MagicHeal.javaClass.simpleName}",
+                    mapOf("player" to this.toDataPlayer())
+                )
             } else "${Messages.PREFIX}${TEXT}Du hast eine Behandlung echt nicht nötig ;)".sendTo(this)
         }
 
