@@ -1,6 +1,8 @@
 package de.astride.gungame.commands
 
+import de.astride.gungame.functions.allActions
 import de.astride.gungame.functions.configService
+import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors
@@ -17,15 +19,18 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
     commandName = config.name,
     permission = config.permission,
-    usage = "save actions",
+    usage = "save actions [file]",
     minLength = 2,
-    maxLength = 2,
+    maxLength = 3,
     aliases = *config.aliases
 ) {
 
     override fun perform(sender: CommandSender, args: Array<String>) {
 
-        "${Messages.PREFIX}${Colors.TEXT}Actions gesichert".sendTo(sender)
+        val configData =
+            if (args.size == 3) configService.actions.configData else ConfigData(javaPlugin.dataFolder, args[0])
+        configService.actions.save(allActions, configData)
+        "${Messages.PREFIX}${Colors.TEXT}Actions wurde in ${configData.file.toPath()} abgespeichert".sendTo(sender)
 
     }
 

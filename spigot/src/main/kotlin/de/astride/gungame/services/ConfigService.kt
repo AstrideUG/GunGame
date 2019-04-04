@@ -359,7 +359,7 @@ class ConfigService(private val directory: File) {
     inner class Actions internal constructor() {
 
         /* Main */
-        private val configData = ConfigData(directory, config.files.actions)
+        val configData: ConfigData = ConfigData(directory, config.files.actions)
         private val jsonObject = loadAs(configData) ?: JsonObject()
 
         /* Values */
