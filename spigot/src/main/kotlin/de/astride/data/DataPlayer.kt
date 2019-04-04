@@ -75,7 +75,11 @@ fun Player.toDataPlayer(): DataPlayer = DataPlayer(
         isCustomNameVisible,
         isInsideVehicle,
         isLeashed,
-        leashHolder,
+        try {
+            leashHolder
+        } catch (e: IllegalStateException) {
+            null
+        },
         isEmpty,
         passenger,
         isDead,
