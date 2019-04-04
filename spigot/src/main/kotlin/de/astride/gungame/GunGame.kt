@@ -33,7 +33,7 @@ import kotlin.random.Random
  */
 class GunGame : DarkPlugin() {
 
-    override fun onLoad() = onLoad {
+    override fun onLoad(): Unit = onLoad {
         Bukkit.getServicesManager().register(
             ConfigService::class.java,
             ConfigService(dataFolder),
@@ -46,13 +46,14 @@ class GunGame : DarkPlugin() {
 
     }
 
-    override fun onEnable() {
+    override fun onEnable(): Unit = onEnable {
 
         EventsListener.autoRespawn = true
 
         val config = configService.maps
         if (config.maps.size() < 1) throw IllegalStateException("No Maps are configured")
-        val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return
+        @Suppress("LABEL_NAME_CLASH")
+        val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return@onEnable
         gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { _, _ -> }
 
         println("Load stats...")
@@ -68,7 +69,7 @@ class GunGame : DarkPlugin() {
 //        ranksUpdater()
     }
 
-    override fun onDisable() = onDisable {
+    override fun onDisable(): Unit = onDisable {
         println("Save stats...")
         configService.actions.save(allActions)
         println("Saved stats")
