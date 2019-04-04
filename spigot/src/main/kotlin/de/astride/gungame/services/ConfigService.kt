@@ -49,6 +49,7 @@ class ConfigService(private val directory: File) {
                 commands.team.jsonObject == null ||
                 commands.teams.jsonObject == null ||
                 commands.top.jsonObject == null ||
+                commands.gungame.jsonObject == null ||
                 shopItems.jsonObject == null ||
                 shopItems.instantKiller.jsonObject == null ||
                 shopItems.keepInventory.jsonObject == null ||
@@ -90,6 +91,12 @@ class ConfigService(private val directory: File) {
                         })
                         add(Commands.Top::class.simpleName, JsonObject().apply {
                             val command = commands.top
+                            addProperty("name", command.name)
+                            addProperty("permission", command.permission)
+                            add("aliases", command.aliases.toJsonArray())
+                        })
+                        add(Commands.GunGame::class.simpleName, JsonObject().apply {
+                            val command = commands.gungame
                             addProperty("name", command.name)
                             addProperty("permission", command.permission)
                             add("aliases", command.aliases.toJsonArray())
@@ -163,6 +170,7 @@ class ConfigService(private val directory: File) {
             val team by lazy { Team(jsonObject?.get(Team::class.java.simpleName)?.asJsonObject) }
             val teams by lazy { Teams(jsonObject?.get(Teams::class.java.simpleName)?.asJsonObject) }
             val top by lazy { Top(jsonObject?.get(Top::class.java.simpleName)?.asJsonObject) }
+            val gungame by lazy { GunGame(jsonObject?.get(GunGame::class.java.simpleName)?.asJsonObject) }
 
             inner class Stats internal constructor(val jsonObject: JsonObject?) {
 
@@ -217,6 +225,23 @@ class ConfigService(private val directory: File) {
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "Top" }
                 val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.top" }
+                val aliases by lazy {
+                    val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
+                    jsonArray.mapNotNull { it.asString() }.toTypedArray()
+                }
+
+            }
+
+            /**
+             * @author Lars Artmann | LartyHD
+             * Created by Lars Artmann | LartyHD on 04.04.2019 18:36.
+             * Current Version: 1.0 (04.04.2019 - 04.04.2019)
+             */
+            inner class GunGame internal constructor(val jsonObject: JsonObject?) {
+
+                /* Values */
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "GunGame" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.gungame" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()

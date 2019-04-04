@@ -5,6 +5,7 @@ package de.astride.gungame
 
 import com.google.gson.JsonObject
 import de.astride.gungame.commands.*
+import de.astride.gungame.commands.GunGame
 import de.astride.gungame.functions.allActions
 import de.astride.gungame.functions.changeColor
 import de.astride.gungame.functions.configService
@@ -90,6 +91,7 @@ class GunGame : DarkPlugin() {
         Stats(this)
         StatsReset(this)
         Top(this)
+        GunGame(this)
     }
 
     private fun spawnShops() = configService.shops.locations.forEach {
