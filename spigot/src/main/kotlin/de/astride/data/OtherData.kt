@@ -19,7 +19,7 @@ data class OtherData(
     val playerListName: String,
     val playerTime: Long,
     val playerTimeOffset: Long,
-    val playerWeather: WeatherType,
+    val playerWeather: WeatherType?,
 
     val isPlayerTimeRelative: Boolean,
     val isBlocking: Boolean,

@@ -2,6 +2,12 @@ package de.astride.data
 
 import org.bukkit.entity.Player
 
+/*
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 01.04.2019 20:07.
+ * Current Version: 1.0 (01.04.2019 - 04.04.2019)
+ */
+
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 01.04.2019 20:07.
@@ -29,7 +35,7 @@ class DataPlayer(
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 02.04.2019 03:05.
- * Current Version: 1.0 (02.04.2019 - 02.04.2019)
+ * Current Version: 1.0 (02.04.2019 - 04.04.2019)
  */
 fun Player.toDataPlayer(): DataPlayer = DataPlayer(
     Damageable(maximumNoDamageTicks, noDamageTicks, lastDamage, lastDamageCause),

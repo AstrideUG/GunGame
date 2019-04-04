@@ -6,7 +6,7 @@ import org.bukkit.util.Vector
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 02.04.2019 01:52.
- * Current Version: 1.0 (02.04.2019 - 02.04.2019)
+ * Current Version: 1.0 (02.04.2019 - 04.04.2019)
  */
 data class DataLocation(
 //  val world: World, is already saved in location
