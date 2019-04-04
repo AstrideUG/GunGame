@@ -35,7 +35,13 @@ fun Player.toDataPlayer(): DataPlayer = DataPlayer(
     Damageable(maximumNoDamageTicks, noDamageTicks, lastDamage, lastDamageCause),
     DataExp(level, exp, exhaustion, expToLevel, totalExperience),
     DataFood(flySpeed, saturation, exhaustion),
-    DataHealth(health, maxHealth, healthScale, isHealthScaled, spigot().isInvulnerable),
+    DataHealth(
+        health,
+        maxHealth,
+        healthScale,
+        isHealthScaled,
+        false /*spigot().isInvulnerable Spigot is trash! This method thrown's an exception*/
+    ),
     DataLocation(location, bedSpawnLocation, eyeLocation, eyeHeight, velocity, @Suppress("DEPRECATION") isOnGround),
     Fireable(fireTicks, maxFireTicks),
     Flyable(isFlying, allowFlight),
