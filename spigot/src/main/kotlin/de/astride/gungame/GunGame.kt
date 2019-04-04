@@ -29,7 +29,7 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 31.03.2019)
+ * Current Version: 1.0 (17.02.2018 - 04.04.2019)
  */
 class GunGame : DarkPlugin() {
 
@@ -55,10 +55,11 @@ class GunGame : DarkPlugin() {
         val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return
         gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { _, _ -> }
 
+        println("Load stats...")
         allActions = configService.actions.load()
+        println("Loaded stats")
 
         initListener()
-//        initStats()
         initCommands()
 
         ShopListener(this)
@@ -68,7 +69,9 @@ class GunGame : DarkPlugin() {
     }
 
     override fun onDisable() = onDisable {
+        println("Save stats...")
         configService.actions.save(allActions)
+        println("Saved stats")
     }
 
     private fun initListener() {
