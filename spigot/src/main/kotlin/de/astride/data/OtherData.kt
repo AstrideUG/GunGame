@@ -31,7 +31,7 @@ data class OtherData(
     val leashHolder: Entity?,
 
     val isEmpty: Boolean,
-    val passenger: Entity,
+    val passenger: Entity?,
 
     val isDead: Boolean,
     val isValid: Boolean,
