@@ -28,7 +28,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
     override fun perform(sender: CommandSender, args: Array<String>) {
 
         val configData =
-            if (args.size < 3) configService.actions.configData else ConfigData(javaPlugin.dataFolder, args[3])
+            if (args.size < 3) configService.actions.configData else ConfigData(javaPlugin.dataFolder, args[2])
         configService.actions.save(allActions, configData)
         "${Messages.PREFIX}${Colors.TEXT}Actions wurde in ${configData.file.toPath()} abgespeichert".sendTo(sender)
 
