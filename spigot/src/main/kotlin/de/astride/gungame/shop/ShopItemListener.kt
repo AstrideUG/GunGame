@@ -3,6 +3,7 @@
  */
 package de.astride.gungame.shop
 
+import de.astride.data.toDataPlayer
 import de.astride.gungame.event.GunGamePlayerShopHasEnoughMoneyEvent
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.configService
@@ -77,7 +78,7 @@ abstract class ShopItemListener protected constructor(
         if (delayed() || !enoughMoney()) return@run
         if (buy()) uniqueId.actions += Action(
             "bought-${this@ShopItemListener.javaClass.simpleName}",
-            mapOf("player" to this)
+            mapOf("player" to this.toDataPlayer())
         )
         else lastItemUse = 0
     }

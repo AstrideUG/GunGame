@@ -85,7 +85,10 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
         event.keepInventory = true
         event.droppedExp = 0
 
-        event.entity.uniqueId.actions += Action(event.javaClass.simpleName, mapOf("player" to event.entity.serialize()))
+        event.entity.uniqueId.actions += Action(
+            event.javaClass.simpleName,
+            mapOf("player" to event.entity.toDataPlayer())
+        )
     }
 
     @EventHandler
