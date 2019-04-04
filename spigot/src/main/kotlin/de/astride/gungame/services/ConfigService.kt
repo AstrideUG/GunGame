@@ -1,8 +1,10 @@
 package de.astride.gungame.services
 
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import de.astride.gungame.serializer.ActionSerializer
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
@@ -373,29 +375,38 @@ class ConfigService(private val directory: File) {
             }.toMutableList()
         }.toMap().toMutableMap()
 
-        fun save(input: MutableMap<UUID, MutableList<Action>>) {
-            val b = JsonObject()
+        fun save(input: MutableMap<UUID, MutableList<Action>>, configData: ConfigData = this.configData) {
+
+            val all = JsonObject()
+            val gson = GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(Action::class.java, ActionSerializer)
+                .create()
 
             input.forEach { (key, actions) ->
-                b.add(key.toString(), JsonArray().apply {
-                    actions.forEach { action ->
-                        add(JsonObject().apply {
-                            addProperty("id", action.id)
-                            addProperty("timestamp", action.timestamp)
-                            add("meta", JsonObject().apply {
-                                action.meta.forEach {
-                                    addProperty(
-                                        it.key,
-                                        it.value.toString()/*GsonBuilder().setPrettyPrinting().create().toJson(action.value)*/
-                                    )
-                                }
-                            })
-                        })
-                    }
+                all.add(key.toString(), JsonArray().apply {
+                    actions.forEach { action -> add(gson.toJsonTree(action, Action::class.java)) }
                 })
             }
 
-            GsonService.save(configData, b)
+            //                        add(JsonObject().apply {
+//                            addProperty("id", action.id)
+//                            addProperty("timestamp", action.timestamp)
+//                            add("meta", JsonObject().apply {
+//                                action.meta.forEach {
+//                                    addProperty(
+//                                        it.key,
+//                                        /*it.value.toString()*/
+//                                        GsonBuilder().setPrettyPrinting().create().toJson(
+//                                            it.value,
+//                                            DataPlayer::class.java
+//                                        )
+//                                    )
+//                                }
+//                            })
+//                        })
+
+            GsonService.save(configData, all)
         }
 
 
