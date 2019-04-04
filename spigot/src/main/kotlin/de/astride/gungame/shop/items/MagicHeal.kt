@@ -47,7 +47,7 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     override fun Player.buy(): Boolean {
         var count = 0
         val item = itemStack.removedLore()
-        inventory.filter { it.equals(item, true) }.forEach { count += it.amount }
+        inventory.filter { it?.equals(item, true) ?: false }.forEach { count += it.amount }
         return if (count >= 3) {
             sendMessage("${Messages.PREFIX}${TEXT}Du darfst nur drei ${itemStack.itemMeta.displayName} ${TEXT}im ${IMPORTANT}Inventar ${TEXT}haben")
             false
