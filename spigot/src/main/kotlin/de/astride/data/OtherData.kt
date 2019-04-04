@@ -38,7 +38,7 @@ data class OtherData(
     val isOnline: Boolean,
 
     val scoreboard: Scoreboard,
-    val killer: Player,
+    val killer: Player?,
     val gameMode: GameMode,
     val fallDistance: Float,
     val type: EntityType,
