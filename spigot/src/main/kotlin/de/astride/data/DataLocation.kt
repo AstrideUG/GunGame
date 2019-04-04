@@ -11,7 +11,7 @@ import org.bukkit.util.Vector
 data class DataLocation(
 //  val world: World, is already saved in location
     val location: Location,
-    val bedSpawnLocation: Location,
+    val bedSpawnLocation: Location?,
     val eyeLocation: Location,
     val eyeHeight: Double,
     val velocity: Vector,
