@@ -1,11 +1,12 @@
 package de.astride.gungame.services
 
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import de.astride.gungame.serializer.ActionSerializer
 import de.astride.gungame.stats.Action
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.parse
+import kotlinx.serialization.stringify
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService.loadAs
@@ -22,7 +23,7 @@ import java.util.*
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 29.03.2019 13:42.
- * Current Version: 1.0 (29.03.2019 - 01.04.2019)
+ * Current Version: 1.0 (29.03.2019 - 05.04.2019)
  */
 class ConfigService(private val directory: File) {
 
@@ -360,55 +361,13 @@ class ConfigService(private val directory: File) {
 
         /* Main */
         val configData: ConfigData = ConfigData(directory, config.files.actions)
-        private val jsonObject = loadAs(configData) ?: JsonObject()
 
         /* Values */
-        fun load(): MutableMap<UUID, MutableList<Action>> = jsonObject.entrySet().map { (key, value) ->
-            UUID.fromString(key) to value.asJsonArray.map { element ->
-                element.asJsonObject.run {
-                    Action(
-                        this["id"].asString,
-                        this["meta"].asJsonObject.entrySet().map { it.toPair() }.toMap(),
-                        this["timestamp"].asLong
-                    )
-                }
-            }.toMutableList()
-        }.toMap().toMutableMap()
+        fun load(configData: ConfigData = this.configData): MutableMap<UUID, MutableList<Action>> =
+            Json.parse(configData.file.readText())
 
-        fun save(input: MutableMap<UUID, MutableList<Action>>, configData: ConfigData = this.configData) {
-
-            val all = JsonObject()
-            val gson = GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(Action::class.java, ActionSerializer)
-                .create()
-
-            input.forEach { (key, actions) ->
-                all.add(key.toString(), JsonArray().apply {
-                    actions.forEach { action -> add(gson.toJsonTree(action, Action::class.java)) }
-                })
-            }
-
-            //                        add(JsonObject().apply {
-//                            addProperty("id", action.id)
-//                            addProperty("timestamp", action.timestamp)
-//                            add("meta", JsonObject().apply {
-//                                action.meta.forEach {
-//                                    addProperty(
-//                                        it.key,
-//                                        /*it.value.toString()*/
-//                                        GsonBuilder().setPrettyPrinting().create().toJson(
-//                                            it.value,
-//                                            DataPlayer::class.java
-//                                        )
-//                                    )
-//                                }
-//                            })
-//                        })
-
-            GsonService.save(configData, all)
-        }
-
+        fun save(input: MutableMap<UUID, MutableList<Action>>, configData: ConfigData = this.configData) =
+            GsonService.save(configData, Json.stringify(input))
 
     }
 
