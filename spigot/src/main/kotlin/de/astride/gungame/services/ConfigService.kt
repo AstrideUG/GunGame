@@ -9,9 +9,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.parse
 import kotlinx.serialization.stringify
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
+import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonConfig
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService.loadAs
 import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
+import net.darkdevelopers.darkbedrock.darkness.general.message.GsonMessages
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMaterial
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
@@ -32,6 +34,7 @@ class ConfigService(private val directory: File) {
     val shops by lazy { Shops() }
     val maps by lazy { Maps() }
     val actions by lazy { Actions() }
+    val messages by lazy { Messages() }
 
     inner class Config internal constructor() {
 
@@ -160,6 +163,7 @@ class ConfigService(private val directory: File) {
             val maps by lazy { file("maps") }
             val shops by lazy { file("shops") }
             val actions by lazy { file("actions") }
+            val messages by lazy { file("messages") }
 
             /**
              * @author Lars Artmann | LartyHD
@@ -374,6 +378,17 @@ class ConfigService(private val directory: File) {
 
         fun save(input: MutableMap<UUID, MutableList<Action>>, configData: ConfigData = this.configData) =
             GsonService.save(configData, Json.stringify(input))
+
+    }
+
+    inner class Messages internal constructor() {
+
+        /* Main */
+        private val configData = ConfigData(directory, config.files.messages)
+        private val gsonConfig = @Suppress("DEPRECATION") GsonConfig(configData).load()
+
+        /* Values */
+        val availableMessages = GsonMessages(gsonConfig).availableMessages
 
     }
 
