@@ -1,5 +1,6 @@
 package de.astride.data
 
+import kotlinx.serialization.Serializable
 import org.bukkit.entity.Player
 
 /*
@@ -11,8 +12,9 @@ import org.bukkit.entity.Player
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 01.04.2019 20:07.
- * Current Version: 1.0 (01.04.2019 - 04.04.2019)
+ * Current Version: 1.0 (02.04.2019 - 04.04.2019)
  */
+@Serializable
 data class DataPlayer(
     val damageable: Damageable,
     val dataExp: DataExp,
