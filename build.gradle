@@ -95,7 +95,7 @@ subprojects {
 
     compileKotlin {
         kotlinOptions {
-            freeCompilerArgs = ['-Xjsr305=strict']
+            freeCompilerArgs = ['-Xjsr305=strict', '-Xuse-experimental=kotlinx.serialization.ImplicitReflectionSerializer']
             jvmTarget = '1.8'
             suppressWarnings = true
         }
@@ -103,7 +103,7 @@ subprojects {
 
     compileTestKotlin {
         kotlinOptions {
-            freeCompilerArgs = ['-Xjsr305=strict']
+            freeCompilerArgs = ['-Xjsr305=strict', '-Xuse-experimental=kotlinx.serialization.ImplicitReflectionSerializer']
             jvmTarget = '1.8'
             suppressWarnings = true
         }
