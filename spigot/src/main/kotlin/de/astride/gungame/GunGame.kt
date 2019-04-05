@@ -27,7 +27,7 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 04.04.2019)
+ * Current Version: 1.0 (17.02.2018 - 06.04.2019)
  */
 class GunGame : DarkPlugin() {
 
@@ -82,8 +82,9 @@ class GunGame : DarkPlugin() {
         InGameListener(this)
         RegionsListener(this)
         if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
+            logger.info("Hooking to Vault...")
             MoneyListener(this)
-            logger.info("Hooking to Vault")
+            logger.info("Hooked to Vault")
         } else logger.warning("Vault not found")
     }
 
