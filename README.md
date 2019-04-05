@@ -10,7 +10,7 @@ Dependencies:
 -
 - Spigot (API) needed ([SpigotMC](https://www.spigotmc.org/))
 - Darkness (not included - needed) ([Github](https://github.com/LartyHD/DarkBedrock))
-- Vault (API) (not included - needed to use all features ([Github](https://github.com/MilkBowl/VaultAPI))
+- Vault (API) (not included - needed to use all features ([Github](https://github.com/MilkBowl/VaultAPI)))
 
 Installation:
 -
