@@ -3,6 +3,7 @@ package de.astride.gungame.services
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.stats.Action
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.parse
@@ -48,7 +49,8 @@ class ConfigService(private val directory: File) {
 
         init {
             //Very bad code but it works!
-            if (files.jsonObject == null ||
+            if (jsonObject["allow-teams"] == null ||
+                files.jsonObject == null ||
                 commands.jsonObject == null ||
                 commands.stats.jsonObject == null ||
                 commands.statsReset.jsonObject == null ||
@@ -64,6 +66,7 @@ class ConfigService(private val directory: File) {
             ) {
 
                 GsonService.save(configData, JsonObject().apply {
+                    addProperty("allow-teams", allowTeams.type)
                     add(Files::class.simpleName, JsonObject().apply {
                         addProperty("maps", files.maps)
                         addProperty("shops", files.shops)
