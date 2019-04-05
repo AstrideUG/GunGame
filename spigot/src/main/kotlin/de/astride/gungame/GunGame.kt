@@ -6,10 +6,7 @@ package de.astride.gungame
 import com.google.gson.JsonObject
 import de.astride.gungame.commands.*
 import de.astride.gungame.commands.GunGame
-import de.astride.gungame.functions.allActions
-import de.astride.gungame.functions.changeColor
-import de.astride.gungame.functions.configService
-import de.astride.gungame.functions.gameMap
+import de.astride.gungame.functions.*
 import de.astride.gungame.listener.InGameListener
 import de.astride.gungame.listener.MoneyListener
 import de.astride.gungame.listener.RegionsListener
@@ -45,6 +42,7 @@ class GunGame : DarkPlugin() {
         Messages.NAME.message = "GunGame"
         Messages.PREFIX.message = "$PRIMARY$EXTRA${Messages.NAME}$IMPORTANT | $RESET"
 
+
     }
 
     override fun onEnable(): Unit = onEnable {
@@ -60,6 +58,10 @@ class GunGame : DarkPlugin() {
         println("Load stats...")
         allActions = configService.actions.load()
         println("Loaded stats")
+
+        println("Load allowTeams...")
+        isAllowTeams = configService.config.allowTeams.result
+        println("Loaded allowTeams")
 
         initListener()
         initCommands()

@@ -38,6 +38,9 @@ class ConfigService(private val directory: File) {
         private val configData = ConfigData(directory, "config.json")
         private val jsonObject = loadAs(configData) ?: JsonObject()
 
+        /* Values */
+        val allowTeams by lazy { AllowTeams.byName(jsonObject["allow-teams"]?.asString()) }
+
         /* SubClass */
         val files by lazy { Files(jsonObject[Files::class.java.simpleName]?.asJsonObject) }
         val commands by lazy { Commands(jsonObject[Commands::class.java.simpleName]?.asJsonObject) }
