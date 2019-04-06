@@ -236,7 +236,7 @@ object InetSocketAddressSerializer : KSerializer<InetSocketAddress> {
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 20:55.
- * Current Version: 1.0 (04.04.2019 - 04.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 06.04.2019)
  */
 @Serializer(forClass = UUID::class)
 object UUIDSerializer : KSerializer<UUID> {
@@ -246,7 +246,7 @@ object UUIDSerializer : KSerializer<UUID> {
 
     override fun serialize(encoder: Encoder, obj: UUID): Unit = encoder.encodeString(obj.toString())
 
-    override fun deserialize(decoder: Decoder): UUID = decoder.decode()
+    override fun deserialize(decoder: Decoder): UUID = UUID.fromString(decoder.decodeString())
 
 }
 
