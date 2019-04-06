@@ -222,12 +222,12 @@ object ItemStackSerializer : KSerializer<ItemStack> {
 
     override fun serialize(encoder: Encoder, obj: ItemStack) {
 
-        val enchantmentSerializer = (encoder.context.getOrDefault(Enchantment::class) to IntSerializer).map
+        val enchantmentsSerializer = (EnchantmentSerializer to IntSerializer).map
         val composite = encoder.beginStructure(descriptor)
         composite.encodeStringElement(descriptor, 0, obj.type.name)
         composite.encodeIntElement(descriptor, 1, obj.amount)
         composite.encodeShortElement(descriptor, 2, obj.durability)
-        composite.encodeSerializableElement(descriptor, 3, enchantmentSerializer, obj.enchantments)
+        composite.encodeSerializableElement(descriptor, 3, enchantmentsSerializer, obj.enchantments)
         composite.encodeSerializableElement(descriptor, 4, ItemMetaSerializer, obj.itemMeta)
         composite.endStructure(descriptor)
 
