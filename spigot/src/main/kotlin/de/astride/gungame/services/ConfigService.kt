@@ -79,6 +79,7 @@ class ConfigService(private val directory: File) {
                         addProperty("maps", files.maps)
                         addProperty("shops", files.shops)
                         addProperty("actions", files.actions)
+                        addProperty("messages", files.messages)
                     })
                     add(Commands::class.simpleName, JsonObject().apply {
                         add(Commands.Stats::class.simpleName, JsonObject().apply {
