@@ -404,6 +404,28 @@ class ConfigService(private val directory: File) {
         val shopName by lazy { available["shop-name"]?.firstOrNull() ?: "%Colors.SECONDARY%Shop" }
         val teamsAllow by lazy { messages.available["teams-allow"]?.firstOrNull() ?: "erlaubt" }
         val teamsDisAllow by lazy { messages.available["teams-dis-allow"]?.firstOrNull() ?: "verboten" }
+        val scoreboardDisplayName by lazy {
+            messages.available["scoreboard-displayname"]?.firstOrNull() ?: "%Colors.PRIMARY%%Colors.EXTRA%GunGame"
+        }
+        val scoreboardScores by lazy {
+            messages.available["scoreboard-scores"] ?: listOf(
+                " ",
+                "%Colors.TEXT%Map%Colors.IMPORTANT%:",
+                "%Colors.IMPORTANT%@map@",
+                "  ",
+                "%Colors.TEXT%Teams%Colors.IMPORTANT%:",
+                "%Colors.IMPORTANT%@allow-teams@",
+                "   ",
+                "%Colors.TEXT%Rang%Colors.IMPORTANT%:",
+                "%Colors.IMPORTANT%@rank@",
+                "    ",
+                "%Colors.TEXT%Points%Colors.IMPORTANT%:",
+                "%Colors.IMPORTANT%@points@ ",
+                "     ",
+                "%Colors.TEXT%Nutze%Colors.IMPORTANT%: /Stats",
+                "%Colors.TEXT%für mehr Statistiken"
+            )
+        }
 
         /* SubClass */
         val commands by lazy { Commands() }
@@ -436,6 +458,8 @@ class ConfigService(private val directory: File) {
                             "shop-name" to shopName
                             "teams-allow" to teamsAllow
                             "teams-dis-allow" to teamsDisAllow
+                            "scoreboard-displayname" to scoreboardDisplayName
+                            "scoreboard-scores" to scoreboardScores.toJsonArray()
                             "commands.gungame.successfully" to commands.gungame.successfully.toJsonArray()
                             "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray()
                             "commands.stats.successfully" to commands.stats.successfully.toJsonArray()

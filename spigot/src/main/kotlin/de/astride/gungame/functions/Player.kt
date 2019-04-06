@@ -1,7 +1,6 @@
 package de.astride.gungame.functions
 
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendScoreBoard
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -11,7 +10,7 @@ import kotlin.concurrent.thread
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 09:20.
- * Current Version: 1.0 (27.03.2019 - 31.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 06.04.2019)
  */
 
 /**
@@ -24,26 +23,13 @@ const val leaveSlot = 8
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 09:22.
- * Current Version: 1.0 (27.03.2019 - 31.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 06.04.2019)
  */
 fun Player.sendScoreBoard() = sendScoreBoard(
-    "${PRIMARY}GunGame", setOf(
-        " ",
-        "${TEXT}Map$IMPORTANT:",
-        "$IMPORTANT${gameMap.name}",
-        "  ",
-        "${TEXT}Teams$IMPORTANT:",
-        "$IMPORTANT${allowTeams.asString}",
-        "   ",
-        "${TEXT}Rang$IMPORTANT:",
-        "$IMPORTANT${uniqueId.rank}",
-        "    ",
-        "${TEXT}Points$IMPORTANT:",
-        "$IMPORTANT${uniqueId.points()} ",
-        "     ",
-        "${TEXT}Use $IMPORTANT/Stats",
-        "${TEXT}for more"
-    )
+    messages.scoreboardDisplayName,
+    messages.scoreboardScores.withReplacements(uniqueId).mapNotNull {
+        it.replace("map", gameMap.name).replace("allow-teams", allowTeams.asString)
+    }.toSet()
 )
 
 /**
