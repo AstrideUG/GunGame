@@ -3,22 +3,25 @@ package de.astride.gungame.services
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import de.astride.data.UUIDSerializer
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.stats.Action
+import kotlinx.serialization.context.getOrDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.json
-import kotlinx.serialization.parse
+import kotlinx.serialization.list
+import kotlinx.serialization.map
 import kotlinx.serialization.stringify
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonConfig
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService.loadAs
 import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
-import net.darkdevelopers.darkbedrock.darkness.general.message.GsonMessages
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMaterial
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.SpigotGsonMessages
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import java.io.File
@@ -381,14 +384,18 @@ class ConfigService(private val directory: File) {
     inner class Actions internal constructor() {
 
         /* Main */
+        private val kSerializer = (UUIDSerializer to Json.context.getOrDefault(Action::class).list).map
         val configData: ConfigData = ConfigData(directory, config.files.actions)
+
 
         /* Values */
         fun load(configData: ConfigData = this.configData): MutableMap<UUID, MutableList<Action>> =
-            Json.parse(configData.file.readText())
+            Json.parse(kSerializer, configData.file.readText()).map {
+                it.key to it.value.toMutableList()
+            }.toMap().toMutableMap()
 
         fun save(input: MutableMap<UUID, MutableList<Action>>, configData: ConfigData = this.configData) =
-            GsonService.save(configData, Json.indented.stringify(input))
+            GsonService.save(configData, Json.indented.stringify(kSerializer, input))
 
     }
 
@@ -399,7 +406,7 @@ class ConfigService(private val directory: File) {
         private val gsonConfig = @Suppress("DEPRECATION") GsonConfig(configData).load()
 
         /* Values */
-        internal val available = GsonMessages(gsonConfig).availableMessages
+        internal val available = SpigotGsonMessages(gsonConfig).availableMessages
         val name by lazy { available["name"]?.firstOrNull() ?: "GunGame" }
         val prefix by lazy {
             available["prefix"]?.firstOrNull()
@@ -470,7 +477,7 @@ class ConfigService(private val directory: File) {
                             "Separator.Stats" to "%Colors.IMPORTANT%: %Colors.PRIMARY%"
                             "gungame.stats" to "%Colors.IMPORTANT%GunGame Stats%Colors.TEXT%"
                             "gungame.stats.by" to "von %Colors.IMPORTANT%@sender@%Colors.TEXT%"
-                            "" to ""
+                            " " to " "
                             "name" to name
                             "prefix" to prefix
                             "shop-name" to shopName
