@@ -210,9 +210,28 @@ object InventoryViewSerializer : KSerializer<InventoryView> {
 object ItemStackSerializer : KSerializer<ItemStack> {
 
     override val descriptor: SerialDescriptor =
-        object : SerialClassDescImpl(javaClass.simpleName.replace("Serializer", "")) {}
+        object : SerialClassDescImpl(javaClass.simpleName.replace("Serializer", "")) {
+            init {
+                addElement("type")
+                addElement("amount")
+                addElement("durability")
+                addElement("enchantments")
+                addElement("itemMeta")
+            }
+        }
 
-    override fun serialize(encoder: Encoder, obj: ItemStack): Unit = encoder.encodeString(obj.toString())
+    override fun serialize(encoder: Encoder, obj: ItemStack) {
+
+        val enchantmentSerializer = (encoder.context.getOrDefault(Enchantment::class) to IntSerializer).map
+        val composite = encoder.beginStructure(descriptor)
+        composite.encodeStringElement(descriptor, 0, obj.type.name)
+        composite.encodeIntElement(descriptor, 1, obj.amount)
+        composite.encodeShortElement(descriptor, 2, obj.durability)
+        composite.encodeSerializableElement(descriptor, 3, enchantmentSerializer, obj.enchantments)
+        composite.encodeSerializableElement(descriptor, 4, ItemMetaSerializer, obj.itemMeta)
+        composite.endStructure(descriptor)
+
+    }
 
     override fun deserialize(decoder: Decoder): ItemStack = decoder.decode()
 
