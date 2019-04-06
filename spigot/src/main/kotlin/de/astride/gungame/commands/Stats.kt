@@ -5,6 +5,7 @@ import de.astride.gungame.functions.*
 import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.isPlayer
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toPlayer
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages.PREFIX
@@ -28,7 +29,7 @@ class Stats(javaPlugin: JavaPlugin) : Command(
 
     override fun perform(sender: CommandSender, args: Array<String>) = if (args.isEmpty()) sender.isPlayer({
         sendStats(sender, it.uniqueId)
-    }, { "Nutze als nicht Spieler: /$commandName <Spieler>" })
+    }, { "Nutze als nicht Spieler: /$commandName <Spieler>".sendTo(sender) })
     else getTarget(sender, args[0]) { sendStats(sender, it.uniqueId) }
 
     private fun sendStats(sender: CommandSender, uuid: UUID) {
