@@ -387,7 +387,7 @@ class ConfigService(private val directory: File) {
             Json.parse(configData.file.readText())
 
         fun save(input: MutableMap<UUID, MutableList<Action>>, configData: ConfigData = this.configData) =
-            GsonService.save(configData, Json.stringify(input))
+            GsonService.save(configData, Json.indented.stringify(input))
 
     }
 
@@ -449,7 +449,7 @@ class ConfigService(private val directory: File) {
             messagesInstance = this
 
             //Very bad code but it works!
-            if (available.isEmpty()) GsonService.save(configData, Json.stringify(json {
+            if (available.isEmpty()) GsonService.save(configData, Json.indented.stringify(json {
                 "Messages" to json {
                     "language" to "de_DE"
                     "languages" to json {
