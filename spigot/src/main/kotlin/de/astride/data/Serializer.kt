@@ -5,6 +5,7 @@ import kotlinx.serialization.context.getOrDefault
 import kotlinx.serialization.internal.IntSerializer
 import kotlinx.serialization.internal.SerialClassDescImpl
 import kotlinx.serialization.internal.StringSerializer
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.entity.EntityDamageEvent
@@ -75,7 +76,7 @@ object LocationSerializer : KSerializer<Location> {
     override fun deserialize(decoder: Decoder): Location {
 
         //TODO: Fix
-//        val composite = decoder.beginStructure(descriptor)
+        val composite = decoder.beginStructure(descriptor)
 //        val worldName = composite.decodeStringElement(descriptor, 0)
 //        val worldName1 = composite.decodeStringElement(descriptor, 0)
 //        println(worldName + worldName1)
@@ -95,25 +96,26 @@ object LocationSerializer : KSerializer<Location> {
 //        val yaw = composite.decodeFloatElement(descriptor, 4)
 //        val pitch = composite.decodeFloatElement(descriptor, 5)
 
-//        lateinit var world: World
-//        var x: Double? = null
-//        var y: Double? = null
-//        var z: Double? = null
-//        loop@ while (true) {
-//            when (val index = composite.decodeElementIndex(descriptor)) {
-//                CompositeDecoder.READ_DONE -> break@loop
-//                0 -> world = Bukkit.getWorld(composite.decodeStringElement(descriptor, 0))
-//                1 -> x = composite.decodeDoubleElement(descriptor, 1)
-//                2 -> y = composite.decodeDoubleElement(descriptor, 2)
-//                3 -> z = composite.decodeDoubleElement(descriptor, 3)
+        lateinit var worldName: String
+        var x: Double? = null
+        var y: Double? = null
+        var z: Double? = null
+        loop@ while (true) {
+            when (val index = composite.decodeElementIndex(descriptor)) {
+                CompositeDecoder.READ_DONE -> break@loop
+                0 -> worldName = composite.decodeStringElement(descriptor, index)
+                1 -> x = composite.decodeDoubleElement(descriptor, index)
+                2 -> y = composite.decodeDoubleElement(descriptor, index)
+                3 -> z = composite.decodeDoubleElement(descriptor, index)
+                else -> composite.decodeStringElement(descriptor, index)
 //                else -> throw SerializationException("Unknown index $index")
-//            }
-//        }
+            }
+        }
 //
-//        composite.endStructure(descriptor)
-//
-//        return Location(world, x!!, y!!, z!!)
-        return Location(null, 0.0, 0.0, 0.0)
+        composite.endStructure(descriptor)
+
+        return Location(Bukkit.getWorld(worldName), x!!, y!!, z!!)
+//        return Location(null, 0.0, 0.0, 0.0)
 
     }
 
