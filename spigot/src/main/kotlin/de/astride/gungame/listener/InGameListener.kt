@@ -58,6 +58,8 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
                 setLeave()
             }
 
+            foodLevel = 20
+            saturation = 20f
             exp = 0f
             level = 0
             gameMode = GameMode.ADVENTURE
