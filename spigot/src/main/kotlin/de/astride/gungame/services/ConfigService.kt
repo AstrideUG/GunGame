@@ -169,7 +169,7 @@ class ConfigService(private val directory: File) {
             val maps by lazy { file("maps") }
             val shops by lazy { file("shops") }
             val actions by lazy { file("actions") }
-            val messagesInstance by lazy { file("messagesInstance") }
+            val messages by lazy { file("messages") }
 
             /**
              * @author Lars Artmann | LartyHD
@@ -394,7 +394,7 @@ class ConfigService(private val directory: File) {
     inner class Messages internal constructor() {
 
         /* Main */
-        private val configData = ConfigData(directory, config.files.messagesInstance)
+        private val configData = ConfigData(directory, config.files.messages)
         private val gsonConfig = @Suppress("DEPRECATION") GsonConfig(configData).load()
 
         /* Values */
