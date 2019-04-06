@@ -440,7 +440,7 @@ class ConfigService(private val directory: File) {
 
         val hologram by lazy {
             available["hologram"] ?: listOf(
-                "%Colors.TEXT%-= @gungame.stats@ =-",
+                "%Colors.TEXT%-= %gungame.stats% =-",
                 "",
                 "%Colors.TEXT%Dein Platz%Separator.Stats%@rank@",
                 "%Colors.TEXT%Kills%Separator.Stats%@kills@",
