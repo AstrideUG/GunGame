@@ -433,6 +433,9 @@ class ConfigService(private val directory: File) {
                             "" to ""
                             "name" to name
                             "prefix" to prefix
+                            "shop-name" to shopName
+                            "teams-allow" to teamsAllow
+                            "teams-dis-allow" to teamsDisAllow
                             "commands.gungame.successfully" to commands.gungame.successfully.toJsonArray()
                             "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray()
                             "commands.stats.successfully" to commands.stats.successfully.toJsonArray()
