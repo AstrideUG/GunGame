@@ -85,9 +85,9 @@ class ConfigService(private val directory: File) {
                         })
                         add(Commands.StatsReset::class.simpleName, JsonObject().apply {
                             val command = commands.statsReset
-
                             addProperty("name", command.name)
                             addProperty("permission", command.permission)
+                            addProperty("permission-other", command.permissionOther)
                             add("aliases", command.aliases.toJsonArray())
                         })
                         add(Commands.Team::class.simpleName, JsonObject().apply {
@@ -203,7 +203,10 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "StatsReset" }
-                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.statsReset" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.statsreset" }
+                val permissionOther by lazy {
+                    jsonObject?.get("permission-other")?.asString() ?: "gungame.commands.statsreset.other"
+                }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
