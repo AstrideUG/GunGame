@@ -60,7 +60,7 @@ object LocationSerializer : KSerializer<Location> {
     override fun serialize(encoder: Encoder, obj: Location) {
 
         val composite = encoder.beginStructure(descriptor)
-        composite.encodeStringElement(descriptor, 0, obj.world.toString())
+        composite.encodeStringElement(descriptor, 0, obj.world.name)
         composite.encodeDoubleElement(descriptor, 1, obj.x)
         composite.encodeDoubleElement(descriptor, 2, obj.y)
         composite.encodeDoubleElement(descriptor, 3, obj.z)
