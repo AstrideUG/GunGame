@@ -15,7 +15,7 @@ class MetaDataTest {
     //given
     companion object {
         const val expectedJson: String =
-            """"{"address":"/0.0.0.0:55500","rawAddress":"/8.8.8.8:44400","uniqueId":"88eb0b03-d0e6-497f-9acb-2d1dcb6526f8","hasPlayedBefore":false,"lastPlayed":0,"firstPlayed":0,"locale":"de_DE","entityId":0,"listeningPluginChannels":[]}"""
+            """{"address":"/0.0.0.0:55500","rawAddress":"/8.8.8.8:44400","uniqueId":"88eb0b03-d0e6-497f-9acb-2d1dcb6526f8","hasPlayedBefore":false,"lastPlayed":0,"firstPlayed":0,"locale":"de_DE","entityId":0,"listeningPluginChannels":[]}"""
         val expectedSource: MetaData = MetaData(
             InetSocketAddress(InetAddress.getByName("0.0.0.0"), 55500),
             InetSocketAddress(InetAddress.getByName("8.8.8.8"), 44400),
