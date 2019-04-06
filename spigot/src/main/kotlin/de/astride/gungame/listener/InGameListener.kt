@@ -69,6 +69,7 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
             setKit()
             sendScoreBoard()
             showAll()
+            gameMap.sendHologram(event.player)
 
         }
 
@@ -76,6 +77,7 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
     @EventHandler
     override fun onPlayerDisconnectEvent(event: PlayerDisconnectEvent) {
+        gameMap.sendHologram(event.player)
     }
 
     @EventHandler
@@ -110,12 +112,14 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
                 sendScoreBoard()
                 upgrade()
                 heal()
+                gameMap.sendHologram(this)
 
             }
 
             playSound(location, Sound.GHAST_DEATH, 2f, 1f)
             downgrade()
             sendScoreBoard()
+            gameMap.sendHologram(this)
 
         }
 
