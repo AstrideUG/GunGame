@@ -53,8 +53,9 @@ lateinit var gameMap: Map
  */
 sealed class AllowTeams {
 
-    val type: String get() = javaClass.simpleName!!
     abstract val result: Boolean
+    val type: String get() = javaClass.simpleName!!
+    val asString: String get() = if (result) configService.messages.teamsAllow else configService.messages.teamsDisAllow
 
     object Random : AllowTeams() {
         override val result: Boolean get() = kotlin.random.Random.nextBoolean()
