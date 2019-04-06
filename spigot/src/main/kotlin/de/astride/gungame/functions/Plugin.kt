@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 09:17.
- * Current Version: 1.0 (27.03.2019 - 05.04.2019)
+ * Current Version: 1.0 (27.03.2019 - 06.04.2019)
  */
 
 /**
@@ -27,10 +27,10 @@ val configService get() = ConfigService.instance
 
 /**
  * @author Lars Artmann | LartyHD
- * Created by Lars Artmann | LartyHD on 05.04.2019 23:56.
- * Current Version: 1.0 (05.04.2019 - 05.04.2019)
+ * Created by Lars Artmann | LartyHD on 06.04.2019 00:49.
+ * Current Version: 1.0 (06.04.2019 - 06.04.2019)
  */
-val messages get() = configService.messages.availableMessages
+val messages get() = configService.messages
 
 /**
  * @author Lars Artmann | LartyHD
