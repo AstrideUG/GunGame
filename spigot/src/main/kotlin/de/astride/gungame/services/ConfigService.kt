@@ -442,10 +442,10 @@ class ConfigService(private val directory: File) {
             available["hologram"] ?: listOf(
                 "%Colors.TEXT%-= @gungame.stats@ =-",
                 "",
-                "%Colors.TEXT%Dein Platz@Separator.Stats@@rank@",
-                "%Colors.TEXT%Kills@Separator.Stats@@kills@",
-                "%Colors.TEXT%Tode@Separator.Stats@@deaths@",
-                "%Colors.TEXT%K/D@Separator.Stats@@kd@",
+                "%Colors.TEXT%Dein Platz%Separator.Stats%@rank@",
+                "%Colors.TEXT%Kills%Separator.Stats%@kills@",
+                "%Colors.TEXT%Tode%Separator.Stats%@deaths@",
+                "%Colors.TEXT%K/D%Separator.Stats%@kd@",
                 " "
             )
         }
