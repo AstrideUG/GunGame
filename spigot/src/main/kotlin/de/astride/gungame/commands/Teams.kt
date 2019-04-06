@@ -15,7 +15,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.concurrent.TimeUnit
 
 
 /**
@@ -34,7 +33,7 @@ class Teams(javaPlugin: JavaPlugin) : Command(
 
     override fun perform(sender: CommandSender, args: Array<String>) {
 
-        val l = lastUse + TimeUnit.MINUTES.toMillis(5) - System.currentTimeMillis()
+        val l = lastUse + config.delay - System.currentTimeMillis()
         if (l > 0) {
             val time = Utils.getTime(l / 1000)
             sender.sendMessage("${Messages.PREFIX}${TEXT}Teams kann nur alle ${IMPORTANT}5 Minuten ${TEXT}genutzt werden ($IMPORTANT$time$TEXT)")

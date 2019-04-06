@@ -22,6 +22,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import java.io.File
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * @author Lars Artmann | LartyHD
@@ -100,6 +101,7 @@ class ConfigService(private val directory: File) {
                             addProperty("name", command.name)
                             addProperty("permission", command.permission)
                             add("aliases", command.aliases.toJsonArray())
+                            addProperty("delay", command.delay)
                         })
                         add(Commands.Top::class.simpleName, JsonObject().apply {
                             val command = commands.top
@@ -230,6 +232,7 @@ class ConfigService(private val directory: File) {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
                 }
+                val delay: Long by lazy { jsonObject?.get("delay")?.asLong ?: TimeUnit.MINUTES.toMillis(5) }
 
             }
 
