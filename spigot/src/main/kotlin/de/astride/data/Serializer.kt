@@ -1,13 +1,15 @@
 package de.astride.data
 
 import kotlinx.serialization.*
+import kotlinx.serialization.context.getOrDefault
+import kotlinx.serialization.internal.IntSerializer
 import kotlinx.serialization.internal.SerialClassDescImpl
+import kotlinx.serialization.internal.StringSerializer
 import org.bukkit.Location
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.inventory.EntityEquipment
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryView
-import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.*
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.permissions.PermissionAttachmentInfo
 import org.bukkit.potion.PotionEffect
 import org.bukkit.util.Vector
@@ -202,7 +204,7 @@ object InventoryViewSerializer : KSerializer<InventoryView> {
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 20:53.
- * Current Version: 1.0 (04.04.2019 - 04.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 06.04.2019)
  */
 @Serializer(forClass = ItemStack::class)
 object ItemStackSerializer : KSerializer<ItemStack> {
@@ -213,6 +215,40 @@ object ItemStackSerializer : KSerializer<ItemStack> {
     override fun serialize(encoder: Encoder, obj: ItemStack): Unit = encoder.encodeString(obj.toString())
 
     override fun deserialize(decoder: Decoder): ItemStack = decoder.decode()
+
+}
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 06.04.2019 21:03.
+ * Current Version: 1.0 (06.04.2019 - 06.04.2019)
+ */
+@Serializer(forClass = ItemStack::class)
+object ItemMetaSerializer : KSerializer<ItemMeta> {
+
+    override val descriptor: SerialDescriptor =
+        object : SerialClassDescImpl(javaClass.simpleName.replace("Serializer", "")) {
+            init {
+                addElement("displayName")
+                addElement("lore")
+                addElement("itemFlags")
+                addElement("unbreakable")
+            }
+        }
+
+    override fun serialize(encoder: Encoder, obj: ItemMeta) {
+
+        val itemFlagsSerializer = encoder.context.getOrDefault(ItemFlag::class).set
+        val composite = encoder.beginStructure(descriptor)
+        composite.encodeStringElement(descriptor, 0, obj.displayName)
+        composite.encodeSerializableElement(descriptor, 1, StringSerializer.list, obj.lore)
+        composite.encodeSerializableElement(descriptor, 2, itemFlagsSerializer, obj.itemFlags)
+        composite.encodeBooleanElement(descriptor, 3, obj.spigot().isUnbreakable)
+        composite.endStructure(descriptor)
+
+    }
+
+    override fun deserialize(decoder: Decoder): ItemMeta = decoder.decode()
 
 }
 
