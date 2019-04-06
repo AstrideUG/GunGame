@@ -1,17 +1,16 @@
 package de.astride.gungame.commands
 
+import de.astride.data.toDataPlayer
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.activeActions
 import de.astride.gungame.functions.configService
+import de.astride.gungame.functions.replace
 import de.astride.gungame.kits.gunGameLevel
 import de.astride.gungame.kits.upgrade
 import de.astride.gungame.shop.items.keepInventory
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.isPlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -20,13 +19,13 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (19.08.2017 - 01.04.2019)
+ * Current Version: 1.0 (19.08.2017 - 06.04.2019)
  */
 class StatsReset(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
     commandName = config.name,
     permission = config.permission,
-    usage = "<Spieler>:gungame.commands.statsreset.other",
+    usage = "<Spieler>:${config.permissionOther}",
     maxLength = 2,
     aliases = *config.aliases
 ) {
@@ -34,60 +33,57 @@ class StatsReset(javaPlugin: JavaPlugin) : Command(
     override fun perform(sender: CommandSender, args: Array<String>) {
         when {
             args.isEmpty() ||
-                    args.size == 1 && !args[0].equals("confirmed", true) ||
-                    args.size == 2 && !args[1].equals("confirmed", true) -> sender.sendConfirm()
+                    args.size == 1 && !args[0].equals(confirmKey, true) ||
+                    args.size == 2 && !args[1].equals(confirmKey, true) -> messages.infoConfirm.map {
+                it.replace("command-name", commandName).replace("confirmKey", confirmKey)
+            }.sendTo(sender)
             args.size == 1 -> sender.isPlayer(
-                {
-                    if (it.uniqueId.activeActions.isEmpty()) {
-                        "${Messages.PREFIX}${TEXT}Du hast keine Stats die man resetten könnte!".sendTo(sender)
-                        return@isPlayer
+                { player ->
+                    if (player.uniqueId.activeActions.isEmpty())
+                        messages.failedSelfNothing.sendTo(sender)
+                    else {
+                        player.reset(player.uniqueId.toString())
+                        messages.successfullySelf.sendTo(sender)
                     }
-                    it.reset()
-                    it.successMessagePlayer()
                 },
-                { sender.sendMessage("Nutze: \"/$commandName <Spieler>\" da du kein Spieler bist") })
-            args.size == 2 && !args[0].equals("confirmed", true) ->
-                hasPermission(sender, "gungame.commands.statsreset.other") {
+                {
+                    messages.failedPlayer.map { it.replace("command-name", commandName) }.sendTo(sender)
+                })
+            args.size == 2 && !args[0].equals(confirmKey, true) ->
+                hasPermission(sender, config.permissionOther) {
                     getTarget(sender, args[0]) { target ->
-                        if (target.uniqueId.activeActions.isEmpty()) {
-                            "${Messages.PREFIX}$TEXT${target.name} hat keine Stats die man resetten könnte!"
-                                .sendTo(sender)
-                            return@getTarget
+                        if (target.uniqueId.activeActions.isEmpty())
+                            messages.failedTargetNothing.transformAndSend(sender, target.name)
+                        else {
+                            target.reset((sender as? Player)?.uniqueId?.toString() ?: sender.name)
+                            messages.successfullySelfBy.map { it.replace("sender", sender.name) }.sendTo(target)
+                            messages.successfullyTarget.transformAndSend(sender, target.name)
                         }
-                        target.reset()
-                        target.successMessagePlayer()
-                        sender.successMessageTarget(target.name)
                     }
                 }
         }
     }
 
-    private fun Player.reset() {
+    private fun List<String?>.transformAndSend(sender: CommandSender, name: String): Unit =
+        map { it.replace("target", name) }.sendTo(sender)
+
+    private fun Player.reset(by: String) {
 
         keepInventory = false
         gunGameLevel = 0
         upgrade()
 
-        uniqueId.actions += Action(this@StatsReset.javaClass.simpleName, mapOf("player" to this))
+        uniqueId.actions += Action(
+            this@StatsReset.javaClass.simpleName,
+            mapOf("player" to this.toDataPlayer(), "by" to by)
+        )
     }
-
-    private fun CommandSender.successMessagePlayer() {
-        sendMessage("")
-        sendMessage("${Messages.PREFIX}${TEXT}Deine$IMPORTANT GunGame Stats$TEXT wurden zurückgesetzt")
-        sendMessage("")
-    }
-
-    private fun CommandSender.successMessageTarget(name: String) {
-        sendMessage("")
-        sendMessage("${Messages.PREFIX}${TEXT}Du hast die$IMPORTANT GunGame Stats$TEXT von$IMPORTANT $name$TEXT zurückgesetzt")
-        sendMessage("")
-    }
-
-    private fun CommandSender.sendConfirm() =
-        sendMessage("${Messages.PREFIX}${TEXT}Nutze $IMPORTANT\"/$commandName [Spieler] confirmed\"$TEXT um deine$IMPORTANT GunGame Stats$TEXT zurückzusetzen")
 
     companion object {
-        private val config = configService.config.commands.statsReset
+        private val config get() = configService.config.commands.statsReset
+        private val messages get() = de.astride.gungame.functions.messages.commands.statsReset
+
+        private const val confirmKey = "confirmed"
     }
 
 }
