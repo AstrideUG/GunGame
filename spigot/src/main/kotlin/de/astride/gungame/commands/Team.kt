@@ -36,12 +36,13 @@ class Team(javaPlugin: JavaPlugin) : Command(
 //                "${Messages.PREFIX}${Colors.TEXT}Du bist jetzt mit ${target.displayName} in einem Team".sendTo(sender)
             "${Messages.PREFIX}${Colors.TEXT}Hm... leider wurde dieses Feature noch nicht programmiert"
                 .sendTo(sender)
-        } else "${Messages.PREFIX}${Colors.TEXT}Teams sind grade verboten".sendTo(sender)
+        } else messages.failedTeamsNotAllowed
 
     }
 
     companion object {
-        private val config = configService.config.commands.team
+        private val config get() = configService.config.commands.team
+        private val messages get() = de.astride.gungame.functions.messages.commands.team
     }
 
 }
