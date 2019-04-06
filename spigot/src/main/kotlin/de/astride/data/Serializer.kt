@@ -273,6 +273,24 @@ object ItemMetaSerializer : KSerializer<ItemMeta> {
 
 /**
  * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 06.04.2019 21:08.
+ * Current Version: 1.0 (06.04.2019 - 06.04.2019)
+ */
+@Serializer(forClass = Enchantment::class)
+object EnchantmentSerializer : KSerializer<Enchantment> {
+
+    override val descriptor: SerialDescriptor =
+        object : SerialClassDescImpl(javaClass.simpleName.replace("Serializer", "")) {}
+
+    override fun serialize(encoder: Encoder, obj: Enchantment) = encoder.encodeString(obj.name)
+
+    override fun deserialize(decoder: Decoder): Enchantment =
+        Enchantment.getByName(decoder.decodeString().toUpperCase())
+
+}
+
+/**
+ * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 20:54.
  * Current Version: 1.0 (04.04.2019 - 04.04.2019)
  */
