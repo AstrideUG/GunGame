@@ -30,7 +30,7 @@ val configService get() = ConfigService.instance
  * Created by Lars Artmann | LartyHD on 06.04.2019 00:49.
  * Current Version: 1.0 (06.04.2019 - 06.04.2019)
  */
-val messages get() = configService.messages
+val messages get() = ConfigService.messagesInstance
 
 /**
  * @author Lars Artmann | LartyHD
@@ -55,7 +55,7 @@ sealed class AllowTeams {
 
     abstract val result: Boolean
     val type: String get() = javaClass.simpleName!!
-    val asString: String get() = if (result) configService.messages.teamsAllow else configService.messages.teamsDisAllow
+    val asString: String get() = if (result) messages.teamsAllow else messages.teamsDisAllow
 
     object Random : AllowTeams() {
         override val result: Boolean get() = kotlin.random.Random.nextBoolean()
