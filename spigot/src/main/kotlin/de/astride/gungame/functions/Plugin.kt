@@ -80,4 +80,7 @@ sealed class AllowTeams {
         }
 
     }
+
+    operator fun not(): AllowTeams = if (result == AllowTeams.True.result) AllowTeams.True else AllowTeams.False
+
 }
