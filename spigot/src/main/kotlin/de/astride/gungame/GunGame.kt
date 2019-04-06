@@ -53,8 +53,10 @@ class GunGame : DarkPlugin() {
         @Suppress("LABEL_NAME_CLASH")
         val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return@onEnable
         gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { player, holograms, map ->
-            holograms[player.uniqueId] = Holograms(messages.hologram.mapNotNull { it }.toTypedArray(), map.hologram)
-            holograms[player.uniqueId]?.show(player)
+            val uuid = player.uniqueId
+            holograms[uuid] =
+                Holograms(messages.hologram.withReplacements(uuid).mapNotNull { it }.toTypedArray(), map.hologram)
+            holograms[uuid]?.show(player)
         }
 
         logger.info("Load stats...")
