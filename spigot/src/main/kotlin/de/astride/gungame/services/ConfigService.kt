@@ -549,7 +549,7 @@ class ConfigService(private val directory: File) {
             /* Values */
             val failedPlayer by lazy {
                 messagesInstance.available["${prefix}failed.use-this-if-you-are-not-a-player"]
-                    ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: @command-name@ <Spieler>.")
+                    ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: /@command-name@ <Spieler>.")
             }
             val successfully by lazy {
 
@@ -604,7 +604,7 @@ class ConfigService(private val directory: File) {
 
             val failedPlayer by lazy {
                 messagesInstance.available["${prefix}failed.use-this-if-you-are-not-a-player"]
-                    ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: @command-name@ <Spieler>.")
+                    ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: /@command-name@ <Spieler>.")
             }
 
             val failedSelfNothing by lazy {
