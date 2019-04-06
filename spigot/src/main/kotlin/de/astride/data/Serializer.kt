@@ -242,7 +242,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
  * Created by Lars Artmann | LartyHD on 06.04.2019 21:03.
  * Current Version: 1.0 (06.04.2019 - 06.04.2019)
  */
-@Serializer(forClass = ItemStack::class)
+@Serializer(forClass = ItemMeta::class)
 object ItemMetaSerializer : KSerializer<ItemMeta> {
 
     override val descriptor: SerialDescriptor =
