@@ -37,7 +37,7 @@ val messages get() = configService.messages
  * Created by Lars Artmann | LartyHD on 27.03.2019 06:37.
  * Current Version: 1.0 (27.03.2019 - 06.04.2019)
  */
-var isAllowTeams: Boolean = false
+lateinit var allowTeams: AllowTeams
 
 /**
  * @author Lars Artmann | LartyHD

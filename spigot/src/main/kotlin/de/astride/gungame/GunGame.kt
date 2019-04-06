@@ -60,7 +60,7 @@ class GunGame : DarkPlugin() {
         logger.info("Loaded stats")
 
         logger.info("Load allowTeams...")
-        isAllowTeams = configService.config.allowTeams.result
+        allowTeams = configService.config.allowTeams
         logger.info("Loaded allowTeams")
 
         initListener()

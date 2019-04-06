@@ -33,7 +33,7 @@ fun Player.sendScoreBoard() = sendScoreBoard(
         "$IMPORTANT${gameMap.name}",
         "  ",
         "${TEXT}Teams$IMPORTANT:",
-        "$IMPORTANT${if (isAllowTeams) "erlaubt" else "verboten"}",
+        "$IMPORTANT${allowTeams.asString}",
         "   ",
         "${TEXT}Rang$IMPORTANT:",
         "$IMPORTANT${uniqueId.rank}",
