@@ -77,7 +77,7 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
     @EventHandler
     override fun onPlayerDisconnectEvent(event: PlayerDisconnectEvent) {
-        gameMap.sendHologram(event.player)
+        gameMap.removeHologram(event.player)
     }
 
     @EventHandler
