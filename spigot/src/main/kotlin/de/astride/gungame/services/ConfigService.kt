@@ -553,7 +553,7 @@ class ConfigService(private val directory: File) {
 
                 fun entry(p1: String, p2: String) = "%Prefix.Text%$p1%Separator.Stats%@$p2@"
 
-                val lineSeparator = "@Separator.Line@"
+                val lineSeparator = "%Separator.Line%"
                 messagesInstance.available["${prefix}successfully"]
                     ?: listOf(
                         "%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%STATS%Colors.IMPORTANT% ]%Colors.DESIGN%                         ",
