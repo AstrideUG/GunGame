@@ -427,6 +427,18 @@ class ConfigService(private val directory: File) {
             )
         }
 
+        val hologram by lazy {
+            messages.available["hologram"] ?: listOf(
+                "%Colors.TEXT%-= @gungame.stats@ =-",
+                "",
+                "%Colors.TEXT%Dein Platz@Separator.Stats@@rank@",
+                "%Colors.TEXT%Kills@Separator.Stats@@kills@",
+                "%Colors.TEXT%Tode@Separator.Stats@@deaths@",
+                "%Colors.TEXT%K/D@Separator.Stats@@kd@",
+                " "
+            )
+        }
+
         /* SubClass */
         val commands by lazy { Commands() }
 
@@ -460,6 +472,7 @@ class ConfigService(private val directory: File) {
                             "teams-dis-allow" to teamsDisAllow
                             "scoreboard-displayname" to scoreboardDisplayName
                             "scoreboard-scores" to scoreboardScores.toJsonArray()
+                            "hologram" to hologram.toJsonArray()
                             "commands.gungame.successfully" to commands.gungame.successfully.toJsonArray()
                             "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray()
                             "commands.stats.successfully" to commands.stats.successfully.toJsonArray()

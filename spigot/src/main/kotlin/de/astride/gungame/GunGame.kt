@@ -15,6 +15,7 @@ import de.astride.gungame.shop.ShopListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Holograms
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.MapsUtils
 import org.bukkit.Bukkit
@@ -51,7 +52,10 @@ class GunGame : DarkPlugin() {
         if (config.maps.size() < 1) throw IllegalStateException("No Maps are configured")
         @Suppress("LABEL_NAME_CLASH")
         val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return@onEnable
-        gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { _, _ -> }
+        gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { player, holograms, map ->
+            holograms[player.uniqueId] = Holograms(messages.hologram.mapNotNull { it }.toTypedArray(), map.hologram)
+            holograms[player.uniqueId]?.show(player)
+        }
 
         logger.info("Load stats...")
         allActions = configService.actions.load()
