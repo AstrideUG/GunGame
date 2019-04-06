@@ -470,6 +470,8 @@ class ConfigService(private val directory: File) {
                             "Colors.DESIGN" to "\u0026m"
                             "Colors.RESET" to "\u0026r"
                             "Colors.WARNING" to "\u0026c"
+                            "name" to name
+                            "prefix" to prefix
                             "Prefix.Text" to "%prefix%%Colors.TEXT%"
                             "Prefix.Important" to "%prefix%%Colors.IMPORTANT%"
                             "Prefix.Warning" to "%prefix%%Colors.WARNING%"
@@ -477,9 +479,6 @@ class ConfigService(private val directory: File) {
                             "Separator.Stats" to "%Colors.IMPORTANT%: %Colors.PRIMARY%"
                             "gungame.stats" to "%Colors.IMPORTANT%GunGame Stats%Colors.TEXT%"
                             "gungame.stats.by" to "von %Colors.IMPORTANT%@sender@%Colors.TEXT%"
-                            " " to " "
-                            "name" to name
-                            "prefix" to prefix
                             "shop-name" to shopName
                             "teams-allow" to teamsAllow
                             "teams-dis-allow" to teamsDisAllow
