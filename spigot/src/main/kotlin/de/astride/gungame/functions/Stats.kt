@@ -127,3 +127,19 @@ fun UUID.maxStreak(check1: String, runNew: String): Int {
  * Current Version: 1.0 (31.03.2019 - 31.03.2019)
  */
 fun UUID.streak(check1: String, runNew: String): Int = count(check1, activeActions.takeLastWhile { it.id != runNew })
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 06.04.2019 06:35.
+ * Current Version: 1.0 (06.04.2019 - 06.04.2019)
+ */
+fun List<String?>.withReplacements(uuid: UUID): List<String?> = map { line ->
+    line ?: return@map null
+    var result = line
+
+    replacements.forEach { (key, func) ->
+        if (key in line) result = result.replace(key, func(uuid))
+    }
+
+    result
+}
