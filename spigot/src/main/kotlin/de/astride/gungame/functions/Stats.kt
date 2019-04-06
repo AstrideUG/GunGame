@@ -1,5 +1,6 @@
 package de.astride.gungame.functions
 
+import de.astride.data.DataPlayer
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
 import java.util.*
@@ -7,8 +8,40 @@ import java.util.*
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 30.03.2019 09:19.
- * Current Version: 1.0 (30.03.2019 - 31.03.2019)
+ * Current Version: 1.0 (30.03.2019 - 06.04.2019)
  */
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 06.04.2019 03:47.
+ * Current Version: 1.0 (06.04.2019 - 06.04.2019)
+ */
+val replacements = mutableMapOf<String, (UUID) -> Any>(
+    "name" to { uuid -> Fetcher.getName(uuid) ?: uuid },
+    "rank" to { uuid -> uuid.rank },
+    "points" to { uuid -> uuid.points() },
+    "deaths" to { uuid -> uuid.count("PlayerDeathEvent") },
+    "kills" to { uuid -> uuid.count("PlayerRespawnEvent") },
+    "kd" to { uuid -> uuid.count("PlayerRespawnEvent").toFloat() / uuid.count("PlayerDeathEvent").toFloat() },
+    "death-streak" to { uuid -> uuid.streak("PlayerDeathEvent", "PlayerRespawnEvent") },
+    "kill-streak" to { uuid -> uuid.streak("PlayerRespawnEvent", "PlayerDeathEvent") },
+    "max-death-streak" to { uuid -> uuid.maxStreak("PlayerDeathEvent", "PlayerRespawnEvent") },
+    "max-kill-streak" to { uuid -> uuid.maxStreak("PlayerRespawnEvent", "PlayerDeathEvent") },
+    "shop-color-changes" to { uuid -> uuid.count("shop-change-color") },
+    "shop-openings" to { uuid ->
+        uuid.count("shop-change-color", uuid.activeActions.filter {
+            val player = it.meta["player"] as? DataPlayer ?: return@filter false
+            !player.speeds.isSneaking
+        })
+    },
+    "bought-levelup" to { uuid -> uuid.count("bought-LevelUp") },
+    "bought-magicheal" to { uuid -> uuid.count("bought-MagicHeal") },
+    "bought-instantkiller" to { uuid -> uuid.count("bought-InstantKiller") },
+    "bought-keepinventory" to { uuid -> uuid.count("bought-KeepInventory") },
+    "used-magicheal" to { uuid -> uuid.count("used-MagicHeal") },
+    "used-instantkiller" to { uuid -> uuid.count("used-InstantKiller") },
+    "used-keepinventory" to { uuid -> uuid.count("used-KeepInventory") }
+)
 
 /**
  * @author Lars Artmann | LartyHD
