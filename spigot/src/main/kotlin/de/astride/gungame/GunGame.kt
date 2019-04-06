@@ -55,13 +55,13 @@ class GunGame : DarkPlugin() {
         val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return@onEnable
         gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { _, _ -> }
 
-        println("Load stats...")
+        logger.info("Load stats...")
         allActions = configService.actions.load()
-        println("Loaded stats")
+        logger.info("Loaded stats")
 
-        println("Load allowTeams...")
+        logger.info("Load allowTeams...")
         isAllowTeams = configService.config.allowTeams.result
-        println("Loaded allowTeams")
+        logger.info("Loaded allowTeams")
 
         initListener()
         initCommands()
@@ -73,9 +73,9 @@ class GunGame : DarkPlugin() {
     }
 
     override fun onDisable(): Unit = onDisable {
-        println("Save stats...")
+        logger.info("Save stats...")
         configService.actions.save(allActions)
-        println("Saved stats")
+        logger.info("Saved stats")
     }
 
     private fun initListener() {
