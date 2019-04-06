@@ -434,7 +434,7 @@ class ConfigService(private val directory: File) {
                 "%Colors.IMPORTANT%@points@ ",
                 "     ",
                 "%Colors.TEXT%Nutze%Colors.IMPORTANT%: /Stats",
-                "%Colors.TEXT%für mehr Statistiken"
+                "%Colors.TEXT%für mehr Stats"
             )
         }
 
