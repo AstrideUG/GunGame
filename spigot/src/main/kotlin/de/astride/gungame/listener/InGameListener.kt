@@ -35,7 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:32.
- * Current Version: 1.0 (17.02.2018 - 01.04.2019)
+ * Current Version: 1.0 (17.02.2018 - 06.04.2019)
  */
 class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
@@ -51,8 +51,6 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
     override fun onPlayerJoinEvent(event: PlayerJoinEvent) {
 
         event.player.apply {
-
-            event.joinMessage = "${Messages.PREFIX}$IMPORTANT$displayName$TEXT hat die Runde betreten"
 
             inventory.apply {
                 clear()
@@ -76,7 +74,6 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
     @EventHandler
     override fun onPlayerDisconnectEvent(event: PlayerDisconnectEvent) {
-        event.leaveMessage = "${Messages.PREFIX}$IMPORTANT${event.player.displayName}$TEXT hat die Runde verlassen"
     }
 
     @EventHandler
