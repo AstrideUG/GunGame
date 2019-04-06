@@ -36,6 +36,9 @@ inline fun <reified T : Any> `(de)serialize`(expectedJson: String, expectedSourc
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 05.04.2019 02:45.
- * Current Version: 1.0 (05.04.2019 - 05.04.2019)
+ * Current Version: 1.0 (05.04.2019 - 06.04.2019)
  */
-val world: World = mock<World>().apply { whenever(toString()).thenReturn("WorldName") }
+val world: World = mock<World>().apply {
+    whenever(toString()).thenReturn("WorldName")
+    whenever(name).thenReturn("WorldName")
+}
