@@ -6,6 +6,7 @@ import com.google.gson.JsonPrimitive
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.stats.Action
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.json
 import kotlinx.serialization.parse
 import kotlinx.serialization.stringify
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
@@ -394,7 +395,255 @@ class ConfigService(private val directory: File) {
         private val gsonConfig = @Suppress("DEPRECATION") GsonConfig(configData).load()
 
         /* Values */
-        val availableMessages = GsonMessages(gsonConfig).availableMessages
+        internal val available = GsonMessages(gsonConfig).availableMessages
+        val name by lazy { available["name"]?.firstOrNull() ?: "GunGame" }
+        val prefix by lazy {
+            available["prefix"]?.firstOrNull()
+                ?: "%Colors.PRIMARY%%Colors.EXTRA%%name% %Colors.IMPORTANT%┃ %Colors.RESET%"
+        }
+        val shopName by lazy { available["shop-name"]?.firstOrNull() ?: "%Colors.SECONDARY%Shop" }
+        val teamsAllow by lazy { messages.available["teams-allow"]?.firstOrNull() ?: "erlaubt" }
+        val teamsDisAllow by lazy { messages.available["teams-dis-allow"]?.firstOrNull() ?: "verboten" }
+
+        /* SubClass */
+        val commands by lazy { Commands() }
+
+        init {
+            //Very bad code but it works!
+            if (available.isEmpty()) GsonService.save(configData, Json.stringify(json {
+                "Messages" to json {
+                    "language" to "de_DE"
+                    "languages" to json {
+                        "de_DE" to json {
+                            "Colors.PRIMARY" to "\u0026b"
+                            "Colors.SECONDARY" to "\u00269"
+                            "Colors.IMPORTANT" to "\u0026f"
+                            "Colors.TEXT" to "\u00267"
+                            "Colors.EXTRA" to "\u0026l"
+                            "Colors.DESIGN" to "\u0026m"
+                            "Colors.RESET" to "\u0026r"
+                            "Colors.WARNING" to "\u0026c"
+                            "Prefix.Text" to "%prefix%%Colors.TEXT%"
+                            "Prefix.Important" to "%prefix%%Colors.IMPORTANT%"
+                            "Prefix.Warning" to "%prefix%%Colors.WARNING%"
+                            "Separator.Line" to "%Prefix.Text%%Colors.DESIGN%                                                               "
+                            "Separator.Stats" to "%Colors.IMPORTANT%: %Colors.PRIMARY%"
+                            "gungame.stats" to "%Colors.IMPORTANT%GunGame Stats%Colors.TEXT%"
+                            "gungame.stats.by" to "von %Colors.IMPORTANT%@sender@%Colors.TEXT%"
+                            "" to ""
+                            "name" to name
+                            "prefix" to prefix
+                            "commands.gungame.successfully" to commands.gungame.successfully.toJsonArray()
+                            "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray()
+                            "commands.stats.successfully" to commands.stats.successfully.toJsonArray()
+                            "commands.statsReset.info.confirm" to commands.statsReset.infoConfirm.toJsonArray()
+                            "commands.statsReset.successfully.self.stats-were-reset" to commands.statsReset.successfullySelf.toJsonArray()
+                            "commands.statsReset.successfully.self.by.stats-were-reset" to commands.statsReset.successfullySelfBy.toJsonArray()
+                            "commands.statsReset.successfully.target.stats-were-reset" to commands.statsReset.successfullyTarget.toJsonArray()
+                            "commands.statsReset.failed.use-this-if-you-are-not-a-player" to commands.statsReset.failedPlayer.toJsonArray()
+                            "commands.statsReset.failed.self.nothing-to-reset" to commands.statsReset.failedSelfNothing.toJsonArray()
+                            "commands.statsReset.failed.target.nothing-to-reset" to commands.statsReset.failedTargetNothing.toJsonArray()
+                            "commands.team.failed.teams-not-allowed" to commands.team.failedTeamsNotAllowed.toJsonArray()
+                            "commands.teams.successfully" to commands.teams.successfully
+                            "commands.teams.title" to commands.teams.title
+                            "commands.teams.sub-title" to commands.teams.subTitle
+                            "commands.teams.successfully" to commands.teams.failedDelay.toJsonArray()
+                            "commands.top.success" to commands.top.success.toJsonArray()
+                            "commands.top.successfully" to commands.top.successfully.toJsonArray()
+                            "commands.top.entry" to commands.top.entry.toJsonArray()
+                        }
+                    }
+                }
+            }))
+
+        }
+
+        /**
+         * @author Lars Artmann | LartyHD
+         * Created by Lars Artmann | LartyHD on 06.04.2019 02:46.
+         * Current Version: 1.0 (06.04.2019 - 06.04.2019)
+         */
+        private fun List<String?>.toJsonArray() =
+            kotlinx.serialization.json.JsonArray(this.map { kotlinx.serialization.json.JsonPrimitive(it) })
+    }
+
+    inner class Commands internal constructor() {
+
+        internal val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
+        internal val Any.prefix get() = "${messages.commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+
+        /* SubClass */
+        val gungame by lazy { GunGame() }
+        val stats by lazy { Stats() }
+        val statsReset by lazy { StatsReset() }
+        val team by lazy { Team() }
+        val teams by lazy { Teams() }
+        val top by lazy { Top() }
+
+        inner class GunGame internal constructor() {
+
+            /* Values */
+            val successfully by lazy {
+                messages.available["${prefix}successfully"]
+                    ?: listOf("%Prefix.Text%Actions wurde in \"@path@\" abgespeichert.")
+            }
+
+        }
+
+        inner class Stats internal constructor() {
+
+            /* Values */
+            val failedPlayer by lazy {
+                messages.available["${prefix}failed.use-this-if-you-are-not-a-player"]
+                    ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: @command-name@ <Spieler>.")
+            }
+            val successfully by lazy {
+
+                fun entry(p1: String, p2: String) = "%Prefix.Text%$p1%Separator.Stats%@$p2@"
+
+                val lineSeparator = "@Separator.Line@"
+                messages.available["${prefix}successfully"]
+                    ?: listOf(
+                        "%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%STATS%Colors.IMPORTANT% ]%Colors.DESIGN%                         ",
+                        "%Prefix.Important%%Colors.DESIGN%                   %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%@name@%Colors.IMPORTANT% ]%Colors.DESIGN%                   ",
+                        entry("Rank", "rank"),
+                        entry("Points", "points"),
+                        lineSeparator,
+                        entry("Deaths", "deaths"),
+                        entry("Kills", "kills"),
+                        entry("K/D", "kd"),
+                        lineSeparator,
+                        entry("DeathStreak", "death-streak"),
+                        entry("KillStreak", "kill-streak"),
+                        lineSeparator,
+                        entry("MaxDeathStreak", "max-death-streak"),
+                        entry("MaxKillStreak", "max-kill-streak"),
+                        lineSeparator,
+                        entry("Bought LevelUps", "bought-levelup"),
+                        entry("Bought MagicHeal", "bought-magicheal"),
+                        entry("Bought InstantKiller", "bought-instantkiller"),
+                        entry("Bought KeepInventory", "bought-keepinventory"),
+                        lineSeparator,
+                        entry("Used MagicHeal", "used-magicheal"),
+                        entry("Used InstantKiller", "used-instantkiller"),
+                        entry("Used KeepInventory", "used-keepinventory"),
+                        lineSeparator,
+                        entry("Changed Shop Color", "shop-color-changes"),
+                        entry("Shop openings", "shop-openings"),
+                        "%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%STATS%Colors.IMPORTANT% ]%Colors.DESIGN%                         "
+                    )
+
+            }
+
+        }
+
+        inner class StatsReset internal constructor() {
+
+            /* Values */
+            val infoConfirm by lazy {
+                messages.available["${prefix}info.confirm"] ?: listOf(
+                    "",
+                    "%Prefix.Text%Nutze %Colors.IMPORTANT%\"/@command-name@ [Spieler] @confirmKey@\"%Colors.TEXT% um die @gungame.stats@ zurückzusetzen",
+                    ""
+                )
+            }
+
+            val failedPlayer by lazy {
+                messages.available["${prefix}failed.use-this-if-you-are-not-a-player"]
+                    ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: @command-name@ <Spieler>.")
+            }
+
+            val failedSelfNothing by lazy {
+                messages.available["${prefix}failed.self.nothing-to-reset"]
+                    ?: listOf("%Prefix.Warning%Du hast keine Stats die man resetten könnte!")
+            }
+
+            val failedTargetNothing by lazy {
+                messages.available["${prefix}failed.target.nothing-to-reset"]
+                    ?: listOf("%Prefix.Warning%@target@ hat keine Stats die man resetten könnte!")
+            }
+
+            val successfullySelf by lazy {
+                messages.available["${prefix}successfully.self.stats-were-reset"] ?: listOf(
+                    "",
+                    "%Prefix.Text%Deine @gungame.stats@ wurden zurückgesetzt",
+                    ""
+                )
+            }
+
+            val successfullySelfBy by lazy {
+                messages.available["${prefix}successfully.self.by.stats-were-reset"] ?: listOf(
+                    "",
+                    "%Prefix.Text%Deine @gungame.stats@ wurden @gungame.stats.by@ zurückgesetzt",
+                    ""
+                )
+            }
+
+            val successfullyTarget by lazy {
+                messages.available["${prefix}successfully.target.stats-were-reset"] ?: listOf(
+                    "",
+                    "%Prefix.Text%Du hast die @gungame.stats@ @gungame.stats.by@ zurückgesetzt",
+                    ""
+                )
+            }
+
+
+        }
+
+        inner class Team internal constructor() {
+
+            internal val prefix get() = "${messages.commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+
+            /* Values */
+            val failedTeamsNotAllowed by lazy {
+                messages.available["${prefix}failed.teams-not-allowed"]
+                    ?: listOf("%Prefix.Warning%Teams sind grade verboten!")
+            }
+
+        }
+
+        inner class Teams internal constructor() {
+
+            /* Values */
+            val failedDelay by lazy {
+                messages.available["${prefix}failed.delay"]
+                    ?: listOf("%Prefix.Warning%Teams kann nur alle %Colors.IMPORTANT%@delay@ %Colors.TEXT%genutzt werden (%Colors.IMPORTANT%@remaining@%Colors.TEXT%)")
+            }
+
+            val title: String  by lazy {
+                messages.available["${prefix}title"]?.firstOrNull() ?: "%Colors.IMPORTANT%Teams"
+            }
+
+            val subTitle: String by lazy {
+                messages.available["${prefix}sub-title"]?.firstOrNull() ?: "%Colors.TEXT%sind jetzt @allowed@"
+            }
+
+            val successfully by lazy {
+                messages.available["${prefix}successfully"]?.firstOrNull() ?: "%Prefix.TEXT%Teams sind jetzt @allowed@"
+            }
+
+
+        }
+
+        inner class Top internal constructor() {
+
+            /* Values */
+            val entry by lazy {
+                messages.available["${prefix}entry"]
+                    ?: listOf("%Prefix.Text%#@rank@%Separator.Stats%@name@%Colors.TEXT% (%Colors.IMPORTANT%@points@%Colors.TEXT%)")
+            }
+
+            val success by lazy {
+                messages.available["${prefix}success"]
+                    ?: listOf("%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%TOP 10%Colors.IMPORTANT% ]%Colors.DESIGN%                         ")
+            }
+
+            val successfully by lazy {
+                messages.available["${prefix}successfully"]
+                    ?: listOf("%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%TOP 10%Colors.IMPORTANT% ]%Colors.DESIGN%                         ")
+            }
+
+        }
 
     }
 
