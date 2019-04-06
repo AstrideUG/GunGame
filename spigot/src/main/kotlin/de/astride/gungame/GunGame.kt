@@ -13,7 +13,6 @@ import de.astride.gungame.listener.RegionsListener
 import de.astride.gungame.services.ConfigService
 import de.astride.gungame.shop.ShopListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
@@ -39,9 +38,8 @@ class GunGame : DarkPlugin() {
             ServicePriority.Normal
         ) //Important for ConfigService.instance
 
-        Messages.NAME.message = "GunGame"
-        Messages.PREFIX.message = "$PRIMARY$EXTRA${Messages.NAME}$IMPORTANT | $RESET"
-
+        Messages.NAME.message = messages.name
+        Messages.PREFIX.message = messages.prefix
 
     }
 
@@ -102,7 +100,7 @@ class GunGame : DarkPlugin() {
         val armorStand = it.world.spawnEntity(it, EntityType.ARMOR_STAND) as ArmorStand
         armorStand.apply {
 
-            customName = "${SECONDARY}Shop"
+            customName = messages.shopName
             isCustomNameVisible = true
             setGravity(false)
             isVisible = false
