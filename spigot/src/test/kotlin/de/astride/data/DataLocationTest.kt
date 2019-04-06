@@ -1,13 +1,18 @@
 package de.astride.data
 
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
+import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Server
 import org.bukkit.util.Vector
+import org.junit.Before
 import org.junit.Test
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 05.04.2019 01:43.
- * Current Version: 1.0 (05.04.2019 - 05.04.2019)
+ * Current Version: 1.0 (05.04.2019 - 06.04.2019)
  */
 class DataLocationTest {
 
@@ -23,6 +28,14 @@ class DataLocationTest {
             Vector(0, 0, 0),
             false
         )
+    }
+
+    @Before
+    fun before() {
+        Bukkit.setServer(mock<Server>().apply {
+            whenever(getWorld("WorldName")).thenReturn(world)
+            whenever(logger).thenReturn(mock())
+        })
     }
 
     @Test
