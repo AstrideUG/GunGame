@@ -492,7 +492,7 @@ class ConfigService(private val directory: File) {
                             "commands.teams.successfully" to commands.teams.successfully
                             "commands.teams.title" to commands.teams.title
                             "commands.teams.sub-title" to commands.teams.subTitle
-                            "commands.teams.successfully" to commands.teams.failedDelay.toJsonArray()
+                            "commands.teams.failed.delay" to commands.teams.failedDelay.toJsonArray()
                             "commands.top.success" to commands.top.success.toJsonArray()
                             "commands.top.successfully" to commands.top.successfully.toJsonArray()
                             "commands.top.entry" to commands.top.entry.toJsonArray()
