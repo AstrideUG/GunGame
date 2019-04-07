@@ -1,6 +1,5 @@
 package de.astride.gungame.shop.items
 
-import de.astride.data.toDataPlayer
 import de.astride.gungame.functions.*
 import de.astride.gungame.shop.ShopItemListener
 import de.astride.gungame.stats.Action
@@ -23,7 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 01.04.2019)
+ * Current Version: 1.0 (27.03.2019 - 07.04.2019)
  */
 class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -80,7 +79,7 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
                 lastHealerUse = System.currentTimeMillis()
                 uniqueId.actions += Action(
                     "used-${this@MagicHeal.javaClass.simpleName}",
-                    mapOf("player" to this.toDataPlayer())
+                    mapOf(/*"player" to this.toDataPlayer()*/)
                 )
             } else "${Messages.PREFIX}${TEXT}Du hast eine Behandlung echt nicht nötig ;)".sendTo(this)
         }

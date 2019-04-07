@@ -3,7 +3,6 @@
  */
 package de.astride.gungame.shop
 
-import de.astride.data.toDataPlayer
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.changeColor
 import de.astride.gungame.shop.items.InstantKiller
@@ -27,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:32.
- * Current Version: 1.0 (19.02.2018 - 01.04.2019)
+ * Current Version: 1.0 (19.02.2018 - 07.04.2019)
  */
 class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
@@ -58,7 +57,10 @@ class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
         event.cancel()
         armorStand.changeColor()
         if (!player.isSneaking) player.openInventory(inventory)
-        player.uniqueId.actions += Action("shop-change-color", mapOf("player" to player.toDataPlayer()))
+        player.uniqueId.actions += Action(
+            "shop-change-color",
+            mapOf("sneaking" to player.isSneaking/*"player" to player.toDataPlayer()*/)
+        )
 
     }
 

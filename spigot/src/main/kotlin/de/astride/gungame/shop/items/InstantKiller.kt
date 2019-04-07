@@ -1,6 +1,5 @@
 package de.astride.gungame.shop.items
 
-import de.astride.data.toDataPlayer
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.equals
 import de.astride.gungame.functions.playBuySound
@@ -22,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 31.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 07.04.2019)
  */
 class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -57,7 +56,10 @@ class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
         if (damager.itemInHand?.clone()?.apply { amount = 1 } != itemStack.removedLore()) return
 //        if (event.entity !is Player) return
         damager.removeItemInHand()
-        damager.uniqueId.actions += Action("used-${javaClass.simpleName}", mapOf("player" to damager.toDataPlayer()))
+        damager.uniqueId.actions += Action(
+            "used-${javaClass.simpleName}",
+            mapOf(/*"player" to damager.toDataPlayer()*/)
+        )
 
     }
 

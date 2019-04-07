@@ -1,6 +1,5 @@
 package de.astride.gungame.commands
 
-import de.astride.data.toDataPlayer
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.activeActions
 import de.astride.gungame.functions.configService
@@ -19,7 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (19.08.2017 - 06.04.2019)
+ * Current Version: 1.0 (19.08.2017 - 07.04.2019)
  */
 class StatsReset(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -75,7 +74,7 @@ class StatsReset(javaPlugin: JavaPlugin) : Command(
 
         uniqueId.actions += Action(
             this@StatsReset.javaClass.simpleName,
-            mapOf("player" to this.toDataPlayer(), "by" to by)
+            mapOf(/*"player" to this.toDataPlayer(),*/ "by" to by)
         )
     }
 

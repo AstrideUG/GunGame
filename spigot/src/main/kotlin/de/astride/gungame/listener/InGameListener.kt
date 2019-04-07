@@ -3,7 +3,6 @@
  */
 package de.astride.gungame.listener
 
-import de.astride.data.toDataPlayer
 import de.astride.gungame.functions.*
 import de.astride.gungame.kits.downgrade
 import de.astride.gungame.kits.setKit
@@ -35,7 +34,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:32.
- * Current Version: 1.0 (17.02.2018 - 06.04.2019)
+ * Current Version: 1.0 (17.02.2018 - 07.04.2019)
  */
 class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
@@ -88,7 +87,7 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
         event.entity.uniqueId.actions += Action(
             event.javaClass.simpleName,
-            mapOf("player" to event.entity.toDataPlayer())
+            mapOf(/*"player" to event.entity.toDataPlayer()*/)
         )
     }
 
@@ -104,7 +103,7 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
                 uniqueId.actions += Action(
                     event.javaClass.simpleName,
-                    mapOf("player" to this, "killed" to this@player.toDataPlayer())
+                    mapOf(/*"player" to this.toDataPlayer(), "killed" to this@player.toDataPlayer()*/)
                 )
 
                 playSound(location, Sound.ENDERMAN_HIT, 2f, 1f)

@@ -1,6 +1,5 @@
 package de.astride.gungame.shop.items
 
-import de.astride.data.toDataPlayer
 import de.astride.gungame.event.GunGamePlayerDowngradeLevelEvent
 import de.astride.gungame.event.GunGamePlayerUpgradeLevelEvent
 import de.astride.gungame.functions.actions
@@ -23,7 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 31.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 07.04.2019)
  */
 class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -71,7 +70,7 @@ class KeepInventory(javaPlugin: JavaPlugin) : ShopItemListener(
             updateLevel()
             uniqueId.actions += Action(
                 "used-${this@KeepInventory.javaClass.simpleName}",
-                mapOf("player" to this.toDataPlayer())
+                mapOf(/*"player" to this.toDataPlayer()*/)
             )
         }
 

@@ -3,7 +3,6 @@
  */
 package de.astride.gungame.shop
 
-import de.astride.data.toDataPlayer
 import de.astride.gungame.event.GunGamePlayerShopHasEnoughMoneyEvent
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.configService
@@ -23,7 +22,7 @@ import java.util.concurrent.TimeUnit
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:33.
- * Current Version: 1.0 (19.02.2018 - 31.03.2019)
+ * Current Version: 1.0 (19.02.2018 - 07.04.2019)
  */
 abstract class ShopItemListener protected constructor(
     javaPlugin: JavaPlugin,
@@ -71,14 +70,14 @@ abstract class ShopItemListener protected constructor(
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 27.03.2019 08:22.
-     * Current Version: 1.0 (27.03.2019 - 31.03.2019)
+     * Current Version: 1.0 (27.03.2019 - 07.04.2019)
      */
     fun checkedBuy(player: Player) = player.run {
         player.closeInventory()
         if (delayed() || !enoughMoney()) return@run
         if (buy()) uniqueId.actions += Action(
             "bought-${this@ShopItemListener.javaClass.simpleName}",
-            mapOf("player" to this.toDataPlayer())
+            mapOf(/*"player" to this.toDataPlayer()*/)
         )
         else lastItemUse = 0
     }
