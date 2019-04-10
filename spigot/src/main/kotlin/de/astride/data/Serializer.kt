@@ -312,13 +312,12 @@ object InetSocketAddressSerializer : KSerializer<InetSocketAddress> {
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 20:55.
- * Current Version: 1.0 (04.04.2019 - 06.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 11.04.2019)
  */
 @Serializer(forClass = UUID::class)
 object UUIDSerializer : KSerializer<UUID> {
 
-    override val descriptor: SerialDescriptor =
-        object : SerialClassDescImpl(javaClass.simpleName.replace("Serializer", "")) {}
+    override val descriptor: SerialDescriptor = StringDescriptor.withName("UUID")
 
     override fun serialize(encoder: Encoder, obj: UUID): Unit = encoder.encodeString(obj.toString())
 
