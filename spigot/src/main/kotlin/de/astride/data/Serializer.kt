@@ -305,7 +305,12 @@ object InetSocketAddressSerializer : KSerializer<InetSocketAddress> {
 
     override fun serialize(encoder: Encoder, obj: InetSocketAddress): Unit = encoder.encodeString(obj.toString())
 
-    override fun deserialize(decoder: Decoder): InetSocketAddress = decoder.decode()
+    override fun deserialize(decoder: Decoder): InetSocketAddress {
+        val input = decoder.decodeString()
+        val decodedString = input.split('/')[1]
+        val split = decodedString.split(':')
+        return InetSocketAddress(InetAddress.getByName(split[0]), split[1].toInt())
+    }
 
 }
 
