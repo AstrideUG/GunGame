@@ -1,154 +1,156 @@
 {
-  "8c9ec1ab-f64f-4003-9110-f98a1f0d7f47": {
-    "id": "PlayerDeathEvent",
-    "timestamp": 1554575966027,
-    "meta": {
-      "player": {
-        "damageable": {
-          "maximumNoDamageTicks": 20,
-          "noDamageTicks": 0,
-          "lastDamage": 0.0,
-          "lastDamageCause": null
-        },
-        "dataExp": {
-          "level": 1,
-          "exp": 0.0,
-          "exhaustion": 0.5751,
-          "expToLevel": 9,
-          "totalExperience": 0
-        },
-        "dataFood": {
-          "foodLevel": 0.1,
-          "saturation": 19.0,
-          "exhaustion": 0.5751
-        },
-        "dataHealth": {
-          "health": 20.0,
-          "maxHealth": 20.0,
-          "healthScale": 20.0,
-          "isHealthScaled": false,
-          "isInvulnerable": false
-        },
-        "dataLocation": {
-          "location": {
-            "world": "Pozoldus",
-            "x": 0.1439379192734197,
-            "y": 9.404708831687794,
-            "z": -16.080803393901295,
-            "yaw": 162.54666,
-            "pitch": 54.38945
+  "8c9ec1ab-f64f-4003-9110-f98a1f0d7f47": [
+    {
+      "id": "PlayerDeathEvent",
+      "timestamp": 1554575966027,
+      "meta": {
+        "player": {
+          "damageable": {
+            "maximumNoDamageTicks": 20,
+            "noDamageTicks": 0,
+            "lastDamage": 0.0,
+            "lastDamageCause": null
           },
-          "bedSpawnLocation": null,
-          "eyeLocation": {
-            "world": "Pozoldus",
-            "x": 0.1439379192734197,
-            "y": 11.024708831687793,
-            "z": -16.080803393901295,
-            "yaw": 162.54666,
-            "pitch": 54.38945
+          "dataExp": {
+            "level": 1,
+            "exp": 0.0,
+            "exhaustion": 0.5751,
+            "expToLevel": 9,
+            "totalExperience": 0
           },
-          "eyeHeight": 1.62,
-          "velocity": {
-            "x": 0.0,
-            "y": -1.1950697113837683,
-            "z": 0.0
+          "dataFood": {
+            "foodLevel": 0.1,
+            "saturation": 19.0,
+            "exhaustion": 0.5751
           },
-          "isOnGround": false
-        },
-        "fireable": {
-          "fireTicks": -20,
-          "maxFireTicks": 20
-        },
-        "flyable": {
-          "isFlying": false,
-          "allowFlight": false
-        },
-        "inventories": {
-          "canPickupItems": false,
-          "equipment": "org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryPlayer@234527ba",
-          "enderChest": "org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventory@78a788e2",
-          "openInventory": "org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryView@4fbd1795",
-          "inventory": "org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryPlayer@234527ba",
-          "itemInHand": "ItemStack{AIR x 0}",
-          "itemOnCursor": "ItemStack{AIR x 0}"
-        },
-        "metaData": {
-          "address": "***",
-          "rawAddress": "***",
-          "uniqueId": "8c9ec1ab-f64f-4003-9110-f98a1f0d7f47",
-          "hasPlayedBefore": true,
-          "lastPlayed": 1554575014087,
-          "firstPlayed": 1550006349116,
-          "locale": "de_DE",
-          "entityId": 81,
-          "listeningPluginChannels": [
-          ]
-        },
-        "names": {
-          "name": "LartyHD",
-          "displayName": "LartyHD"
-        },
-        "otherData": {
-          "playerListName": "LartyHD",
-          "playerTime": "30000",
-          "playerTimeOffset": "0",
-          "playerWeather": null,
-          "isPlayerTimeRelative": "true",
-          "isBlocking": "false",
-          "isConversing": "false",
-          "isCustomNameVisible": "false",
-          "isInsideVehicle": "false",
-          "isLeashed": "false",
-          "leashHolder": null,
-          "isEmpty": "true",
-          "passenger": null,
-          "isDead": "false",
-          "isValid": "true",
-          "isOnline": "true",
-          "scoreboard": "org.bukkit.craftbukkit.v1_8_R3.scoreboard.CraftScoreboard@6d0f7994",
-          "killer": null,
-          "gameMode": "ADVENTURE",
-          "fallDistance": "4.844478",
-          "type": "PLAYER",
-          "vehicle": null,
-          "maximumAir": "300",
-          "remainingAir": "300",
-          "removeWhenFarAway": "false",
-          "server": "CraftServer{serverName=CraftBukkit,serverVersion=git-PaperSpigot-\"4c7641d\",minecraftVersion=1.8.8}",
-          "activePotionEffects": "[]",
-          "collidesWithEntities": "true",
-          "hiddenPlayers": "[]"
-        },
-        "permissables": {
-          "isOp": true,
-          "effectivePermissions": "[]"
-        },
-        "sleepable": {
-          "isSleeping": false,
-          "isSleepingIgnored": false
-        },
-        "speeds": {
-          "isSprinting": false,
-          "isSneaking": false,
-          "walkSpeed": 0.2,
-          "flySpeed": 0.1
-        },
-        "targetable": {
-          "spectatorTarget": null,
-          "compassTarget": {
-            "world": "Pozoldus",
-            "x": 0.0,
-            "y": 13.0,
-            "z": 0.0,
-            "yaw": 0.0,
-            "pitch": 0.0
+          "dataHealth": {
+            "health": 20.0,
+            "maxHealth": 20.0,
+            "healthScale": 20.0,
+            "isHealthScaled": false,
+            "isInvulnerable": false
+          },
+          "dataLocation": {
+            "location": {
+              "world": "Pozoldus",
+              "x": 0.1439379192734197,
+              "y": 9.404708831687794,
+              "z": -16.080803393901295,
+              "yaw": 162.54666,
+              "pitch": 54.38945
+            },
+            "bedSpawnLocation": null,
+            "eyeLocation": {
+              "world": "Pozoldus",
+              "x": 0.1439379192734197,
+              "y": 11.024708831687793,
+              "z": -16.080803393901295,
+              "yaw": 162.54666,
+              "pitch": 54.38945
+            },
+            "eyeHeight": 1.62,
+            "velocity": {
+              "x": 0.0,
+              "y": -1.1950697113837683,
+              "z": 0.0
+            },
+            "isOnGround": false
+          },
+          "fireable": {
+            "fireTicks": -20,
+            "maxFireTicks": 20
+          },
+          "flyable": {
+            "isFlying": false,
+            "allowFlight": false
+          },
+          "inventories": {
+            "canPickupItems": false,
+            "equipment": "org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryPlayer@234527ba",
+            "enderChest": "org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventory@78a788e2",
+            "openInventory": "org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryView@4fbd1795",
+            "inventory": "org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryPlayer@234527ba",
+            "itemInHand": "ItemStack{AIR x 0}",
+            "itemOnCursor": "ItemStack{AIR x 0}"
+          },
+          "metaData": {
+            "address": "***",
+            "rawAddress": "***",
+            "uniqueId": "8c9ec1ab-f64f-4003-9110-f98a1f0d7f47",
+            "hasPlayedBefore": true,
+            "lastPlayed": 1554575014087,
+            "firstPlayed": 1550006349116,
+            "locale": "de_DE",
+            "entityId": 81,
+            "listeningPluginChannels": [
+            ]
+          },
+          "names": {
+            "name": "LartyHD",
+            "displayName": "LartyHD"
+          },
+          "otherData": {
+            "playerListName": "LartyHD",
+            "playerTime": "30000",
+            "playerTimeOffset": "0",
+            "playerWeather": null,
+            "isPlayerTimeRelative": "true",
+            "isBlocking": "false",
+            "isConversing": "false",
+            "isCustomNameVisible": "false",
+            "isInsideVehicle": "false",
+            "isLeashed": "false",
+            "leashHolder": null,
+            "isEmpty": "true",
+            "passenger": null,
+            "isDead": "false",
+            "isValid": "true",
+            "isOnline": "true",
+            "scoreboard": "org.bukkit.craftbukkit.v1_8_R3.scoreboard.CraftScoreboard@6d0f7994",
+            "killer": null,
+            "gameMode": "ADVENTURE",
+            "fallDistance": "4.844478",
+            "type": "PLAYER",
+            "vehicle": null,
+            "maximumAir": "300",
+            "remainingAir": "300",
+            "removeWhenFarAway": "false",
+            "server": "CraftServer{serverName=CraftBukkit,serverVersion=git-PaperSpigot-\"4c7641d\",minecraftVersion=1.8.8}",
+            "activePotionEffects": "[]",
+            "collidesWithEntities": "true",
+            "hiddenPlayers": "[]"
+          },
+          "permissables": {
+            "isOp": true,
+            "effectivePermissions": "[]"
+          },
+          "sleepable": {
+            "isSleeping": false,
+            "isSleepingIgnored": false
+          },
+          "speeds": {
+            "isSprinting": false,
+            "isSneaking": false,
+            "walkSpeed": 0.2,
+            "flySpeed": 0.1
+          },
+          "targetable": {
+            "spectatorTarget": null,
+            "compassTarget": {
+              "world": "Pozoldus",
+              "x": 0.0,
+              "y": 13.0,
+              "z": 0.0,
+              "yaw": 0.0,
+              "pitch": 0.0
+            }
+          },
+          "whiteAndBlackList": {
+            "isWhitelisted": false,
+            "isBanned": false
           }
-        },
-        "whiteAndBlackList": {
-          "isWhitelisted": false,
-          "isBanned": false
         }
       }
     }
-  }
+  ]
 }
