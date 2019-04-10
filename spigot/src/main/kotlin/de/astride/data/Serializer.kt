@@ -4,6 +4,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.context.getOrDefault
 import kotlinx.serialization.internal.IntSerializer
 import kotlinx.serialization.internal.SerialClassDescImpl
+import kotlinx.serialization.internal.StringDescriptor
 import kotlinx.serialization.internal.StringSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -14,13 +15,14 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.permissions.PermissionAttachmentInfo
 import org.bukkit.potion.PotionEffect
 import org.bukkit.util.Vector
+import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.*
 
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 19:46.
- * Current Version: 1.0 (04.04.2019 - 04.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 11.04.2019)
  */
 
 /**
@@ -294,13 +296,12 @@ object EnchantmentSerializer : KSerializer<Enchantment> {
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 20:54.
- * Current Version: 1.0 (04.04.2019 - 04.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 11.04.2019)
  */
 @Serializer(forClass = InetSocketAddress::class)
 object InetSocketAddressSerializer : KSerializer<InetSocketAddress> {
 
-    override val descriptor: SerialDescriptor =
-        object : SerialClassDescImpl(javaClass.simpleName.replace("Serializer", "")) {}
+    override val descriptor: SerialDescriptor = StringDescriptor.withName("InetSocketAddress")
 
     override fun serialize(encoder: Encoder, obj: InetSocketAddress): Unit = encoder.encodeString(obj.toString())
 
