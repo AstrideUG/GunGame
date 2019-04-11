@@ -11,7 +11,7 @@ import java.util.*
  */
 @Serializable
 data class Action(
-    val id: String,
+    val key: String,
     val meta: Map<String, Any?> = mapOf(),
     val timestamp: Long = System.currentTimeMillis(),
     @Serializable(with = UUIDSerializer::class) val uuid: UUID = UUID.randomUUID()
