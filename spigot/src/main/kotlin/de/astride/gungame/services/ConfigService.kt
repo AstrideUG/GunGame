@@ -741,8 +741,7 @@ class ConfigService(private val directory: File) {
             private val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
             internal val Any.prefix get() = "${messages.shop.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
-            /* SubClass */
-            val money by lazy { Money() }
+            /* Values */
             val delayed by lazy {
                 messages.available["${prefix}delayed"]
                     ?: listOf("%Prefix.Warning%Du kannst %Colors.SECONDARY%@item@%Colors.TEXT% in @time@ wieder kaufen!")
@@ -764,6 +763,24 @@ class ConfigService(private val directory: File) {
                     ?: listOf("%Prefix.Text%Du hast schon das maximahle Level (%Colors.IMPORTANT%@kits@%Colors.TEXT%) erreicht.")
             }
 
+            /* SubClass */
+            val money by lazy { Money() }
+            val keepInventory by lazy { KeepInventory() }
+
+            inner class KeepInventory internal constructor() {
+
+                /* Values */
+                val successfully by lazy {
+                    messages.available["${prefix}successfully"]
+                        ?: listOf("%Prefix.Text%Du hast %Colors.IMPORTANT%KeepInventory %Colors.TEXT%aktiviert.")
+                }
+
+                val failed by lazy {
+                    messages.available["${prefix}failed"]
+                        ?: listOf("%Prefix.Warning%Du hast %Colors.IMPORTANT%KeepInventory %Colors.Warning%schon aktiviert!")
+                }
+
+            }
 
             inner class Money internal constructor() {
 
@@ -774,7 +791,7 @@ class ConfigService(private val directory: File) {
                 }
 
                 val failed by lazy {
-                    messages.available["${prefix}failed"] ?: listOf("%Prefix.Warning%Dir fehlen @difference@$!")
+                    messages.available["${prefix}failed"] ?: listOf("%Prefix.Warning%Dir fehlen @difference@!")
                 }
 
             }
