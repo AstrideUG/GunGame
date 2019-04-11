@@ -95,13 +95,13 @@ abstract class ShopItemListener protected constructor(
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 27.03.2019 08:19.
-     * Current Version: 1.0 (27.03.2019 - 31.03.2019)
+     * Current Version: 1.0 (27.03.2019 - 11.04.2019)
      */
     private fun Player.delayed(): Boolean {
         val l = (lastItemUse + TimeUnit.SECONDS.toMillis(delay)) - System.currentTimeMillis()
         return if (l <= 0) false else {
             val time = Utils.getTime(l / 1000)
-            "${Messages.PREFIX}${TEXT}Du kannst $SECONDARY${itemStack.itemMeta.displayName}$TEXT in $time wieder kaufen"
+            messages.shop.delayed.map { it.replace("item", itemStack.itemMeta.displayName).replace("time", time) }
                 .sendTo(this)
             true
         }
