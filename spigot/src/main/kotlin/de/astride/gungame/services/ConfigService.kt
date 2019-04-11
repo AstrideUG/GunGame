@@ -529,6 +529,8 @@ class ConfigService(private val directory: File) {
                                 "shop.max-level" to shop.maxLevel.toJsonArray()
                                 "shop.money.successfully" to shop.money.successfully.toJsonArray()
                                 "shop.money.failed" to shop.money.failed.toJsonArray()
+                                "shop.keepInventory.successfully" to shop.keepInventory.successfully.toJsonArray()
+                                "shop.keepInventory.failed" to shop.keepInventory.failed.toJsonArray()
                                 "regions.damage-in-player" to regions.damageInPlayer.toJsonArray()
                                 "regions.damage-in-target" to regions.damageInTarget.toJsonArray()
                                 "regions.launch-arrow" to regions.launchArrow.toJsonArray()
