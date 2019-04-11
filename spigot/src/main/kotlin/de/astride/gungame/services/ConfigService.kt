@@ -526,6 +526,9 @@ class ConfigService(private val directory: File) {
                                 "shop.price-lore" to shop.priceLore.toJsonArray()
                                 "shop.money.successfully" to shop.money.successfully.toJsonArray()
                                 "shop.money.failed" to shop.money.failed.toJsonArray()
+                                "regions.damage-in-player" to regions.damageInPlayer.toJsonArray()
+                                "regions.damage-in-target" to regions.damageInTarget.toJsonArray()
+                                "regions.launch-arrow" to regions.launchArrow.toJsonArray()
                             }
                         }
                     }
@@ -673,7 +676,7 @@ class ConfigService(private val directory: File) {
 
             inner class Team internal constructor() {
 
-                internal val prefix get() = "${messagesInstance.commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+                private val prefix get() = "${messagesInstance.commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
                 /* Values */
                 val failedTeamsNotAllowed by lazy {
