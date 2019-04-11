@@ -1,14 +1,14 @@
 package de.astride.gungame.shop.items
 
+import de.astride.gungame.functions.messages
 import de.astride.gungame.functions.playBuySound
+import de.astride.gungame.functions.replace
 import de.astride.gungame.kits.Kits
 import de.astride.gungame.kits.gunGameLevel
 import de.astride.gungame.kits.upgrade
 import de.astride.gungame.shop.ShopItemListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.concurrent.thread
@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 31.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 11.04.2019)
  */
 class LevelUp(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -29,7 +29,7 @@ class LevelUp(javaPlugin: JavaPlugin) : ShopItemListener(
 ) {
 
     override fun Player.buy() = if (Kits.values().size == player.gunGameLevel) {
-        sendMessage("${Messages.PREFIX}${TEXT}Du hast schon das maximahle Level ($IMPORTANT${Kits.values().size}$TEXT) erreicht")
+        messages.shop.maxLevel.map { it.replace("kits", Kits.values().size) }.sendTo(this)
         false
     } else {
         thread {
