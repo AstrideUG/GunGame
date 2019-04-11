@@ -54,6 +54,15 @@ class ConfigService(private val directory: File) {
 
         /* Values */
         val allowTeams by lazy { AllowTeams.byName(jsonObject["allow-teams"]?.asString()) }
+        val rewards: Map<String, Double>  by lazy {
+            (jsonObject["rewards"] as? JsonObject)?.entrySet()?.mapNotNull {
+                try {
+                    it.key to it.value.asDouble
+                } catch (ex: Exception) {
+                    null
+                }
+            }?.toMap() ?: mapOf("PlayerRespawnEvent" to 5.0)
+        }
 
         /* SubClass */
         val files by lazy { Files(jsonObject[Files::class.java.simpleName]?.asJsonObject) }
@@ -63,6 +72,7 @@ class ConfigService(private val directory: File) {
         init {
             //Very bad code but it works!
             if (jsonObject["allow-teams"] == null ||
+                jsonObject["rewards"] == null ||
                 files.jsonObject == null ||
                 commands.jsonObject == null ||
                 commands.stats.jsonObject == null ||
@@ -80,6 +90,7 @@ class ConfigService(private val directory: File) {
 
                 GsonService.save(configData, JsonObject().apply {
                     addProperty("allow-teams", allowTeams.type)
+                    add("rewards", JsonObject().apply { rewards.forEach { key, value -> addProperty(key, value) } })
                     add(Files::class.simpleName, JsonObject().apply {
                         addProperty("maps", files.maps)
                         addProperty("shops", files.shops)
@@ -443,7 +454,6 @@ class ConfigService(private val directory: File) {
                 "%Colors.TEXT%für mehr Stats"
             )
         }
-
         val hologram by lazy {
             available["hologram"] ?: listOf(
                 "%Colors.TEXT%-= %gungame.stats% =-",
@@ -454,6 +464,7 @@ class ConfigService(private val directory: File) {
                 "%Colors.TEXT%K/D%Separator.Stats%@kd@"
             )
         }
+        val addAction by lazy { available["add-action"] ?: listOf() }
 
         /* SubClass */
         val commands by lazy { Commands() }
