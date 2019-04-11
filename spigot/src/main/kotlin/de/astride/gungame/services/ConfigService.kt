@@ -508,6 +508,8 @@ class ConfigService(private val directory: File) {
                             "commands.top.success" to commands.top.success.toJsonArray()
                             "commands.top.successfully" to commands.top.successfully.toJsonArray()
                             "commands.top.entry" to commands.top.entry.toJsonArray()
+                            "shop.delayed" to shop.delayed.toJsonArray()
+                            "shop.priceLore" to shop.priceLore.toJsonArray()
                             "shop.money.successfully" to shop.money.successfully.toJsonArray()
                             "shop.money.failed" to shop.money.failed.toJsonArray()
                         }
@@ -709,7 +711,7 @@ class ConfigService(private val directory: File) {
 
         inner class Shop internal constructor() {
 
-            internal val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
+            private val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
             internal val Any.prefix get() = "${messagesInstance.shop.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
             /* SubClass */
