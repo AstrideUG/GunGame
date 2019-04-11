@@ -12,6 +12,7 @@ import de.astride.gungame.listener.MoneyListener
 import de.astride.gungame.listener.RegionsListener
 import de.astride.gungame.services.ConfigService
 import de.astride.gungame.shop.ShopListener
+import de.astride.gungame.stats.Actions
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
@@ -60,7 +61,7 @@ class GunGame : DarkPlugin() {
         }
 
         logger.info("Load stats...")
-        allActions = configService.actions.load()
+        allActions = configService.actions.load().map { it.key to Actions(it.key, it.value) }.toMap().toMutableMap()
         logger.info("Loaded stats")
 
         logger.info("Load allowTeams...")

@@ -1,6 +1,7 @@
 package de.astride.gungame.functions
 
 import de.astride.gungame.stats.Action
+import de.astride.gungame.stats.Actions
 import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
 import java.util.*
 
@@ -49,9 +50,9 @@ lateinit var allActions: MutableMap<UUID, MutableList<Action>>
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 30.03.2019 18:49.
- * Current Version: 1.0 (30.03.2019 - 30.03.2019)
+ * Current Version: 1.0 (30.03.2019 - 11.04.2019)
  */
-val UUID.actions: MutableList<Action> get() = allActions.getOrPut(this) { mutableListOf() }
+val UUID.actions: MutableList<Action> get() = allActions.getOrPut(this) { Actions(this) }
 
 /**
  * @author Lars Artmann | LartyHD
