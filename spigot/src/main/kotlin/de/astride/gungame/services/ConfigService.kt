@@ -6,6 +6,7 @@ import com.google.gson.JsonPrimitive
 import de.astride.data.UUIDSerializer
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.stats.Action
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.context.getOrDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.json
@@ -384,15 +385,18 @@ class ConfigService(private val directory: File) {
     inner class Actions internal constructor() {
 
         /* Main */
-        private val kSerializer = (UUIDSerializer to Json.context.getOrDefault(Action::class).list).map
         val configData: ConfigData = ConfigData(directory, config.files.actions)
-
+        private val kSerializer: KSerializer<Map<UUID, List<Action>>> =
+            (UUIDSerializer to Json.context.getOrDefault(Action::class).list).map
 
         /* Values */
-        fun load(configData: ConfigData = this.configData): MutableMap<UUID, MutableList<Action>> =
-            Json.parse(kSerializer, configData.file.readText()).map {
-                it.key to it.value.toMutableList()
-            }.toMap().toMutableMap()
+        fun load(configData: ConfigData = this.configData): MutableMap<UUID, MutableList<Action>> {
+            val string = configData.file.readText()
+            return if (string.isEmpty()) mutableMapOf() else Json.parse(
+                kSerializer,
+                string
+            ).map { it.key to it.value.toMutableList() }.toMap().toMutableMap()
+        }
 
         fun save(input: MutableMap<UUID, MutableList<Action>>, configData: ConfigData = this.configData) =
             GsonService.save(configData, Json.indented.stringify(kSerializer, input))
