@@ -1,7 +1,10 @@
 package de.astride.gungame.listener
 
 import de.astride.gungame.event.GunGamePlayerShopHasEnoughMoneyEvent
+import de.astride.gungame.functions.messages
+import de.astride.gungame.functions.replace
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.Listener
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
@@ -11,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 11:12.
- * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 11.04.2019)
  */
 class MoneyListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
@@ -25,11 +28,24 @@ class MoneyListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 29.03.2019 13:29.
-     * Current Version: 1.0 (29.03.2019 - 29.03.2019)
+     * Current Version: 1.0 (29.03.2019 - 11.04.2019)
      */
     @EventHandler
     fun onGunGamePlayerShopHasEnoughMoneyEvent(event: GunGamePlayerShopHasEnoughMoneyEvent) {
-        if (!economy.has(event.player, event.price)) event.cancel() else event.cancel(false)
+        val price = event.price
+        val player = event.player
+        val transform: (String?) -> String? = {
+            val balance = economy.getBalance(player)
+            it.replace("price", price).replace("balance", balance).replace("difference", balance - price)
+        }
+        if (!economy.has(player, price)) {
+            event.cancel()
+            economy.withdrawPlayer(player, price)
+            messages.shop.money.successfully.map(transform).sendTo(player)
+        } else {
+            event.cancel(false)
+            messages.shop.money.failed.map(transform).sendTo(player)
+        }
     }
 
 }
