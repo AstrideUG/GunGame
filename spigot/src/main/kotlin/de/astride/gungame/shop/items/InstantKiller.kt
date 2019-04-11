@@ -4,6 +4,7 @@ import de.astride.gungame.functions.*
 import de.astride.gungame.shop.ShopItemListener
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItemInHand
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -35,6 +36,7 @@ class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
         inventory.filter { it?.equals(item, true) ?: false }.forEach { count += it.amount }
         return if (count >= 1) {
             messages.shop.maxCount.map { it.replace("item", itemStack.itemMeta.displayName).replace("count", "ein") }
+                .sendTo(this)
             false
         } else {
             inventory.addItem(item)

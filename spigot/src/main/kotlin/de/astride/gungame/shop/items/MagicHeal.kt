@@ -48,6 +48,7 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
         inventory.filter { it?.equals(item, true) ?: false }.forEach { count += it.amount }
         return if (count >= 3) {
             messages.shop.maxCount.map { it.replace("item", itemStack.itemMeta.displayName).replace("count", "drei") }
+                .sendTo(this)
             false
         } else {
             inventory.addItem(item)
