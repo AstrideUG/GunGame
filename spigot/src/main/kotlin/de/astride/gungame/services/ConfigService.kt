@@ -748,6 +748,10 @@ class ConfigService(private val directory: File) {
                 messages.available["${prefix}price-lore"]
                     ?: listOf("%Prefix.Text%Kaufe ihn dir für %Colors.PRIMARY%@price@ %Colors.IMPORTANT%Coins")
             }
+            val maxCount by lazy {
+                messages.available["${prefix}max-count"]
+                    ?: listOf("%Prefix.Warning%Du darfst nur @count@ @item@ %Colors.TEXT%im %Colors.IMPORTANT%Inventar %Colors.TEXT%haben!")
+            }
 
             inner class Money internal constructor() {
 
