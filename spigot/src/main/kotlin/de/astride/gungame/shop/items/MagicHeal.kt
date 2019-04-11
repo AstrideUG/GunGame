@@ -6,7 +6,6 @@ import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItemInHand
@@ -22,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 07.04.2019)
+ * Current Version: 1.0 (27.03.2019 - 11.04.2019)
  */
 class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -48,7 +47,7 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
         val item = itemStack.removedLore()
         inventory.filter { it?.equals(item, true) ?: false }.forEach { count += it.amount }
         return if (count >= 3) {
-            sendMessage("${Messages.PREFIX}${TEXT}Du darfst nur drei ${itemStack.itemMeta.displayName} ${TEXT}im ${IMPORTANT}Inventar ${TEXT}haben")
+            messages.shop.maxCount.map { it.replace("item", itemStack.itemMeta.displayName).replace("count", "drei") }
             false
         } else {
             inventory.addItem(item)

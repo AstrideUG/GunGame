@@ -1,15 +1,9 @@
 package de.astride.gungame.shop.items
 
-import de.astride.gungame.functions.actions
-import de.astride.gungame.functions.equals
-import de.astride.gungame.functions.playBuySound
-import de.astride.gungame.functions.removedLore
+import de.astride.gungame.functions.*
 import de.astride.gungame.shop.ShopItemListener
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.IMPORTANT
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItemInHand
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -21,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 07:51.
- * Current Version: 1.0 (27.03.2019 - 07.04.2019)
+ * Current Version: 1.0 (27.03.2019 - 11.04.2019)
  */
 class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
     javaPlugin,
@@ -40,7 +34,7 @@ class InstantKiller(javaPlugin: JavaPlugin) : ShopItemListener(
         val item = itemStack.removedLore()
         inventory.filter { it?.equals(item, true) ?: false }.forEach { count += it.amount }
         return if (count >= 1) {
-            sendMessage("${Messages.PREFIX}${TEXT}Du darfst nur ein ${itemStack.itemMeta.displayName} ${TEXT}im ${IMPORTANT}Inventar ${TEXT}haben")
+            messages.shop.maxCount.map { it.replace("item", itemStack.itemMeta.displayName).replace("count", "ein") }
             false
         } else {
             inventory.addItem(item)
