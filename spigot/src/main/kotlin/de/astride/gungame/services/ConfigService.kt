@@ -525,6 +525,7 @@ class ConfigService(private val directory: File) {
                                 "shop.delayed" to shop.delayed.toJsonArray()
                                 "shop.price-lore" to shop.priceLore.toJsonArray()
                                 "shop.max-count" to shop.maxCount.toJsonArray()
+                                "shop.max-health" to shop.maxHealth.toJsonArray()
                                 "shop.money.successfully" to shop.money.successfully.toJsonArray()
                                 "shop.money.failed" to shop.money.failed.toJsonArray()
                                 "regions.damage-in-player" to regions.damageInPlayer.toJsonArray()
@@ -752,6 +753,10 @@ class ConfigService(private val directory: File) {
             val maxCount by lazy {
                 messages.available["${prefix}max-count"]
                     ?: listOf("%Prefix.Warning%Du darfst nur @count@ @item@ %Colors.TEXT%im %Colors.IMPORTANT%Inventar %Colors.TEXT%haben!")
+            }
+            val maxHealth by lazy {
+                messages.available["${prefix}max-health"]
+                    ?: listOf("%Prefix.Text%Du hast eine Behandlung echt nicht nötig ;).")
             }
 
             inner class Money internal constructor() {

@@ -6,8 +6,6 @@ import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.removeItemInHand
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -81,7 +79,7 @@ class MagicHeal(javaPlugin: JavaPlugin) : ShopItemListener(
                     "used-${this@MagicHeal.javaClass.simpleName}",
                     mapOf(/*"player" to this.toDataPlayer()*/)
                 )
-            } else "${Messages.PREFIX}${TEXT}Du hast eine Behandlung echt nicht nötig ;)".sendTo(this)
+            } else messages.shop.maxHealth.sendTo(this)
         }
 
     }
