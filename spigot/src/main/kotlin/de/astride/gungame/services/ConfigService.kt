@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 29.03.2019 13:42.
- * Current Version: 1.0 (29.03.2019 - 05.04.2019)
+ * Current Version: 1.0 (29.03.2019 - 11.04.2019)
  */
 class ConfigService(private val directory: File) {
 
@@ -410,7 +410,8 @@ class ConfigService(private val directory: File) {
         private val gsonConfig = @Suppress("DEPRECATION") GsonConfig(configData).load()
 
         /* Values */
-        internal val available = SpigotGsonMessages(gsonConfig).availableMessages
+        private val spigotGsonMessages = SpigotGsonMessages(gsonConfig)
+        internal val available = spigotGsonMessages.availableMessages
         val name by lazy { available["name"]?.firstOrNull() ?: "GunGame" }
         val prefix by lazy {
             available["prefix"]?.firstOrNull()
@@ -455,6 +456,7 @@ class ConfigService(private val directory: File) {
 
         /* SubClass */
         val commands by lazy { Commands() }
+        val shop by lazy { Shop() }
 
         init {
             messagesInstance = this
@@ -506,6 +508,8 @@ class ConfigService(private val directory: File) {
                             "commands.top.success" to commands.top.success.toJsonArray()
                             "commands.top.successfully" to commands.top.successfully.toJsonArray()
                             "commands.top.entry" to commands.top.entry.toJsonArray()
+                            "shop.money.successfully" to shop.money.successfully.toJsonArray()
+                            "shop.money.failed" to shop.money.failed.toJsonArray()
                         }
                     }
                 }
@@ -521,187 +525,211 @@ class ConfigService(private val directory: File) {
         private fun List<String?>.toJsonArray() =
             kotlinx.serialization.json.JsonArray(this.map { kotlinx.serialization.json.JsonPrimitive(it) })
 
-    }
+        inner class Commands internal constructor() {
 
-    inner class Commands internal constructor() {
+            internal val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
+            internal val Any.prefix get() = "${messagesInstance.commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
-        internal val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
-        internal val Any.prefix get() = "${messagesInstance.commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+            /* SubClass */
+            val gungame by lazy { GunGame() }
+            val stats by lazy { Stats() }
+            val statsReset by lazy { StatsReset() }
+            val team by lazy { Team() }
+            val teams by lazy { Teams() }
+            val top by lazy { Top() }
 
-        /* SubClass */
-        val gungame by lazy { GunGame() }
-        val stats by lazy { Stats() }
-        val statsReset by lazy { StatsReset() }
-        val team by lazy { Team() }
-        val teams by lazy { Teams() }
-        val top by lazy { Top() }
+            inner class GunGame internal constructor() {
 
-        inner class GunGame internal constructor() {
+                /* Values */
+                val successfully by lazy {
+                    messagesInstance.available["${prefix}successfully"]
+                        ?: listOf("%Prefix.Text%Actions wurde in \"@path@\" abgespeichert.")
+                }
 
-            /* Values */
-            val successfully by lazy {
-                messagesInstance.available["${prefix}successfully"]
-                    ?: listOf("%Prefix.Text%Actions wurde in \"@path@\" abgespeichert.")
             }
 
-        }
+            inner class Stats internal constructor() {
 
-        inner class Stats internal constructor() {
+                /* Values */
+                val failedPlayer by lazy {
+                    messagesInstance.available["${prefix}failed.use-this-if-you-are-not-a-player"]
+                        ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: /@command-name@ <Spieler>.")
+                }
+                val successfully by lazy {
 
-            /* Values */
-            val failedPlayer by lazy {
-                messagesInstance.available["${prefix}failed.use-this-if-you-are-not-a-player"]
-                    ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: /@command-name@ <Spieler>.")
+                    fun entry(p1: String, p2: String) = "%Prefix.Text%$p1%Separator.Stats%@$p2@"
+
+                    val lineSeparator = "%Separator.Line%"
+                    messagesInstance.available["${prefix}successfully"]
+                        ?: listOf(
+                            "%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%STATS%Colors.IMPORTANT% ]%Colors.DESIGN%                         ",
+                            "%Prefix.Important%%Colors.DESIGN%                   %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%@name@%Colors.IMPORTANT% ]%Colors.DESIGN%                   ",
+                            entry("Rank", "rank"),
+                            entry("Points", "points"),
+                            lineSeparator,
+                            entry("Deaths", "deaths"),
+                            entry("Kills", "kills"),
+                            entry("K/D", "kd"),
+                            lineSeparator,
+                            entry("DeathStreak", "death-streak"),
+                            entry("KillStreak", "kill-streak"),
+                            lineSeparator,
+                            entry("MaxDeathStreak", "max-death-streak"),
+                            entry("MaxKillStreak", "max-kill-streak"),
+                            lineSeparator,
+                            entry("Bought LevelUps", "bought-levelup"),
+                            entry("Bought MagicHeal", "bought-magicheal"),
+                            entry("Bought InstantKiller", "bought-instantkiller"),
+                            entry("Bought KeepInventory", "bought-keepinventory"),
+                            lineSeparator,
+                            entry("Used MagicHeal", "used-magicheal"),
+                            entry("Used InstantKiller", "used-instantkiller"),
+                            entry("Used KeepInventory", "used-keepinventory"),
+                            lineSeparator,
+                            entry("Changed Shop Color", "shop-color-changes"),
+                            entry("Shop openings", "shop-openings"),
+                            "%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%STATS%Colors.IMPORTANT% ]%Colors.DESIGN%                         "
+                        )
+
+                }
+
             }
-            val successfully by lazy {
 
-                fun entry(p1: String, p2: String) = "%Prefix.Text%$p1%Separator.Stats%@$p2@"
+            inner class StatsReset internal constructor() {
 
-                val lineSeparator = "%Separator.Line%"
-                messagesInstance.available["${prefix}successfully"]
-                    ?: listOf(
-                        "%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%STATS%Colors.IMPORTANT% ]%Colors.DESIGN%                         ",
-                        "%Prefix.Important%%Colors.DESIGN%                   %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%@name@%Colors.IMPORTANT% ]%Colors.DESIGN%                   ",
-                        entry("Rank", "rank"),
-                        entry("Points", "points"),
-                        lineSeparator,
-                        entry("Deaths", "deaths"),
-                        entry("Kills", "kills"),
-                        entry("K/D", "kd"),
-                        lineSeparator,
-                        entry("DeathStreak", "death-streak"),
-                        entry("KillStreak", "kill-streak"),
-                        lineSeparator,
-                        entry("MaxDeathStreak", "max-death-streak"),
-                        entry("MaxKillStreak", "max-kill-streak"),
-                        lineSeparator,
-                        entry("Bought LevelUps", "bought-levelup"),
-                        entry("Bought MagicHeal", "bought-magicheal"),
-                        entry("Bought InstantKiller", "bought-instantkiller"),
-                        entry("Bought KeepInventory", "bought-keepinventory"),
-                        lineSeparator,
-                        entry("Used MagicHeal", "used-magicheal"),
-                        entry("Used InstantKiller", "used-instantkiller"),
-                        entry("Used KeepInventory", "used-keepinventory"),
-                        lineSeparator,
-                        entry("Changed Shop Color", "shop-color-changes"),
-                        entry("Shop openings", "shop-openings"),
-                        "%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%STATS%Colors.IMPORTANT% ]%Colors.DESIGN%                         "
+                /* Values */
+                val infoConfirm by lazy {
+                    messagesInstance.available["${prefix}info.confirm"] ?: listOf(
+                        "",
+                        "%Prefix.Text%Nutze %Colors.IMPORTANT%\"/@command-name@ [Spieler] @confirmKey@\"%Colors.TEXT% um die @gungame.stats@ zurückzusetzen",
+                        ""
                     )
+                }
+
+                val failedPlayer by lazy {
+                    messagesInstance.available["${prefix}failed.use-this-if-you-are-not-a-player"]
+                        ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: /@command-name@ <Spieler>.")
+                }
+
+                val failedSelfNothing by lazy {
+                    messagesInstance.available["${prefix}failed.self.nothing-to-reset"]
+                        ?: listOf("%Prefix.Warning%Du hast keine Stats die man resetten könnte!")
+                }
+
+                val failedTargetNothing by lazy {
+                    messagesInstance.available["${prefix}failed.target.nothing-to-reset"]
+                        ?: listOf("%Prefix.Warning%@target@ hat keine Stats die man resetten könnte!")
+                }
+
+                val successfullySelf by lazy {
+                    messagesInstance.available["${prefix}successfully.self.stats-were-reset"] ?: listOf(
+                        "",
+                        "%Prefix.Text%Deine @gungame.stats@ wurden zurückgesetzt",
+                        ""
+                    )
+                }
+
+                val successfullySelfBy by lazy {
+                    messagesInstance.available["${prefix}successfully.self.by.stats-were-reset"] ?: listOf(
+                        "",
+                        "%Prefix.Text%Deine @gungame.stats@ wurden @gungame.stats.by@ zurückgesetzt",
+                        ""
+                    )
+                }
+
+                val successfullyTarget by lazy {
+                    messagesInstance.available["${prefix}successfully.target.stats-were-reset"] ?: listOf(
+                        "",
+                        "%Prefix.Text%Du hast die @gungame.stats@ @gungame.stats.by@ zurückgesetzt",
+                        ""
+                    )
+                }
+
+
+            }
+
+            inner class Team internal constructor() {
+
+                internal val prefix get() = "${messagesInstance.commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+
+                /* Values */
+                val failedTeamsNotAllowed by lazy {
+                    messagesInstance.available["${prefix}failed.teams-not-allowed"]
+                        ?: listOf("%Prefix.Warning%Teams sind grade verboten!")
+                }
+
+            }
+
+            inner class Teams internal constructor() {
+
+                /* Values */
+                val failedDelay by lazy {
+                    messagesInstance.available["${prefix}failed.delay"]
+                        ?: listOf("%Prefix.Warning%Teams kann nur alle %Colors.IMPORTANT%@delay@ %Colors.TEXT%genutzt werden (%Colors.IMPORTANT%@remaining@%Colors.TEXT%)")
+                }
+
+                val title: String  by lazy {
+                    messagesInstance.available["${prefix}title"]?.firstOrNull() ?: "%Colors.IMPORTANT%Teams"
+                }
+
+                val subTitle: String by lazy {
+                    messagesInstance.available["${prefix}sub-title"]?.firstOrNull()
+                        ?: "%Colors.TEXT%sind jetzt @allowed@"
+                }
+
+                val successfully by lazy {
+                    messagesInstance.available["${prefix}successfully"]?.firstOrNull()
+                        ?: "%Prefix.TEXT%Teams sind jetzt @allowed@"
+                }
+
+
+            }
+
+            inner class Top internal constructor() {
+
+                /* Values */
+                val entry by lazy {
+                    messagesInstance.available["${prefix}entry"]
+                        ?: listOf("%Prefix.Text%#@rank@%Separator.Stats%@name@%Colors.TEXT% (%Colors.IMPORTANT%@points@%Colors.TEXT%)")
+                }
+
+                val success by lazy {
+                    messagesInstance.available["${prefix}success"]
+                        ?: listOf("%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%TOP 10%Colors.IMPORTANT% ]%Colors.DESIGN%                         ")
+                }
+
+                val successfully by lazy {
+                    messagesInstance.available["${prefix}successfully"]
+                        ?: listOf("%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%TOP 10%Colors.IMPORTANT% ]%Colors.DESIGN%                         ")
+                }
 
             }
 
         }
 
-        inner class StatsReset internal constructor() {
+        inner class Shop internal constructor() {
 
-            /* Values */
-            val infoConfirm by lazy {
-                messagesInstance.available["${prefix}info.confirm"] ?: listOf(
-                    "",
-                    "%Prefix.Text%Nutze %Colors.IMPORTANT%\"/@command-name@ [Spieler] @confirmKey@\"%Colors.TEXT% um die @gungame.stats@ zurückzusetzen",
-                    ""
-                )
-            }
+            internal val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
+            internal val Any.prefix get() = "${messagesInstance.shop.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
-            val failedPlayer by lazy {
-                messagesInstance.available["${prefix}failed.use-this-if-you-are-not-a-player"]
-                    ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: /@command-name@ <Spieler>.")
-            }
+            /* SubClass */
+            val money by lazy { Money() }
 
-            val failedSelfNothing by lazy {
-                messagesInstance.available["${prefix}failed.self.nothing-to-reset"]
-                    ?: listOf("%Prefix.Warning%Du hast keine Stats die man resetten könnte!")
-            }
+            inner class Money internal constructor() {
 
-            val failedTargetNothing by lazy {
-                messagesInstance.available["${prefix}failed.target.nothing-to-reset"]
-                    ?: listOf("%Prefix.Warning%@target@ hat keine Stats die man resetten könnte!")
-            }
+                /* Values */
+                val successfully by lazy {
+                    messagesInstance.available["${prefix}successfully"]
+                        ?: listOf("%Prefix.Text%Der Kauf wurde erfolgreich abgeschlossen.")
+                }
 
-            val successfullySelf by lazy {
-                messagesInstance.available["${prefix}successfully.self.stats-were-reset"] ?: listOf(
-                    "",
-                    "%Prefix.Text%Deine @gungame.stats@ wurden zurückgesetzt",
-                    ""
-                )
-            }
+                val failed by lazy {
+                    messagesInstance.available["${prefix}failed"] ?: listOf("%Prefix.Warning%Dir fehlen @difference@$!")
+                }
 
-            val successfullySelfBy by lazy {
-                messagesInstance.available["${prefix}successfully.self.by.stats-were-reset"] ?: listOf(
-                    "",
-                    "%Prefix.Text%Deine @gungame.stats@ wurden @gungame.stats.by@ zurückgesetzt",
-                    ""
-                )
-            }
-
-            val successfullyTarget by lazy {
-                messagesInstance.available["${prefix}successfully.target.stats-were-reset"] ?: listOf(
-                    "",
-                    "%Prefix.Text%Du hast die @gungame.stats@ @gungame.stats.by@ zurückgesetzt",
-                    ""
-                )
-            }
-
-
-        }
-
-        inner class Team internal constructor() {
-
-            internal val prefix get() = "${messagesInstance.commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
-
-            /* Values */
-            val failedTeamsNotAllowed by lazy {
-                messagesInstance.available["${prefix}failed.teams-not-allowed"]
-                    ?: listOf("%Prefix.Warning%Teams sind grade verboten!")
             }
 
         }
-
-        inner class Teams internal constructor() {
-
-            /* Values */
-            val failedDelay by lazy {
-                messagesInstance.available["${prefix}failed.delay"]
-                    ?: listOf("%Prefix.Warning%Teams kann nur alle %Colors.IMPORTANT%@delay@ %Colors.TEXT%genutzt werden (%Colors.IMPORTANT%@remaining@%Colors.TEXT%)")
-            }
-
-            val title: String  by lazy {
-                messagesInstance.available["${prefix}title"]?.firstOrNull() ?: "%Colors.IMPORTANT%Teams"
-            }
-
-            val subTitle: String by lazy {
-                messagesInstance.available["${prefix}sub-title"]?.firstOrNull() ?: "%Colors.TEXT%sind jetzt @allowed@"
-            }
-
-            val successfully by lazy {
-                messagesInstance.available["${prefix}successfully"]?.firstOrNull()
-                    ?: "%Prefix.TEXT%Teams sind jetzt @allowed@"
-            }
-
-
-        }
-
-        inner class Top internal constructor() {
-
-            /* Values */
-            val entry by lazy {
-                messagesInstance.available["${prefix}entry"]
-                    ?: listOf("%Prefix.Text%#@rank@%Separator.Stats%@name@%Colors.TEXT% (%Colors.IMPORTANT%@points@%Colors.TEXT%)")
-            }
-
-            val success by lazy {
-                messagesInstance.available["${prefix}success"]
-                    ?: listOf("%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%TOP 10%Colors.IMPORTANT% ]%Colors.DESIGN%                         ")
-            }
-
-            val successfully by lazy {
-                messagesInstance.available["${prefix}successfully"]
-                    ?: listOf("%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%TOP 10%Colors.IMPORTANT% ]%Colors.DESIGN%                         ")
-            }
-
-        }
-
     }
 
     companion object {
