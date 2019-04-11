@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:33.
- * Current Version: 1.0 (19.02.2018 - 07.04.2019)
+ * Current Version: 1.0 (19.02.2018 - 11.04.2019)
  */
 abstract class ShopItemListener protected constructor(
     javaPlugin: JavaPlugin,
