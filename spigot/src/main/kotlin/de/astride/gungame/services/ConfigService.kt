@@ -410,8 +410,8 @@ class ConfigService(private val directory: File) {
         private val gsonConfig = @Suppress("DEPRECATION") GsonConfig(configData).load()
 
         /* Values */
-        private val spigotGsonMessages = SpigotGsonMessages(gsonConfig)
-        internal val available = spigotGsonMessages.availableMessages
+        private val spigotGsonMessages by lazy { SpigotGsonMessages(gsonConfig) }
+        internal val available by lazy { spigotGsonMessages.availableMessages }
         val name by lazy { available["name"]?.firstOrNull() ?: "GunGame" }
         val prefix by lazy {
             available["prefix"]?.firstOrNull()
@@ -462,60 +462,65 @@ class ConfigService(private val directory: File) {
             messagesInstance = this
 
             //Very bad code but it works!
-            if (available.isEmpty()) GsonService.save(configData, Json.indented.stringify(json {
-                "Messages" to json {
-                    "language" to "de_DE"
-                    "languages" to json {
-                        "de_DE" to json {
-                            "Colors.PRIMARY" to "\u0026b"
-                            "Colors.SECONDARY" to "\u00269"
-                            "Colors.IMPORTANT" to "\u0026f"
-                            "Colors.TEXT" to "\u00267"
-                            "Colors.EXTRA" to "\u0026l"
-                            "Colors.DESIGN" to "\u0026m"
-                            "Colors.RESET" to "\u0026r"
-                            "Colors.WARNING" to "\u0026c"
-                            "name" to name
-                            "prefix" to prefix
-                            "Prefix.Text" to "%prefix%%Colors.TEXT%"
-                            "Prefix.Important" to "%prefix%%Colors.IMPORTANT%"
-                            "Prefix.Warning" to "%prefix%%Colors.WARNING%"
-                            "Separator.Line" to "%Prefix.Text%%Colors.DESIGN%                                                               "
-                            "Separator.Stats" to "%Colors.IMPORTANT%: %Colors.PRIMARY%"
-                            "gungame.stats" to "%Colors.IMPORTANT%GunGame Stats%Colors.TEXT%"
-                            "gungame.stats.by" to "von %Colors.IMPORTANT%@sender@%Colors.TEXT%"
-                            "shop-name" to shopName
-                            "teams-allow" to teamsAllow
-                            "teams-dis-allow" to teamsDisAllow
-                            "scoreboard-displayname" to scoreboardDisplayName
-                            "scoreboard-scores" to scoreboardScores.toJsonArray()
-                            "hologram" to hologram.toJsonArray()
-                            "commands.gungame.successfully" to commands.gungame.successfully.toJsonArray()
-                            "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray()
-                            "commands.stats.successfully" to commands.stats.successfully.toJsonArray()
-                            "commands.statsReset.info.confirm" to commands.statsReset.infoConfirm.toJsonArray()
-                            "commands.statsReset.successfully.self.stats-were-reset" to commands.statsReset.successfullySelf.toJsonArray()
-                            "commands.statsReset.successfully.self.by.stats-were-reset" to commands.statsReset.successfullySelfBy.toJsonArray()
-                            "commands.statsReset.successfully.target.stats-were-reset" to commands.statsReset.successfullyTarget.toJsonArray()
-                            "commands.statsReset.failed.use-this-if-you-are-not-a-player" to commands.statsReset.failedPlayer.toJsonArray()
-                            "commands.statsReset.failed.self.nothing-to-reset" to commands.statsReset.failedSelfNothing.toJsonArray()
-                            "commands.statsReset.failed.target.nothing-to-reset" to commands.statsReset.failedTargetNothing.toJsonArray()
-                            "commands.team.failed.teams-not-allowed" to commands.team.failedTeamsNotAllowed.toJsonArray()
-                            "commands.teams.successfully" to commands.teams.successfully
-                            "commands.teams.title" to commands.teams.title
-                            "commands.teams.sub-title" to commands.teams.subTitle
-                            "commands.teams.failed.delay" to commands.teams.failedDelay.toJsonArray()
-                            "commands.top.success" to commands.top.success.toJsonArray()
-                            "commands.top.successfully" to commands.top.successfully.toJsonArray()
-                            "commands.top.entry" to commands.top.entry.toJsonArray()
-                            "shop.delayed" to shop.delayed.toJsonArray()
-                            "shop.priceLore" to shop.priceLore.toJsonArray()
-                            "shop.money.successfully" to shop.money.successfully.toJsonArray()
-                            "shop.money.failed" to shop.money.failed.toJsonArray()
+            if (available.isEmpty()) {
+                GsonService.save(configData, Json.indented.stringify(json {
+                    "Messages" to json {
+                        "language" to "de_DE"
+                        "languages" to json {
+                            "de_DE" to json {
+                                "Colors.PRIMARY" to "\u0026b"
+                                "Colors.SECONDARY" to "\u00269"
+                                "Colors.IMPORTANT" to "\u0026f"
+                                "Colors.TEXT" to "\u00267"
+                                "Colors.EXTRA" to "\u0026l"
+                                "Colors.DESIGN" to "\u0026m"
+                                "Colors.RESET" to "\u0026r"
+                                "Colors.WARNING" to "\u0026c"
+                                "name" to name
+                                "prefix" to prefix
+                                "Prefix.Text" to "%prefix%%Colors.TEXT%"
+                                "Prefix.Important" to "%prefix%%Colors.IMPORTANT%"
+                                "Prefix.Warning" to "%prefix%%Colors.WARNING%"
+                                "Separator.Line" to "%Prefix.Text%%Colors.DESIGN%                                                               "
+                                "Separator.Stats" to "%Colors.IMPORTANT%: %Colors.PRIMARY%"
+                                "gungame.stats" to "%Colors.IMPORTANT%GunGame Stats%Colors.TEXT%"
+                                "gungame.stats.by" to "von %Colors.IMPORTANT%@sender@%Colors.TEXT%"
+                                "shop-name" to shopName
+                                "teams-allow" to teamsAllow
+                                "teams-dis-allow" to teamsDisAllow
+                                "scoreboard-displayname" to scoreboardDisplayName
+                                "scoreboard-scores" to scoreboardScores.toJsonArray()
+                                "hologram" to hologram.toJsonArray()
+                                "commands.gungame.successfully" to commands.gungame.successfully.toJsonArray()
+                                "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray()
+                                "commands.stats.successfully" to commands.stats.successfully.toJsonArray()
+                                "commands.statsReset.info.confirm" to commands.statsReset.infoConfirm.toJsonArray()
+                                "commands.statsReset.successfully.self.stats-were-reset" to commands.statsReset.successfullySelf.toJsonArray()
+                                "commands.statsReset.successfully.self.by.stats-were-reset" to commands.statsReset.successfullySelfBy.toJsonArray()
+                                "commands.statsReset.successfully.target.stats-were-reset" to commands.statsReset.successfullyTarget.toJsonArray()
+                                "commands.statsReset.failed.use-this-if-you-are-not-a-player" to commands.statsReset.failedPlayer.toJsonArray()
+                                "commands.statsReset.failed.self.nothing-to-reset" to commands.statsReset.failedSelfNothing.toJsonArray()
+                                "commands.statsReset.failed.target.nothing-to-reset" to commands.statsReset.failedTargetNothing.toJsonArray()
+                                "commands.team.failed.teams-not-allowed" to commands.team.failedTeamsNotAllowed.toJsonArray()
+                                "commands.teams.successfully" to commands.teams.successfully
+                                "commands.teams.title" to commands.teams.title
+                                "commands.teams.sub-title" to commands.teams.subTitle
+                                "commands.teams.failed.delay" to commands.teams.failedDelay.toJsonArray()
+                                "commands.top.success" to commands.top.success.toJsonArray()
+                                "commands.top.successfully" to commands.top.successfully.toJsonArray()
+                                "commands.top.entry" to commands.top.entry.toJsonArray()
+                                "shop.delayed" to shop.delayed.toJsonArray()
+                                "shop.priceLore" to shop.priceLore.toJsonArray()
+                                "shop.money.successfully" to shop.money.successfully.toJsonArray()
+                                "shop.money.failed" to shop.money.failed.toJsonArray()
+                            }
                         }
                     }
-                }
-            }))
+                }))
+
+                Messages()
+
+            }
 
         }
 
