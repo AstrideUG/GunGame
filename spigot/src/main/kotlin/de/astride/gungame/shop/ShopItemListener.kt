@@ -70,16 +70,18 @@ abstract class ShopItemListener protected constructor(
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 27.03.2019 08:22.
-     * Current Version: 1.0 (27.03.2019 - 07.04.2019)
+     * Current Version: 1.0 (27.03.2019 - 11.04.2019)
      */
     fun checkedBuy(player: Player) = player.run {
         player.closeInventory()
         if (delayed() || !enoughMoney()) return@run
-        if (buy()) uniqueId.actions += Action(
-            "bought-${this@ShopItemListener.javaClass.simpleName}",
-            mapOf(/*"player" to this.toDataPlayer()*/)
-        )
-        else lastItemUse = 0
+        if (buy()) {
+            lastItemUse = System.currentTimeMillis()
+            uniqueId.actions += Action(
+                "bought-${this@ShopItemListener.javaClass.simpleName}",
+                mapOf(/*"player" to this.toDataPlayer()*/)
+            )
+        }
     }
 
     /**
@@ -97,10 +99,7 @@ abstract class ShopItemListener protected constructor(
      */
     private fun Player.delayed(): Boolean {
         val l = (lastItemUse + TimeUnit.SECONDS.toMillis(delay)) - System.currentTimeMillis()
-        return if (l <= 0) {
-            lastItemUse = System.currentTimeMillis()
-            false
-        } else {
+        return if (l <= 0) false else {
             val time = Utils.getTime(l / 1000)
             "${Messages.PREFIX}${TEXT}Du kannst $SECONDARY${itemStack.itemMeta.displayName}$TEXT in $time wieder kaufen"
                 .sendTo(this)
