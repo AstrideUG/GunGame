@@ -718,6 +718,10 @@ class ConfigService(private val directory: File) {
                 messagesInstance.available["${prefix}delayed"]
                     ?: listOf("%Prefix.Warning%Du kannst %Colors.SECONDARY%@item@%Colors.TEXT% in @time@ wieder kaufen!")
             }
+            val priceLore by lazy {
+                messagesInstance.available["${prefix}price-lore"]
+                    ?: listOf("%Prefix.Text%Kaufe ihn dir für %Colors.PRIMARY%@price@ %Colors.IMPORTANT%Coins")
+            }
 
             inner class Money internal constructor() {
 
