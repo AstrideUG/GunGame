@@ -511,7 +511,7 @@ class ConfigService(private val directory: File) {
                                 "commands.top.successfully" to commands.top.successfully.toJsonArray()
                                 "commands.top.entry" to commands.top.entry.toJsonArray()
                                 "shop.delayed" to shop.delayed.toJsonArray()
-                                "shop.priceLore" to shop.priceLore.toJsonArray()
+                                "shop.price-lore" to shop.priceLore.toJsonArray()
                                 "shop.money.successfully" to shop.money.successfully.toJsonArray()
                                 "shop.money.failed" to shop.money.failed.toJsonArray()
                             }
