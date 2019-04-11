@@ -6,11 +6,11 @@ package de.astride.gungame.shop
 import de.astride.gungame.event.GunGamePlayerShopHasEnoughMoneyEvent
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.configService
+import de.astride.gungame.functions.messages
+import de.astride.gungame.functions.replace
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.Listener
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Utils
 import net.darkdevelopers.darkbedrock.darkness.universal.functions.call
 import org.bukkit.entity.Player
@@ -50,12 +50,12 @@ abstract class ShopItemListener protected constructor(
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 27.03.2019 08:44.
-     * Current Version: 1.0 (27.03.2019 - 30.03.2019)
+     * Current Version: 1.0 (27.03.2019 - 11.04.2019)
      */
     init {
 
         itemStack.itemMeta = itemStack.itemMeta.apply {
-            lore = lore.toMutableList().apply { add(0, "${TEXT}Kaufe ihn dir für $PRIMARY$price ${IMPORTANT}Coins") }
+            lore = lore.toMutableList().apply { addAll(0, messages.shop.priceLore) }
         }
 
     }
