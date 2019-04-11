@@ -469,6 +469,7 @@ class ConfigService(private val directory: File) {
         /* SubClass */
         val commands by lazy { Commands() }
         val shop by lazy { Shop() }
+        val regions by lazy { Regions() }
 
         init {
             messagesInstance = this
@@ -760,6 +761,27 @@ class ConfigService(private val directory: File) {
             }
 
         }
+
+        inner class Regions internal constructor() {
+
+            /* Values */
+            val damageInTarget by lazy {
+                messagesInstance.available["${prefix}damage-in-target"]
+                    ?: listOf("%Prefix.Important%@target@%Colors.TEXT% befindet sich im %Colors.IMPORTANT%Spawn-Bereich!")
+            }
+
+            val damageInPlayer by lazy {
+                messagesInstance.available["${prefix}damage-in-player"]
+                    ?: listOf("%Prefix.Text%Du befindet sich im %Colors.IMPORTANT%Spawn-Bereich!")
+            }
+
+            val launchArrow by lazy {
+                messagesInstance.available["${prefix}launch-arrow"]
+                    ?: listOf("%Prefix.Text%Du befindet sich im %Colors.IMPORTANT%Spawn-Bereich!")
+            }
+
+        }
+
     }
 
     companion object {
