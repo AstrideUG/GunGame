@@ -11,9 +11,9 @@ import java.util.*
  */
 class Actions(val uuid: UUID, input: Collection<Action> = emptyList()) : ArrayList<Action>(input) {
 
-    operator fun <T> MutableCollection<in T>.plusAssign(element: T) {
+    operator fun plusAssign(element: Action) {
         this.add(element)
-        GunGameAddedActionEvent(uuid).call()
+        GunGameAddedActionEvent(uuid, element).call()
     }
 
 }
