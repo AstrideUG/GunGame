@@ -14,7 +14,6 @@ import de.astride.gungame.services.ConfigService
 import de.astride.gungame.shop.ShopListener
 import de.astride.gungame.stats.Actions
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Holograms
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
@@ -39,10 +38,6 @@ class GunGame : DarkPlugin() {
             this,
             ServicePriority.Normal
         ) //Important for ConfigService.instance
-
-        Messages.NAME.message = messages.name
-        Messages.PREFIX.message = messages.prefix
-
     }
 
     override fun onEnable(): Unit = onEnable {

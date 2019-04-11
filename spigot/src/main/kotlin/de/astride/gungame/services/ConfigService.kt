@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import de.astride.data.UUIDSerializer
 import de.astride.gungame.functions.AllowTeams
+import de.astride.gungame.functions.messages
 import de.astride.gungame.stats.Action
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.context.getOrDefault
@@ -521,6 +522,9 @@ class ConfigService(private val directory: File) {
                 Messages()
 
             }
+
+            net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages.NAME.message = messages.name
+            net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages.PREFIX.message = messages.prefix
 
         }
 
