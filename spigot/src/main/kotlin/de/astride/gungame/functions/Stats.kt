@@ -58,7 +58,7 @@ val UUID.actions: MutableList<Action> get() = allActions.getOrPut(this) { mutabl
  * Created by Lars Artmann | LartyHD on 30.03.2019 23:46.
  * Current Version: 1.0 (30.03.2019 - 30.03.2019)
  */
-val UUID.activeActions: List<Action> get() = actions.takeLastWhile { it.id != "StatsReset" }
+val UUID.activeActions: List<Action> get() = actions.takeLastWhile { it.key != "StatsReset" }
 
 /**
  * @author Lars Artmann | LartyHD
@@ -72,7 +72,7 @@ val UUID.rank get() = ranks().asReversed().takeWhile { it != Fetcher.getName(thi
  * Created by Lars Artmann | LartyHD on 30.03.2019 21:32.
  * Current Version: 1.0 (30.03.2019 - 31.03.2019)
  */
-fun UUID.count(key: String, actions: List<Action> = activeActions): Int = actions.filter { it.id == key }.count()
+fun UUID.count(key: String, actions: List<Action> = activeActions): Int = actions.filter { it.key == key }.count()
 
 /**
  * @author Lars Artmann | LartyHD
@@ -83,8 +83,8 @@ fun UUID.points(): Int {
     var count = 0
     activeActions.forEach {
         count += when {
-            it.id == "PlayerDeathEvent" -> if (count > 5) -5 else count * -1
-            it.id == "PlayerRespawnEvent" -> 10
+            it.key == "PlayerDeathEvent" -> if (count > 5) -5 else count * -1
+            it.key == "PlayerRespawnEvent" -> 10
             else -> 0
         }
     }
@@ -109,8 +109,8 @@ fun ranks() = allActions.keys.sortedBy { it.points() }.map { Fetcher.getName(it)
 fun UUID.maxStreak(check1: String, runNew: String): Int {
     val counts = mutableListOf(0)
     activeActions.forEach {
-        if (it.id == check1) counts[counts.size - 1]++
-        else if (it.id == runNew) counts += 0
+        if (it.key == check1) counts[counts.size - 1]++
+        else if (it.key == runNew) counts += 0
     }
     var b = 0
     for (i in 0 until counts.size) if (counts[i] > b) b = counts[i]
@@ -122,7 +122,7 @@ fun UUID.maxStreak(check1: String, runNew: String): Int {
  * Created by Lars Artmann | LartyHD on 31.03.2019 21:19.
  * Current Version: 1.0 (31.03.2019 - 31.03.2019)
  */
-fun UUID.streak(check1: String, runNew: String): Int = count(check1, activeActions.takeLastWhile { it.id != runNew })
+fun UUID.streak(check1: String, runNew: String): Int = count(check1, activeActions.takeLastWhile { it.key != runNew })
 
 /**
  * @author Lars Artmann | LartyHD
