@@ -754,7 +754,7 @@ class ConfigService(private val directory: File) {
             /* Values */
             val delayed by lazy {
                 messages.available["${prefix}delayed"]
-                    ?: listOf("%Prefix.Warning%Du kannst %Colors.SECONDARY%@item@%Colors.TEXT% in @time@ wieder kaufen!")
+                    ?: listOf("%Prefix.Text%Du kannst %Colors.SECONDARY%@item@%Colors.TEXT% in @time@ wieder kaufen!")
             }
             val priceLore by lazy {
                 messages.available["${prefix}price-lore"]
