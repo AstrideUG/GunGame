@@ -42,12 +42,12 @@ class MoneyListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
             val balance = economy.getBalance(player)
             it.replace("price", price).replace("balance", balance).replace("difference", balance - price)
         }
-        if (!economy.has(player, price)) {
-            event.cancel()
+        if (economy.has(player, price)) {
+            event.cancel(false)
             economy.withdrawPlayer(player, price)
             messages.shop.money.successfully.map(transform).sendTo(player)
         } else {
-            event.cancel(false)
+            event.cancel()
             messages.shop.money.failed.map(transform).sendTo(player)
         }
     }
