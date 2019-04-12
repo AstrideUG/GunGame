@@ -7,6 +7,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -365,7 +366,7 @@ private fun getWaffe(material: Material, level: Int = 0): ItemStack {
     val builder = ItemBuilder(material).setName("${SECONDARY}Waffe").setUnbreakable()
     val iItemBuilder =
         if (level != 0) builder.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, level) else builder
-    return iItemBuilder.addAllItemFlags().build()
+    return iItemBuilder.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE).build()
 }
 
 private fun getArmor(material: Material, level: Int = 0): ItemStack {
@@ -381,6 +382,6 @@ private fun getArmor(material: Material, level: Int = 0): ItemStack {
     val builder = ItemBuilder(material).setName("$SECONDARY$typeName").setUnbreakable()
     val iItemBuilder =
         if (level != 0) builder.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, level) else builder
-    return iItemBuilder.addAllItemFlags().build()
+    return iItemBuilder.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE).build()
 
 }
