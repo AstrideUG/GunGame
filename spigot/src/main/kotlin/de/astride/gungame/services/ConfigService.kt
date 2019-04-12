@@ -472,7 +472,10 @@ class ConfigService(private val directory: File) {
                 "%Colors.TEXT%K/D%Separator.Stats%@kd@"
             )
         }
-        val addAction by lazy { available["add-action"] ?: listOf() }
+        val addAction by lazy {
+            available["add-action"]
+                ?: listOf("%Colors.TEXT%Dir wurden %Colors.PRIMARY%@reward@ %Colors.IMPORTANT%Coins %Colors.TEXT%hinzugefügt.")
+        }
 
         /* SubClass */
         val commands by lazy { Commands() }
@@ -512,6 +515,7 @@ class ConfigService(private val directory: File) {
                                 "scoreboard-displayname" to scoreboardDisplayName
                                 "scoreboard-scores" to scoreboardScores.toJsonArray()
                                 "hologram" to hologram.toJsonArray()
+                                "add-action" to addAction.toJsonArray()
                                 "commands.gungame.successfully" to commands.gungame.successfully.toJsonArray()
                                 "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray()
                                 "commands.stats.successfully" to commands.stats.successfully.toJsonArray()
