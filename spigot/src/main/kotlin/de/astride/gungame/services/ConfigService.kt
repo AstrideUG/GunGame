@@ -758,7 +758,7 @@ class ConfigService(private val directory: File) {
             }
             val priceLore by lazy {
                 messages.available["${prefix}price-lore"]
-                    ?: listOf("Kaufe ihn dir für %Colors.PRIMARY%@price@ %Colors.IMPORTANT%Coins")
+                    ?: listOf("%Colors.TEXT%Kaufe ihn dir für %Colors.PRIMARY%@price@ %Colors.IMPORTANT%Coins")
             }
             val maxCount by lazy {
                 messages.available["${prefix}max-count"]
