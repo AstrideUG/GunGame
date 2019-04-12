@@ -19,7 +19,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
     commandName = config.name,
     permission = config.permission,
-    usage = "save actions [Path]",
+    usage = "save <actions/kits> [Path]",
     minLength = 2,
     maxLength = 3,
     aliases = *config.aliases
@@ -32,12 +32,22 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             val directory = "${javaPlugin.dataFolder}${File.separator}${path.dropLast(1).joinToString(File.separator)}"
             ConfigData(directory, path.last())
         }
-        configService.actions.save(configData = configData)
+
+        when (args[1].toLowerCase()) {
+            "actions" -> configService.actions.save(configData = configData)
+            "kits" -> configService.kits.save(configData = configData)
+            else -> {
+                sendUseMessage(sender)
+                return
+            }
+        }
 
         val path = configData.file.toPath()
         val absolutePath = path.toAbsolutePath()
         messages.commands.gungame.successfully.map {
-            it.replace("path", path).replace("absolute-path", absolutePath)
+            var result = it.replace("path", path).replace("absolute-path", absolutePath)
+            for (i in 0 until args.size) result = result.replace("arg$i", args[i])
+            result
         }.sendTo(sender)
 
     }
