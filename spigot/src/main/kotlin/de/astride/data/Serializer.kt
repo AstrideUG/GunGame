@@ -1,7 +1,6 @@
 package de.astride.data
 
 import kotlinx.serialization.*
-import kotlinx.serialization.context.getOrDefault
 import kotlinx.serialization.internal.IntSerializer
 import kotlinx.serialization.internal.SerialClassDescImpl
 import kotlinx.serialization.internal.StringDescriptor
@@ -22,7 +21,7 @@ import java.util.*
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 19:46.
- * Current Version: 1.0 (04.04.2019 - 11.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 12.04.2019)
  */
 
 /**
@@ -208,7 +207,7 @@ object InventoryViewSerializer : KSerializer<InventoryView> {
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 20:53.
- * Current Version: 1.0 (04.04.2019 - 06.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 12.04.2019)
  */
 @Serializer(forClass = ItemStack::class)
 object ItemStackSerializer : KSerializer<ItemStack> {
@@ -232,7 +231,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
         composite.encodeIntElement(descriptor, 1, obj.amount)
         composite.encodeShortElement(descriptor, 2, obj.durability)
         composite.encodeSerializableElement(descriptor, 3, enchantmentsSerializer, obj.enchantments)
-        composite.encodeSerializableElement(descriptor, 4, ItemMetaSerializer, obj.itemMeta)
+        composite.encodeNullableSerializableElement(descriptor, 4, ItemMetaSerializer, obj.itemMeta)
         composite.endStructure(descriptor)
 
     }
@@ -261,17 +260,32 @@ object ItemMetaSerializer : KSerializer<ItemMeta> {
 
     override fun serialize(encoder: Encoder, obj: ItemMeta) {
 
-        val itemFlagsSerializer = encoder.context.getOrDefault(ItemFlag::class).set
         val composite = encoder.beginStructure(descriptor)
         composite.encodeStringElement(descriptor, 0, obj.displayName)
-        composite.encodeSerializableElement(descriptor, 1, StringSerializer.list, obj.lore)
-        composite.encodeSerializableElement(descriptor, 2, itemFlagsSerializer, obj.itemFlags)
+        composite.encodeSerializableElement(descriptor, 1, StringSerializer.list, obj.lore.orEmpty())
+        composite.encodeSerializableElement(descriptor, 2, ItemFlagSerializer.set, obj.itemFlags)
         composite.encodeBooleanElement(descriptor, 3, obj.spigot().isUnbreakable)
         composite.endStructure(descriptor)
 
     }
 
     override fun deserialize(decoder: Decoder): ItemMeta = decoder.decode()
+
+}
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 12.04.2019 11:40.
+ * Current Version: 1.0 (12.04.2019 - 12.04.2019)
+ */
+@Serializer(forClass = ItemFlag::class)
+object ItemFlagSerializer : KSerializer<ItemFlag> {
+
+    override val descriptor: SerialDescriptor = StringDescriptor.withName("ItemFlag")
+
+    override fun serialize(encoder: Encoder, obj: ItemFlag): Unit = encoder.encodeString(obj.name)
+
+    override fun deserialize(decoder: Decoder): ItemFlag = ItemFlag.valueOf(decoder.decodeString().toUpperCase())
 
 }
 
