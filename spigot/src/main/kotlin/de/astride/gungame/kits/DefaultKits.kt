@@ -12,9 +12,9 @@ import org.bukkit.inventory.ItemStack
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 20.08.2017 18:19.
- * Current Version: 1.0 (20.08.2017 - 27.03.2019)
+ * Current Version: 1.0 (20.08.2017 - 12.04.2019)
  */
-enum class Kits(
+enum class DefaultKits(
     val helmet: ItemStack?,
     val chestplate: ItemStack?,
     val leggins: ItemStack?,
@@ -362,10 +362,10 @@ enum class Kits(
 }
 
 private fun getWaffe(material: Material, level: Int = 0): ItemStack {
-    val builder = ItemBuilder(material).setName("${SECONDARY}Waffe").setUnbreakable().addAllItemFlags()
+    val builder = ItemBuilder(material).setName("${SECONDARY}Waffe").setUnbreakable()
     val iItemBuilder =
         if (level != 0) builder.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, level) else builder
-    return iItemBuilder.build()
+    return iItemBuilder.addAllItemFlags().build()
 }
 
 private fun getArmor(material: Material, level: Int = 0): ItemStack {
@@ -378,9 +378,9 @@ private fun getArmor(material: Material, level: Int = 0): ItemStack {
         typeName.endsWith("boots") -> typeName = "${SECONDARY}Schuhe"
     }
 
-    val builder = ItemBuilder(material).setName("$SECONDARY$typeName").setUnbreakable().addAllItemFlags()
+    val builder = ItemBuilder(material).setName("$SECONDARY$typeName").setUnbreakable()
     val iItemBuilder =
         if (level != 0) builder.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, level) else builder
-    return iItemBuilder.build()
+    return iItemBuilder.addAllItemFlags().build()
 
 }

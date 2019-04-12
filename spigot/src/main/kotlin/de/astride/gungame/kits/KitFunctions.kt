@@ -10,6 +10,7 @@ import de.astride.gungame.functions.playBuySound
 import net.darkdevelopers.darkbedrock.darkness.universal.functions.call
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.metadata.FixedMetadataValue
 
 /*
@@ -17,6 +18,13 @@ import org.bukkit.metadata.FixedMetadataValue
  * Created by Lars Artmann | LartyHD on 17.02.2018 16:33. (KitManager)
  * Current Version: 1.0 (17.02.2018 - 12.04.2019)
  */
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 12.04.2019 09:51.
+ * Current Version: 1.0 (12.04.2019 - 12.04.2019)
+ */
+lateinit var kits: List<List<ItemStack?>>
 
 /**
  * @author Lars Artmann | LartyHD
@@ -52,12 +60,12 @@ fun Player.downgrade() {
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 05:34.
- * Current Version: 1.0 (27.03.2019 - 29.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 12.04.2019)
  */
 fun Player.upgrade() {
 
     val isNotCancelled = !GunGamePlayerUpgradeLevelEvent(this).call().isCancelled
-    if (isNotCancelled && gunGameLevel < Kits.values().size) {
+    if (isNotCancelled && gunGameLevel <= kits.size) {
         gunGameLevel++
         playBuySound()
     }
@@ -68,17 +76,17 @@ fun Player.upgrade() {
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 05:34.
- * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 12.04.2019)
  */
 fun Player.setKit() {
 
     inventory.apply {
-        val kit = Kits.valueOf("KIT$gunGameLevel")
-        helmet = kit.helmet
-        chestplate = kit.chestplate
-        leggings = kit.leggins
-        boots = kit.boots
-        setItem(0, kit.item)
+        val kit = kits[gunGameLevel - 1]//DefaultKits.valueOf("KIT$gunGameLevel")
+        helmet = kit[0]
+        chestplate = kit[1]
+        leggings = kit[2]
+        boots = kit[3]
+        setItem(0, kit[4])
     }
 
     updateLevel()

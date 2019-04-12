@@ -1,6 +1,5 @@
 package de.astride.gungame.commands
 
-import de.astride.gungame.functions.allActions
 import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.messages
 import de.astride.gungame.functions.replace
@@ -14,7 +13,7 @@ import java.io.File
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 18:33.
- * Current Version: 1.0 (04.04.2019 - 11.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 12.04.2019)
  */
 class GunGame(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -33,7 +32,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             val directory = "${javaPlugin.dataFolder}${File.separator}${path.dropLast(1).joinToString(File.separator)}"
             ConfigData(directory, path.last())
         }
-        configService.actions.save(allActions, configData)
+        configService.actions.save(configData = configData)
 
         val path = configData.file.toPath()
         val absolutePath = path.toAbsolutePath()

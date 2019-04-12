@@ -3,9 +3,12 @@ package de.astride.gungame.services
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import de.astride.data.ItemStackSerializer
 import de.astride.data.UUIDSerializer
 import de.astride.gungame.functions.AllowTeams
+import de.astride.gungame.functions.allActions
 import de.astride.gungame.functions.messages
+import de.astride.gungame.kits.DefaultKits
 import de.astride.gungame.stats.Action
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.context.getOrDefault
@@ -26,14 +29,16 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.SpigotGsonMessages
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
+import de.astride.gungame.kits.kits as allKits
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 29.03.2019 13:42.
- * Current Version: 1.0 (29.03.2019 - 11.04.2019)
+ * Current Version: 1.0 (29.03.2019 - 12.04.2019)
  */
 class ConfigService(private val directory: File) {
 
@@ -41,6 +46,7 @@ class ConfigService(private val directory: File) {
     val shops by lazy { Shops() }
     val maps by lazy { Maps() }
     val actions by lazy { Actions() }
+    val kits by lazy { Kits() }
 
     init {
         Messages()
@@ -96,6 +102,7 @@ class ConfigService(private val directory: File) {
                         addProperty("shops", files.shops)
                         addProperty("actions", files.actions)
                         addProperty("messages", files.messages)
+                        addProperty("kits", files.kits)
                     })
                     add(Commands::class.simpleName, JsonObject().apply {
                         add(Commands.Stats::class.simpleName, JsonObject().apply {
@@ -187,6 +194,7 @@ class ConfigService(private val directory: File) {
             val shops by lazy { file("shops") }
             val actions by lazy { file("actions") }
             val messages by lazy { file("messages") }
+            val kits by lazy { file("kits") }
 
             /**
              * @author Lars Artmann | LartyHD
@@ -410,7 +418,7 @@ class ConfigService(private val directory: File) {
             ).map { it.key to it.value.toMutableList() }.toMap().toMutableMap()
         }
 
-        fun save(input: MutableMap<UUID, MutableList<Action>>, configData: ConfigData = this.configData) =
+        fun save(input: MutableMap<UUID, MutableList<Action>> = allActions, configData: ConfigData = this.configData) =
             GsonService.save(configData, Json.indented.stringify(kSerializer, input))
 
     }
@@ -819,6 +827,31 @@ class ConfigService(private val directory: File) {
             }
 
         }
+
+    }
+
+    inner class Kits internal constructor() {
+
+        /* Main */
+        private val configData = ConfigData(directory, config.files.kits)
+        private val kSerializer: KSerializer<List<List<ItemStack>>> = ItemStackSerializer.list.list
+
+        /* Values */
+        fun load(configData: ConfigData = this.configData): List<List<ItemStack?>> {
+            val string = configData.file.readText()
+            return if (string.isEmpty()) DefaultKits.values().map {
+                listOf(it.helmet, it.chestplate, it.leggins, it.boots, it.item)
+            } else Json.parse(kSerializer, string).map {
+                it.map { itemStack -> if (itemStack.type == Material.AIR) null else itemStack }
+            }
+        }
+
+        fun save(input: List<List<ItemStack?>> = allKits, configData: ConfigData = this.configData) = GsonService.save(
+            configData,
+            Json.indented.stringify(
+                kSerializer,
+                input.map { it.mapNotNull { itemStack -> itemStack ?: ItemStack(Material.AIR) } })
+        )
 
     }
 

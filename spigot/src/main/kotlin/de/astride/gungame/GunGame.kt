@@ -7,6 +7,7 @@ import com.google.gson.JsonObject
 import de.astride.gungame.commands.*
 import de.astride.gungame.commands.GunGame
 import de.astride.gungame.functions.*
+import de.astride.gungame.kits.kits
 import de.astride.gungame.listener.InGameListener
 import de.astride.gungame.listener.MoneyListener
 import de.astride.gungame.listener.RegionsListener
@@ -27,7 +28,7 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 06.04.2019)
+ * Current Version: 1.0 (17.02.2018 - 12.04.2019)
  */
 class GunGame : DarkPlugin() {
 
@@ -44,24 +45,23 @@ class GunGame : DarkPlugin() {
 
         EventsListener.autoRespawn = true
 
-        val config = configService.maps
-        if (config.maps.size() < 1) throw IllegalStateException("No Maps are configured")
-        @Suppress("LABEL_NAME_CLASH")
-        val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return@onEnable
-        gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { player, holograms, map ->
-            val uuid = player.uniqueId
-            holograms[uuid] =
-                Holograms(messages.hologram.withReplacements(uuid).mapNotNull { it }.toTypedArray(), map.hologram)
-            holograms[uuid]?.show(player)
+        logLoad("map") {
+            val config = configService.maps
+            if (config.maps.size() < 1) throw IllegalStateException("No Maps are configured")
+            @Suppress("LABEL_NAME_CLASH")
+            val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return@onEnable
+            gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { player, holograms, map ->
+                val uuid = player.uniqueId
+                holograms[uuid] =
+                    Holograms(messages.hologram.withReplacements(uuid).mapNotNull { it }.toTypedArray(), map.hologram)
+                holograms[uuid]?.show(player)
+            }
         }
-
-        logger.info("Load stats...")
-        allActions = configService.actions.load().map { it.key to Actions(it.key, it.value) }.toMap().toMutableMap()
-        logger.info("Loaded stats")
-
-        logger.info("Load allowTeams...")
-        allowTeams = configService.config.allowTeams
-        logger.info("Loaded allowTeams")
+        logLoad("kits") { kits = configService.kits.load() }
+        logLoad("allow-teams") { allowTeams = configService.config.allowTeams }
+        logLoad("stats") {
+            allActions = configService.actions.load().map { it.key to Actions(it.key, it.value) }.toMap().toMutableMap()
+        }
 
         initListener()
         initCommands()
@@ -73,9 +73,8 @@ class GunGame : DarkPlugin() {
     }
 
     override fun onDisable(): Unit = onDisable {
-        logger.info("Save stats...")
-        configService.actions.save(allActions)
-        logger.info("Saved stats")
+        logSave("kits") { configService.kits.save() }
+        logSave("stats") { configService.actions.save() }
     }
 
     private fun initListener() {
@@ -112,6 +111,14 @@ class GunGame : DarkPlugin() {
 
         }
 
+    }
+
+    private inline fun logLoad(suffix: String, block: () -> Unit) = log("Load", suffix, block)
+    private inline fun logSave(suffix: String, block: () -> Unit) = log("Save", suffix, block)
+    private inline fun log(prefix: String, suffix: String, block: () -> Unit) {
+        logger.info("$prefix $suffix...")
+        block()
+        logger.info("${prefix}ed $suffix")
     }
 
 //    private fun ranksUpdater() =
