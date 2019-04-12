@@ -5,8 +5,10 @@ import kotlinx.serialization.internal.IntSerializer
 import kotlinx.serialization.internal.SerialClassDescImpl
 import kotlinx.serialization.internal.StringDescriptor
 import kotlinx.serialization.internal.StringSerializer
+import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.*
@@ -216,34 +218,73 @@ object ItemStackSerializer : KSerializer<ItemStack> {
         object : SerialClassDescImpl(javaClass.simpleName.replace("Serializer", "")) {
             init {
                 addElement("type")
-                addElement("amount")
-                addElement("durability")
-                addElement("enchantments")
-                addElement("itemMeta")
+                addElement("amount", true)
+                addElement("durability", true)
+                addElement("enchantments", true)
+                addElement("itemMeta", true)
             }
         }
 
     override fun serialize(encoder: Encoder, obj: ItemStack) {
 
-        val enchantmentsSerializer = (EnchantmentSerializer to IntSerializer).map
         val composite = encoder.beginStructure(descriptor)
         composite.encodeStringElement(descriptor, 0, obj.type.name)
-        composite.encodeIntElement(descriptor, 1, obj.amount)
-        composite.encodeShortElement(descriptor, 2, obj.durability)
-        composite.encodeSerializableElement(descriptor, 3, enchantmentsSerializer, obj.enchantments)
-        composite.encodeNullableSerializableElement(descriptor, 4, ItemMetaSerializer, obj.itemMeta)
+        if (obj.amount != 1) composite.encodeIntElement(descriptor, 1, obj.amount)
+        if (obj.durability != 0.toShort()) composite.encodeShortElement(descriptor, 2, obj.durability)
+        if (obj.enchantments.isNotEmpty()) composite.encodeSerializableElement(
+            descriptor,
+            3,
+            (EnchantmentSerializer to IntSerializer).map,
+            obj.enchantments
+        )
+        if (obj.itemMeta != null) composite.encodeSerializableElement(
+            descriptor,
+            4,
+            ItemMetaSerializer,
+            obj.itemMeta
+        )
         composite.endStructure(descriptor)
 
     }
 
-    override fun deserialize(decoder: Decoder): ItemStack = decoder.decode()
+    override fun deserialize(decoder: Decoder): ItemStack {
+
+        val composite = decoder.beginStructure(descriptor)
+
+        var type: Material? = null
+        var amount = 1
+        var durability: Short = 0
+        var enchantments: Map<Enchantment, Int> = emptyMap()
+        var itemMeta: ItemMeta? = null
+        loop@ while (true) {
+            if (type == Material.AIR) break@loop
+            when (val index = composite.decodeElementIndex(descriptor)) {
+                CompositeDecoder.READ_DONE -> break@loop
+                0 -> type = Material.valueOf(composite.decodeStringElement(descriptor, 0))
+                1 -> amount = composite.decodeIntElement(descriptor, 1)
+                2 -> durability = composite.decodeShortElement(descriptor, 2)
+                3 -> enchantments =
+                    composite.decodeSerializableElement(descriptor, 3, (EnchantmentSerializer to IntSerializer).map)
+                4 -> itemMeta = composite.decodeSerializableElement(descriptor, 4, ItemMetaSerializer)
+                else -> throw SerializationException("Unknown index $index")
+            }
+        }
+        composite.endStructure(descriptor)
+
+        return if (type == null || type == Material.AIR) ItemStack(Material.AIR)
+        else ItemBuilder(type, amount, durability).apply {
+            enchantments.forEach { enchantment, i ->
+                addEnchant(enchantment, i)
+            }
+        }.build().apply { this.itemMeta = itemMeta }
+    }
 
 }
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 06.04.2019 21:03.
- * Current Version: 1.0 (06.04.2019 - 06.04.2019)
+ * Current Version: 1.0 (06.04.2019 - 12.04.2019)
  */
 @Serializer(forClass = ItemMeta::class)
 object ItemMetaSerializer : KSerializer<ItemMeta> {
@@ -251,9 +292,9 @@ object ItemMetaSerializer : KSerializer<ItemMeta> {
     override val descriptor: SerialDescriptor =
         object : SerialClassDescImpl(javaClass.simpleName.replace("Serializer", "")) {
             init {
-                addElement("displayName")
+                addElement("display-name")
                 addElement("lore")
-                addElement("itemFlags")
+                addElement("item-flags")
                 addElement("unbreakable")
             }
         }
@@ -269,7 +310,34 @@ object ItemMetaSerializer : KSerializer<ItemMeta> {
 
     }
 
-    override fun deserialize(decoder: Decoder): ItemMeta = decoder.decode()
+    override fun deserialize(decoder: Decoder): ItemMeta {
+
+        val composite = decoder.beginStructure(ItemStackSerializer.descriptor)
+
+        var displayName: String? = null
+        var lore = listOf<String>()
+        var itemFlags: Set<ItemFlag> = emptySet()
+        var unbreakable = false
+        loop@ while (true) {
+            when (val index = composite.decodeElementIndex(ItemStackSerializer.descriptor)) {
+                CompositeDecoder.READ_DONE -> break@loop
+                0 -> displayName = composite.decodeStringElement(descriptor, 0)
+                1 -> lore = composite.decodeSerializableElement(descriptor, 1, StringSerializer.list)
+                2 -> itemFlags = composite.decodeSerializableElement(descriptor, 2, ItemFlagSerializer.set)
+                3 -> unbreakable =
+                    composite.decodeBooleanElement(descriptor, 3)
+                else -> throw SerializationException("Unknown index $index")
+            }
+        }
+        composite.endStructure(ItemStackSerializer.descriptor)
+
+        return Bukkit.getItemFactory().getItemMeta(Material.STONE).apply {
+            this.displayName = displayName
+            this.lore = lore
+            this.itemFlags.addAll(itemFlags)
+            this.spigot().isUnbreakable = unbreakable
+        }
+    }
 
 }
 
