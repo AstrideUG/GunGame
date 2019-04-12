@@ -15,7 +15,7 @@ import org.bukkit.metadata.FixedMetadataValue
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 16:33. (KitManager)
- * Current Version: 1.0 (17.02.2018 - 01.04.2019)
+ * Current Version: 1.0 (17.02.2018 - 12.04.2019)
  */
 
 /**
@@ -88,9 +88,9 @@ fun Player.setKit() {
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 08:31.
- * Current Version: 1.0 (27.03.2019 - 27.03.2019)
+ * Current Version: 1.0 (27.03.2019 - 12.04.2019)
  */
-fun Player.updateLevel() = Bukkit.getScheduler().scheduleSyncDelayedTask(javaPlugin, { level = gunGameLevel }, 3)
+fun Player.updateLevel() = Bukkit.getScheduler().scheduleSyncDelayedTask(javaPlugin, { level = gunGameLevel }, 2)
 
 
 
