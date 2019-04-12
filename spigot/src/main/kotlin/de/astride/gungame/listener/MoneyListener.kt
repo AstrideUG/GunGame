@@ -40,7 +40,7 @@ class MoneyListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
         val player = event.player
         val transform: (String?) -> String? = {
             val balance = economy.getBalance(player)
-            it.replace("price", price).replace("balance", balance).replace("difference", balance - price)
+            it.replace("price", price).replace("balance", balance).replace("difference", price - balance)
         }
         if (economy.has(player, price)) {
             event.cancel(false)
