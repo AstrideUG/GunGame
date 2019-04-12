@@ -378,7 +378,7 @@ private fun build(material: Material, level: Int = 0): ItemStack {
     }
 
     val builder = ItemBuilder(material).setName("$SECONDARY$typeName")
-    val iItemBuilder = if (level != 0) builder.addUnsafeEnchantment(
+    val iItemBuilder = if (level != 0) builder.addEnchant(
         if (typeName == "Waffe") Enchantment.DAMAGE_ALL else Enchantment.PROTECTION_ENVIRONMENTAL,
         level
     ) else builder
