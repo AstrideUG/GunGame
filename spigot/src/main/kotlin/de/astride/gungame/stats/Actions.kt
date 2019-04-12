@@ -7,13 +7,13 @@ import java.util.*
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 11.04.2019 03:52.
- * Current Version: 1.0 (11.04.2019 - 11.04.2019)
+ * Current Version: 1.0 (11.04.2019 - 12.04.2019)
  */
 class Actions(val uuid: UUID, input: Collection<Action> = emptyList()) : ArrayList<Action>(input) {
 
-    operator fun plusAssign(element: Action) {
-        this.add(element)
+    override fun add(element: Action): Boolean {
         GunGameAddedActionEvent(uuid, element).call()
+        return super.add(element)
     }
 
 }
