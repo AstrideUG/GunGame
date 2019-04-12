@@ -55,18 +55,20 @@ class MoneyListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 11.04.2019 04:08.
-     * Current Version: 1.0 (11.04.2019 - 11.04.2019)
+     * Current Version: 1.0 (11.04.2019 - 12.04.2019)
      */
     @EventHandler
     fun onGunGameAddedActionEvent(event: GunGameAddedActionEvent) {
 
         val offlinePlayer = event.uuid.toOfflinePlayer()
         if (offlinePlayer != null) {
-            economy.withdrawPlayer(offlinePlayer, configService.config.rewards[event.action.key] ?: return)
+            val reward = configService.config.rewards[event.action.key]
+            economy.depositPlayer(offlinePlayer, reward ?: return)
             messages.addAction.map {
                 it
                     .replace("uuid", event.uuid.toString())
                     .replace("name", offlinePlayer.name)
+                    .replace("reward", reward)
                     .replace("action-key", event.action.key)
                     .replace("action-timestamp", event.action.timestamp)
                     .replace("action-uuid", event.action.uuid)
