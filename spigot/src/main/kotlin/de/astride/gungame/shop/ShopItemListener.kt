@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:33.
- * Current Version: 1.0 (19.02.2018 - 11.04.2019)
+ * Current Version: 1.0 (19.02.2018 - 12.04.2019)
  */
 abstract class ShopItemListener protected constructor(
     javaPlugin: JavaPlugin,
@@ -55,7 +55,8 @@ abstract class ShopItemListener protected constructor(
     init {
 
         itemStack.itemMeta = itemStack.itemMeta.apply {
-            lore = lore.toMutableList().apply { addAll(0, messages.shop.priceLore) }
+            lore = lore.toMutableList()
+                .apply { addAll(0, messages.shop.priceLore.map { it.replace("price", price).replace("delay", delay) }) }
         }
 
     }
