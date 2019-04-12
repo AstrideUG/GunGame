@@ -582,7 +582,7 @@ class ConfigService(private val directory: File) {
                 /* Values */
                 val successfully by lazy {
                     messages.available["${prefix}successfully"]
-                        ?: listOf("%Prefix.Text%@arg1@ wurde in \"@path@\" abgespeichert.")
+                        ?: listOf("%Prefix.Text%@arg1@ wurden in \"@path@\" abgespeichert.")
                 }
 
             }
