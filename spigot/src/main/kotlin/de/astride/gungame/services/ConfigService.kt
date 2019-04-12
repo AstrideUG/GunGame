@@ -474,7 +474,7 @@ class ConfigService(private val directory: File) {
         }
         val addAction by lazy {
             available["add-action"]
-                ?: listOf("%Colors.TEXT%Dir wurden %Colors.PRIMARY%@reward@ %Colors.IMPORTANT%Coins %Colors.TEXT%hinzugefügt.")
+                ?: listOf("%Prefix.Text%Dir wurden %Colors.PRIMARY%@reward@ %Colors.IMPORTANT%Coins %Colors.TEXT%hinzugefügt.")
         }
 
         /* SubClass */
