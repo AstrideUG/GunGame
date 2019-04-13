@@ -845,7 +845,7 @@ class ConfigService(private val directory: File) {
             val string = configData.file.readText()
             return if (string.isEmpty()) DefaultKits.values().map {
                 listOf(it.helmet, it.chestplate, it.leggins, it.boots, it.item)
-            } else Json.parse(kSerializer, string).map {
+            } else Json.nonstrict.parse(kSerializer, string).map {
                 it.map { itemStack -> if (itemStack.type == Material.AIR) null else itemStack }
             }
         }
