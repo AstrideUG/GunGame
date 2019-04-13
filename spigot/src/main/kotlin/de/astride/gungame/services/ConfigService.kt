@@ -655,7 +655,7 @@ class ConfigService(private val directory: File) {
                 val infoConfirm by lazy {
                     available["${prefix}info.confirm"] ?: listOf(
                         "",
-                        "%Prefix.Text%Nutze %Colors.IMPORTANT%\"/@command-name@ [Spieler] @confirmKey@\"%Colors.TEXT% um die @gungame.stats@ zurückzusetzen",
+                        "%Prefix.Text%Nutze %Colors.IMPORTANT%\"/@command-name@ [Spieler] @confirmKey@\"%Colors.TEXT% um die %gungame.stats% zurückzusetzen",
                         ""
                     )
                 }
@@ -678,7 +678,7 @@ class ConfigService(private val directory: File) {
                 val successfullySelf by lazy {
                     available["${prefix}successfully.self.stats-were-reset"] ?: listOf(
                         "",
-                        "%Prefix.Text%Deine @gungame.stats@ wurden zurückgesetzt",
+                        "%Prefix.Text%Deine %gungame.stats% wurden zurückgesetzt",
                         ""
                     )
                 }
