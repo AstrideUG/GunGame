@@ -13,7 +13,7 @@ import java.io.File
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 18:33.
- * Current Version: 1.0 (04.04.2019 - 12.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 13.04.2019)
  */
 class GunGame(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -27,20 +27,21 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
 
     override fun perform(sender: CommandSender, args: Array<String>) {
 
-        val configData = if (args.size < 3) configService.actions.configData else {
+        val configData = if (args.size < 3) when (args[1].toLowerCase()) {
+            "actions" -> configService.actions.configData
+            "kits" -> configService.kits.configData
+            else -> {
+                sendUseMessage(sender)
+                return
+            }
+        } else {
             val path = args[2].split('/')
             val directory = "${javaPlugin.dataFolder}${File.separator}${path.dropLast(1).joinToString(File.separator)}"
             ConfigData(directory, path.last())
         }
 
-        when (args[1].toLowerCase()) {
-            "actions" -> configService.actions.save(configData = configData)
-            "kits" -> configService.kits.save(configData = configData)
-            else -> {
-                sendUseMessage(sender)
-                return
-            }
-        }
+        if (args[1].toLowerCase() == "actions") configService.actions.save(configData = configData)
+        else if (args[1].toLowerCase() == "kits") configService.kits.save(configData = configData)
 
         val path = configData.file.toPath()
         val absolutePath = path.toAbsolutePath()
