@@ -423,10 +423,13 @@ class ConfigService(private val directory: File) {
 
     }
 
-    inner class Messages internal constructor() {
+    inner class Messages internal constructor(/* Main */ val configData: ConfigData = ConfigData(
+        directory,
+        config.files.messages
+    )
+    ) {
 
         /* Main */
-        private val configData = ConfigData(directory, config.files.messages)
         private val gsonConfig = @Suppress("DEPRECATION") GsonConfig(configData).load()
 
         /* Values */
@@ -516,7 +519,8 @@ class ConfigService(private val directory: File) {
                                 "scoreboard-scores" to scoreboardScores.toJsonArray()
                                 "hologram" to hologram.toJsonArray()
                                 "add-action" to addAction.toJsonArray()
-                                "commands.gungame.successfully" to commands.gungame.successfully.toJsonArray()
+                                "commands.gungame.successfully.saved" to commands.gungame.successfullySaved.toJsonArray()
+                                "commands.gungame.successfully.loaded" to commands.gungame.successfullyLoaded.toJsonArray()
                                 "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray()
                                 "commands.stats.successfully" to commands.stats.successfully.toJsonArray()
                                 "commands.statsreset.info.confirm" to commands.statsReset.infoConfirm.toJsonArray()
@@ -584,9 +588,14 @@ class ConfigService(private val directory: File) {
             inner class GunGame internal constructor() {
 
                 /* Values */
-                val successfully by lazy {
-                    messages.available["${prefix}successfully"]
+                val successfullySaved by lazy {
+                    messages.available["${prefix}successfully.saved"]
                         ?: listOf("%Prefix.Text%@arg1@ wurden in \"@path@\" abgespeichert.")
+                }
+
+                val successfullyLoaded by lazy {
+                    messages.available["${prefix}successfully.loaded"]
+                        ?: listOf("%Prefix.Text%@arg1@ wurde aus \"@path@\" geladen.")
                 }
 
             }
