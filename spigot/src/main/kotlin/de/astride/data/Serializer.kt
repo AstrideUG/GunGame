@@ -23,7 +23,7 @@ import java.util.*
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 19:46.
- * Current Version: 1.0 (04.04.2019 - 12.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 13.04.2019)
  */
 
 /**
@@ -284,7 +284,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 06.04.2019 21:03.
- * Current Version: 1.0 (06.04.2019 - 12.04.2019)
+ * Current Version: 1.0 (06.04.2019 - 13.04.2019)
  */
 @Serializer(forClass = ItemMeta::class)
 object ItemMetaSerializer : KSerializer<ItemMeta> {
@@ -312,14 +312,14 @@ object ItemMetaSerializer : KSerializer<ItemMeta> {
 
     override fun deserialize(decoder: Decoder): ItemMeta {
 
-        val composite = decoder.beginStructure(ItemStackSerializer.descriptor)
+        val composite = decoder.beginStructure(descriptor)
 
         var displayName: String? = null
         var lore = listOf<String>()
         var itemFlags: Set<ItemFlag> = emptySet()
-        var unbreakable = false
+        var unbreakable: Boolean? = null
         loop@ while (true) {
-            when (val index = composite.decodeElementIndex(ItemStackSerializer.descriptor)) {
+            when (val index = composite.decodeElementIndex(descriptor)) {
                 CompositeDecoder.READ_DONE -> break@loop
                 0 -> displayName = composite.decodeStringElement(descriptor, 0)
                 1 -> lore = composite.decodeSerializableElement(descriptor, 1, StringSerializer.list)
@@ -329,13 +329,13 @@ object ItemMetaSerializer : KSerializer<ItemMeta> {
                 else -> throw SerializationException("Unknown index $index")
             }
         }
-        composite.endStructure(ItemStackSerializer.descriptor)
+        composite.endStructure(descriptor)
 
         return Bukkit.getItemFactory().getItemMeta(Material.STONE).apply {
-            this.displayName = displayName
+            displayName?.let { this.displayName = it }
             this.lore = lore
             this.itemFlags.addAll(itemFlags)
-            this.spigot().isUnbreakable = unbreakable
+            unbreakable?.let { this.spigot().isUnbreakable = it }
         }
     }
 
