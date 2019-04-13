@@ -776,7 +776,7 @@ class ConfigService(private val directory: File) {
             }
             val maxCount by lazy {
                 available["${prefix}max-count"]
-                    ?: listOf("%Prefix.Warning%Du darfst nur @count@ @item@ %Colors.TEXT%im %Colors.IMPORTANT%Inventar %Colors.TEXT%haben!")
+                    ?: listOf("%Prefix.Warning%Du darfst nur @count@ @item@ %Colors.WARNING%im %Colors.IMPORTANT%Inventar %Colors.WARNING%haben!")
             }
             val maxHealth by lazy {
                 available["${prefix}max-health"]
