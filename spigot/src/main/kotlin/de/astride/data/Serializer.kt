@@ -272,11 +272,9 @@ object ItemStackSerializer : KSerializer<ItemStack> {
         composite.endStructure(descriptor)
 
         return if (type == null || type == Material.AIR) ItemStack(Material.AIR)
-        else ItemBuilder(type, amount, durability).apply {
-            enchantments.forEach { enchantment, i ->
-                addEnchant(enchantment, i)
-            }
-        }.build().apply { this.itemMeta = itemMeta }
+        else ItemBuilder(ItemStack(type, amount, durability).apply { this.itemMeta = itemMeta }).apply {
+            enchantments.forEach { (enchantment, i) -> addEnchant(enchantment, i) }
+        }.build()
     }
 
 }
