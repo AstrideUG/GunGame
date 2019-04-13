@@ -118,7 +118,7 @@ class GunGame : DarkPlugin() {
     private inline fun log(prefix: String, suffix: String, block: () -> Unit) {
         logger.info("$prefix $suffix...")
         block()
-        logger.info("${prefix}ed $suffix")
+        logger.info("${if (prefix.endsWith('e')) prefix.dropLast(1) else prefix}ed $suffix")
     }
 
 //    private fun ranksUpdater() =
