@@ -423,10 +423,9 @@ class ConfigService(private val directory: File) {
 
     }
 
-    inner class Messages internal constructor(/* Main */ val configData: ConfigData = ConfigData(
-        directory,
-        config.files.messages
-    )
+    inner class Messages internal constructor(
+        /* Main */
+        val configData: ConfigData = ConfigData(directory, config.files.messages)
     ) {
 
         /* Main */
@@ -440,7 +439,6 @@ class ConfigService(private val directory: File) {
             available["prefix"]?.firstOrNull()
                 ?: "%Colors.PRIMARY%%Colors.EXTRA%%name% %Colors.IMPORTANT%┃ %Colors.RESET%"
         }
-        val shopName by lazy { available["shop-name"]?.firstOrNull() ?: "%Colors.SECONDARY%Shop" }
         val teamsAllow by lazy { available["teams-allow"]?.firstOrNull() ?: "erlaubt" }
         val teamsDisAllow by lazy { available["teams-dis-allow"]?.firstOrNull() ?: "verboten" }
         val scoreboardDisplayName by lazy {
@@ -512,7 +510,6 @@ class ConfigService(private val directory: File) {
                                 "Separator.Stats" to "%Colors.IMPORTANT%: %Colors.PRIMARY%"
                                 "gungame.stats" to "%Colors.IMPORTANT%GunGame Stats%Colors.TEXT%"
                                 "gungame.stats.by" to "von %Colors.IMPORTANT%@sender@%Colors.TEXT%"
-                                "shop-name" to shopName
                                 "teams-allow" to teamsAllow
                                 "teams-dis-allow" to teamsDisAllow
                                 "scoreboard-displayname" to scoreboardDisplayName
@@ -538,6 +535,8 @@ class ConfigService(private val directory: File) {
                                 "commands.top.success" to commands.top.success.toJsonArray()
                                 "commands.top.successfully" to commands.top.successfully.toJsonArray()
                                 "commands.top.entry" to commands.top.entry.toJsonArray()
+                                "shop.entity-name" to shop.entityName
+                                "shop.name" to shop.name
                                 "shop.delayed" to shop.delayed.toJsonArray()
                                 "shop.price-lore" to shop.priceLore.toJsonArray()
                                 "shop.max-count" to shop.maxCount.toJsonArray()
@@ -589,12 +588,12 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val successfullySaved by lazy {
-                    messages.available["${prefix}successfully.saved"]
+                    available["${prefix}successfully.saved"]
                         ?: listOf("%Prefix.Text%@arg1@ wurden in \"@path@\" abgespeichert.")
                 }
 
                 val successfullyLoaded by lazy {
-                    messages.available["${prefix}successfully.loaded"]
+                    available["${prefix}successfully.loaded"]
                         ?: listOf("%Prefix.Text%@arg1@ wurde aus \"@path@\" geladen.")
                 }
 
@@ -604,7 +603,7 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val failedPlayer by lazy {
-                    messages.available["${prefix}failed.use-this-if-you-are-not-a-player"]
+                    available["${prefix}failed.use-this-if-you-are-not-a-player"]
                         ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: /@command-name@ <Spieler>.")
                 }
                 val successfully by lazy {
@@ -612,7 +611,7 @@ class ConfigService(private val directory: File) {
                     fun entry(p1: String, p2: String) = "%Prefix.Text%$p1%Separator.Stats%@$p2@"
 
                     val lineSeparator = "%Separator.Line%"
-                    messages.available["${prefix}successfully"]
+                    available["${prefix}successfully"]
                         ?: listOf(
                             "%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%STATS%Colors.IMPORTANT% ]%Colors.DESIGN%                         ",
                             "%Prefix.Important%%Colors.DESIGN%                   %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%@name@%Colors.IMPORTANT% ]%Colors.DESIGN%                   ",
@@ -651,7 +650,7 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val infoConfirm by lazy {
-                    messages.available["${prefix}info.confirm"] ?: listOf(
+                    available["${prefix}info.confirm"] ?: listOf(
                         "",
                         "%Prefix.Text%Nutze %Colors.IMPORTANT%\"/@command-name@ [Spieler] @confirmKey@\"%Colors.TEXT% um die @gungame.stats@ zurückzusetzen",
                         ""
@@ -659,22 +658,22 @@ class ConfigService(private val directory: File) {
                 }
 
                 val failedPlayer by lazy {
-                    messages.available["${prefix}failed.use-this-if-you-are-not-a-player"]
+                    available["${prefix}failed.use-this-if-you-are-not-a-player"]
                         ?: listOf("%Prefix.Warning%Nutze als nicht Spieler: /@command-name@ <Spieler>.")
                 }
 
                 val failedSelfNothing by lazy {
-                    messages.available["${prefix}failed.self.nothing-to-reset"]
+                    available["${prefix}failed.self.nothing-to-reset"]
                         ?: listOf("%Prefix.Warning%Du hast keine Stats die man resetten könnte!")
                 }
 
                 val failedTargetNothing by lazy {
-                    messages.available["${prefix}failed.target.nothing-to-reset"]
+                    available["${prefix}failed.target.nothing-to-reset"]
                         ?: listOf("%Prefix.Warning%@target@ hat keine Stats die man resetten könnte!")
                 }
 
                 val successfullySelf by lazy {
-                    messages.available["${prefix}successfully.self.stats-were-reset"] ?: listOf(
+                    available["${prefix}successfully.self.stats-were-reset"] ?: listOf(
                         "",
                         "%Prefix.Text%Deine @gungame.stats@ wurden zurückgesetzt",
                         ""
@@ -682,7 +681,7 @@ class ConfigService(private val directory: File) {
                 }
 
                 val successfullySelfBy by lazy {
-                    messages.available["${prefix}successfully.self.by.stats-were-reset"] ?: listOf(
+                    available["${prefix}successfully.self.by.stats-were-reset"] ?: listOf(
                         "",
                         "%Prefix.Text%Deine @gungame.stats@ wurden @gungame.stats.by@ zurückgesetzt",
                         ""
@@ -690,7 +689,7 @@ class ConfigService(private val directory: File) {
                 }
 
                 val successfullyTarget by lazy {
-                    messages.available["${prefix}successfully.target.stats-were-reset"] ?: listOf(
+                    available["${prefix}successfully.target.stats-were-reset"] ?: listOf(
                         "",
                         "%Prefix.Text%Du hast die @gungame.stats@ @gungame.stats.by@ zurückgesetzt",
                         ""
@@ -706,7 +705,7 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val failedTeamsNotAllowed by lazy {
-                    messages.available["${prefix}failed.teams-not-allowed"]
+                    available["${prefix}failed.teams-not-allowed"]
                         ?: listOf("%Prefix.Warning%Teams sind grade verboten!")
                 }
 
@@ -716,21 +715,21 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val failedDelay by lazy {
-                    messages.available["${prefix}failed.delay"]
+                    available["${prefix}failed.delay"]
                         ?: listOf("%Prefix.Warning%Teams kann nur alle %Colors.IMPORTANT%@delay@ %Colors.TEXT%genutzt werden (%Colors.IMPORTANT%@remaining@%Colors.TEXT%)")
                 }
 
                 val title: String  by lazy {
-                    messages.available["${prefix}title"]?.firstOrNull() ?: "%Colors.IMPORTANT%Teams"
+                    available["${prefix}title"]?.firstOrNull() ?: "%Colors.IMPORTANT%Teams"
                 }
 
                 val subTitle: String by lazy {
-                    messages.available["${prefix}sub-title"]?.firstOrNull()
+                    available["${prefix}sub-title"]?.firstOrNull()
                         ?: "%Colors.TEXT%sind jetzt @allowed@"
                 }
 
                 val successfully by lazy {
-                    messages.available["${prefix}successfully"]?.firstOrNull()
+                    available["${prefix}successfully"]?.firstOrNull()
                         ?: "%Prefix.TEXT%Teams sind jetzt @allowed@"
                 }
 
@@ -741,17 +740,17 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val entry by lazy {
-                    messages.available["${prefix}entry"]
+                    available["${prefix}entry"]
                         ?: listOf("%Prefix.Text%#@rank@%Separator.Stats%@name@%Colors.TEXT% (%Colors.IMPORTANT%@points@%Colors.TEXT%)")
                 }
 
                 val success by lazy {
-                    messages.available["${prefix}success"]
+                    available["${prefix}success"]
                         ?: listOf("%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%TOP 10%Colors.IMPORTANT% ]%Colors.DESIGN%                         ")
                 }
 
                 val successfully by lazy {
-                    messages.available["${prefix}successfully"]
+                    available["${prefix}successfully"]
                         ?: listOf("%Prefix.Important%%Colors.DESIGN%                         %Colors.IMPORTANT%[ %Colors.PRIMARY%%Colors.EXTRA%TOP 10%Colors.IMPORTANT% ]%Colors.DESIGN%                         ")
                 }
 
@@ -765,24 +764,26 @@ class ConfigService(private val directory: File) {
             internal val Any.prefix get() = "${messages.shop.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
             /* Values */
+            val entityName by lazy { available["entity-name"]?.firstOrNull() ?: "%Colors.SECONDARY%Shop" }
+            val name by lazy { available["${prefix}name"]?.firstOrNull() ?: "%Colors.SECONDARY%Shop" }
             val delayed by lazy {
-                messages.available["${prefix}delayed"]
+                available["${prefix}delayed"]
                     ?: listOf("%Prefix.Text%Du kannst %Colors.SECONDARY%@item@%Colors.TEXT% in @time@ wieder kaufen!")
             }
             val priceLore by lazy {
-                messages.available["${prefix}price-lore"]
+                available["${prefix}price-lore"]
                     ?: listOf("%Colors.TEXT%Kaufe ihn dir für %Colors.PRIMARY%@price@ %Colors.IMPORTANT%Coins")
             }
             val maxCount by lazy {
-                messages.available["${prefix}max-count"]
+                available["${prefix}max-count"]
                     ?: listOf("%Prefix.Warning%Du darfst nur @count@ @item@ %Colors.TEXT%im %Colors.IMPORTANT%Inventar %Colors.TEXT%haben!")
             }
             val maxHealth by lazy {
-                messages.available["${prefix}max-health"]
+                available["${prefix}max-health"]
                     ?: listOf("%Prefix.Text%Du hast eine Behandlung echt nicht nötig ;).")
             }
             val maxLevel by lazy {
-                messages.available["${prefix}max-health"]
+                available["${prefix}max-health"]
                     ?: listOf("%Prefix.Text%Du hast schon das maximahle Level (%Colors.IMPORTANT%@kits@%Colors.TEXT%) erreicht.")
             }
 
@@ -794,12 +795,12 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val successfully by lazy {
-                    messages.available["${prefix}successfully"]
+                    available["${prefix}successfully"]
                         ?: listOf("%Prefix.Text%Du hast %Colors.IMPORTANT%KeepInventory %Colors.TEXT%aktiviert.")
                 }
 
                 val failed by lazy {
-                    messages.available["${prefix}failed"]
+                    available["${prefix}failed"]
                         ?: listOf("%Prefix.Warning%Du hast %Colors.IMPORTANT%KeepInventory %Colors.Warning%schon aktiviert!")
                 }
 
@@ -809,12 +810,12 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val successfully by lazy {
-                    messages.available["${prefix}successfully"]
+                    available["${prefix}successfully"]
                         ?: listOf("%Prefix.Text%Der Kauf wurde erfolgreich abgeschlossen.")
                 }
 
                 val failed by lazy {
-                    messages.available["${prefix}failed"] ?: listOf("%Prefix.Warning%Dir fehlen @difference@!")
+                    available["${prefix}failed"] ?: listOf("%Prefix.Warning%Dir fehlen @difference@!")
                 }
 
             }
@@ -825,17 +826,17 @@ class ConfigService(private val directory: File) {
 
             /* Values */
             val damageInTarget by lazy {
-                messages.available["${prefix}damage-in-target"]
+                available["${prefix}damage-in-target"]
                     ?: listOf("%Prefix.Important%@target@%Colors.TEXT% befindet sich im %Colors.IMPORTANT%Spawn-Bereich!")
             }
 
             val damageInPlayer by lazy {
-                messages.available["${prefix}damage-in-player"]
+                available["${prefix}damage-in-player"]
                     ?: listOf("%Prefix.Text%Du befindet sich im %Colors.IMPORTANT%Spawn-Bereich!")
             }
 
             val launchArrow by lazy {
-                messages.available["${prefix}launch-arrow"]
+                available["${prefix}launch-arrow"]
                     ?: listOf("%Prefix.Text%Du befindet sich im %Colors.IMPORTANT%Spawn-Bereich!")
             }
 

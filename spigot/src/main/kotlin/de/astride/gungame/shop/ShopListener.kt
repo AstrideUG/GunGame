@@ -14,7 +14,6 @@ import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.Listener
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -54,7 +53,7 @@ class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
     fun onPlayerInteractAtEntityEvent(event: PlayerInteractAtEntityEvent) {
 
         val armorStand = event.rightClicked as? ArmorStand ?: return
-        if (armorStand.customName != "${SECONDARY}Shop") return
+        if (armorStand.customName != messages.shop.entityName) return
         val player = event.player ?: return
         event.cancel()
         armorStand.changeColor()

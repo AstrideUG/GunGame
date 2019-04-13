@@ -28,7 +28,7 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 12.04.2019)
+ * Current Version: 1.0 (17.02.2018 - 13.04.2019)
  */
 class GunGame : DarkPlugin() {
 
@@ -101,7 +101,7 @@ class GunGame : DarkPlugin() {
         val armorStand = it.world.spawnEntity(it, EntityType.ARMOR_STAND) as ArmorStand
         armorStand.apply {
 
-            customName = messages.shopName
+            customName = messages.shop.entityName
             isCustomNameVisible = true
             setGravity(false)
             isVisible = false
