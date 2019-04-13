@@ -574,7 +574,7 @@ class ConfigService(private val directory: File) {
         inner class Commands internal constructor() {
 
             internal val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
-            internal val Any.prefix get() = "${messages.commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+            internal val Any.prefix get() = "${commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
             /* SubClass */
             val gungame by lazy { GunGame() }
@@ -701,7 +701,7 @@ class ConfigService(private val directory: File) {
 
             inner class Team internal constructor() {
 
-                private val prefix get() = "${messages.commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+                private val prefix get() = "${commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
                 /* Values */
                 val failedTeamsNotAllowed by lazy {
@@ -761,10 +761,10 @@ class ConfigService(private val directory: File) {
         inner class Shop internal constructor() {
 
             private val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
-            internal val Any.prefix get() = "${messages.shop.prefix}${javaClass.simpleName!!}.".toLowerCase()
+            internal val Any.prefix get() = "${shop.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
             /* Values */
-            val entityName by lazy { available["entity-name"]?.firstOrNull() ?: "%Colors.SECONDARY%Shop" }
+            val entityName by lazy { available["${prefix}entity-name"]?.firstOrNull() ?: "%Colors.SECONDARY%Shop" }
             val name by lazy { available["${prefix}name"]?.firstOrNull() ?: "%Colors.SECONDARY%Shop" }
             val delayed by lazy {
                 available["${prefix}delayed"]
@@ -823,6 +823,9 @@ class ConfigService(private val directory: File) {
         }
 
         inner class Regions internal constructor() {
+
+            private val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
+            private val Any.prefix get() = "${regions.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
             /* Values */
             val damageInTarget by lazy {
