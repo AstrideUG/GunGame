@@ -67,7 +67,10 @@ class ConfigService(private val directory: File) {
                 } catch (ex: Exception) {
                     null
                 }
-            }?.toMap() ?: mapOf("PlayerRespawnEvent" to 5.0)
+            }?.toMap() ?: mapOf(
+                "PlayerRespawnEvent" to 15.0,
+                "PlayerDeathEvent" to 5.0
+            )
         }
 
         /* SubClass */
