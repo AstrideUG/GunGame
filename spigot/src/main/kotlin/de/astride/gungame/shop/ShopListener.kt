@@ -26,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:32.
- * Current Version: 1.0 (19.02.2018 - 07.04.2019)
+ * Current Version: 1.0 (19.02.2018 - 13.04.2019)
  */
 class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
@@ -43,6 +43,7 @@ class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
     fun onInventoryClickEvent(event: InventoryClickEvent) {
 
         if (event.whoClicked.openInventory.topInventory != inventory) return
+        event.cancel()
         val item = items.find { event.currentItem == it.itemStack } ?: return
         item.checkedBuy(event.whoClicked as Player)
 
