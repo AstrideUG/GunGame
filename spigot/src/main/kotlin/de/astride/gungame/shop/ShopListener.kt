@@ -5,6 +5,7 @@ package de.astride.gungame.shop
 
 import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.changeColor
+import de.astride.gungame.functions.messages
 import de.astride.gungame.shop.items.InstantKiller
 import de.astride.gungame.shop.items.KeepInventory
 import de.astride.gungame.shop.items.LevelUp
@@ -30,7 +31,7 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
-    private val inventory: Inventory = InventoryBuilder(InventoryType.HOPPER, "${SECONDARY}Shop").setDesign().build()
+    private val inventory: Inventory = InventoryBuilder(InventoryType.HOPPER, messages.shop.name).setDesign().build()
     private val items: List<ShopItemListener> =
         listOf(MagicHeal(javaPlugin), LevelUp(javaPlugin), InstantKiller(javaPlugin), KeepInventory(javaPlugin))
 
