@@ -18,13 +18,13 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (19.08.2017 - 07.04.2019)
+ * Current Version: 1.0 (19.08.2017 - 14.04.2019)
  */
 class StatsReset(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
     commandName = config.name,
     permission = config.permission,
-    usage = "<Spieler>:${config.permissionOther}",
+    usage = "[Spieler]:${config.permissionOther}",
     maxLength = 2,
     aliases = *config.aliases
 ) {
