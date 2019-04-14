@@ -13,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (19.08.2017 - 06.04.2019)
+ * Current Version: 1.0 (19.08.2017 - 14.04.2019)
  */
 //TODO: impl Team with
 class Team(javaPlugin: JavaPlugin) : Command(
@@ -36,7 +36,7 @@ class Team(javaPlugin: JavaPlugin) : Command(
 //                "${Messages.PREFIX}${Colors.TEXT}Du bist jetzt mit ${target.displayName} in einem Team".sendTo(sender)
             "${Messages.PREFIX}${Colors.TEXT}Hm... leider wurde dieses Feature noch nicht programmiert"
                 .sendTo(sender)
-        } else messages.failedTeamsNotAllowed
+        } else messages.failedTeamsNotAllowed.sendTo(sender)
 
     }
 
