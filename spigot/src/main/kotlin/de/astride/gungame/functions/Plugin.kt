@@ -58,7 +58,11 @@ sealed class AllowTeams {
     val asString: String get() = if (result) messages.teamsAllow else messages.teamsDisAllow
 
     object Random : AllowTeams() {
-        override val result: Boolean get() = kotlin.random.Random.nextBoolean()
+        override var result: Boolean = kotlin.random.Random.nextBoolean()
+
+        fun update() {
+            result = kotlin.random.Random.nextBoolean()
+        }
     }
 
     object True : AllowTeams() {
@@ -82,6 +86,6 @@ sealed class AllowTeams {
 
     }
 
-    operator fun not(): AllowTeams = if (result == AllowTeams.True.result) AllowTeams.True else AllowTeams.False
+    operator fun not(): AllowTeams = if (result == True.result) True else False
 
 }

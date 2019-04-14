@@ -58,7 +58,10 @@ class GunGame : DarkPlugin() {
             }
         }
         logLoad("kits") { kits = configService.kits.load() }
-        logLoad("allow-teams") { allowTeams = configService.config.allowTeams }
+        logLoad("allow-teams") {
+            AllowTeams.Random.update()
+            allowTeams = configService.config.allowTeams
+        }
         logLoad("actions") {
             allActions = configService.actions.load().map { it.key to Actions(it.key, it.value) }.toMap().toMutableMap()
         }
