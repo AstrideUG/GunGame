@@ -38,7 +38,7 @@ import de.astride.gungame.kits.kits as allKits
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 29.03.2019 13:42.
- * Current Version: 1.0 (29.03.2019 - 13.04.2019)
+ * Current Version: 1.0 (29.03.2019 - 14.04.2019)
  */
 class ConfigService(private val directory: File) {
 
@@ -655,7 +655,7 @@ class ConfigService(private val directory: File) {
                 val infoConfirm by lazy {
                     available["${prefix}info.confirm"] ?: listOf(
                         "",
-                        "%Prefix.Text%Nutze %Colors.IMPORTANT%\"/@command-name@ [Spieler] @confirmKey@\"%Colors.TEXT% um die %GunGame.Stats% zurückzusetzen",
+                        "%Prefix.Text%Nutze %Colors.IMPORTANT%\"/@command-name@ [Spieler] @confirm-key@\"%Colors.TEXT% um die %GunGame.Stats% zurückzusetzen",
                         ""
                     )
                 }

@@ -34,7 +34,7 @@ class StatsReset(javaPlugin: JavaPlugin) : Command(
             args.isEmpty() ||
                     args.size == 1 && !args[0].equals(confirmKey, true) ||
                     args.size == 2 && !args[1].equals(confirmKey, true) -> messages.infoConfirm.map {
-                it.replace("command-name", commandName).replace("confirmKey", confirmKey)
+                it.replace("command-name", commandName).replace("confirm-key", confirmKey)
             }.sendTo(sender)
             args.size == 1 -> sender.isPlayer(
                 { player ->
