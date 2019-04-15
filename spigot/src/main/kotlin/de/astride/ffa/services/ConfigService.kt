@@ -103,7 +103,7 @@ class ConfigService(private val directory: File) {
                         addProperty("shops", files.shops)
                         addProperty("actions", files.actions)
                         addProperty("messages", files.messages)
-                        addProperty("kit", files.kits)
+                        addProperty("kit", files.kit)
                     })
                     add(Commands::class.simpleName, JsonObject().apply {
                         add(Commands.Stats::class.simpleName, JsonObject().apply {
@@ -186,7 +186,7 @@ class ConfigService(private val directory: File) {
             val shops by lazy { file("shops") }
             val actions by lazy { file("actions") }
             val messages by lazy { file("messages") }
-            val kits by lazy { file("kit") }
+            val kit by lazy { file("kit") }
 
             /**
              * @author Lars Artmann | LartyHD
@@ -816,10 +816,13 @@ class ConfigService(private val directory: File) {
     inner class Kit internal constructor() {
 
         /* Main */
-        val configData = ConfigData(directory, config.files.kits)
+        val configData = ConfigData(directory, config.files.kit)
         private val kSerializer: KSerializer<List<ItemStack>> = ItemStackSerializer.list
 
-        val kit by lazy { load() }
+        val kit by lazy {
+            load()
+            save()
+        }
 
         /* Values */
         private fun load(configData: ConfigData = this.configData): List<ItemStack?> {
@@ -833,7 +836,7 @@ class ConfigService(private val directory: File) {
                 ItemBuilder(Material.BOW).setName("Bogen"),
                 ItemBuilder(Material.FISHING_ROD).setName("Angel"),
                 ItemBuilder(Material.ARROW, 5).setName("Pfeil")
-            ).map { it.setUnbreakable().build() }.apply { save() }
+            ).map { it.setUnbreakable().build() }
             else Json.nonstrict.parse(kSerializer, string).map { itemStack ->
                 if (itemStack.type == Material.AIR) null else itemStack
             }
