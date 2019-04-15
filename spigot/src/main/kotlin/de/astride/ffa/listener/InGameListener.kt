@@ -56,7 +56,7 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
             event.player.inventory.apply {
                 val kit = configService.kit.kit
-                armorContents = kit.take(4).toTypedArray()
+                armorContents = kit.take(4).asReversed().toTypedArray()
                 addItem(*kit.drop(4).toTypedArray())
             }
 

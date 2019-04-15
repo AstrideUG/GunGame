@@ -24,6 +24,7 @@ import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMaterial
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.SpigotGsonMessages
@@ -833,7 +834,9 @@ class ConfigService(private val directory: File) {
                 ItemBuilder(Material.BOW).setName("Bogen"),
                 ItemBuilder(Material.FISHING_ROD).setName("Angel"),
                 ItemBuilder(Material.ARROW, 5).setName("Pfeil")
-            ).map { it.setUnbreakable().build() }.apply { save(this) }
+            ).map {
+                it.setName("${Colors.SECONDARY.chatColor}${it.build().itemMeta.displayName}").setUnbreakable().build()
+            }.apply { save(this) }
             else Json.nonstrict.parse(kSerializer, string).map { itemStack ->
                 if (itemStack.type == Material.AIR) null else itemStack
             }
