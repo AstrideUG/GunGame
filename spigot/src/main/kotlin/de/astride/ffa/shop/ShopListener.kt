@@ -34,7 +34,7 @@ class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
         listOf(MagicHeal(javaPlugin), InstantKiller(javaPlugin), Arrows(javaPlugin))
 
     init {
-        for (i in 0 until 4 step 2) inventory.setItem(i, items[i].itemStack)
+        for (i in 0 until inventory.size step 2) inventory.setItem(i, items[i].itemStack)
     }
 
     @EventHandler
