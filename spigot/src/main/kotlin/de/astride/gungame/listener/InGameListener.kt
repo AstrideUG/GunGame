@@ -4,9 +4,6 @@
 package de.astride.gungame.listener
 
 import de.astride.gungame.functions.*
-import de.astride.gungame.kits.downgrade
-import de.astride.gungame.kits.setKit
-import de.astride.gungame.kits.upgrade
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.PlayerDisconnectEvent
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
@@ -40,14 +37,6 @@ import org.bukkit.plugin.java.JavaPlugin
 class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
 
     @EventHandler
-    override fun onPlayerMoveEvent(event: PlayerMoveEvent) {
-        super.onPlayerMoveEvent(event)
-        if (event.player.health <= 0.0) return
-        val types = arrayOf(Material.WATER, Material.STATIONARY_WATER, Material.LAVA, Material.STATIONARY_LAVA)
-        if (types.any { it == event.to.block.type }) event.player.health = 0.0
-    }
-
-    @EventHandler
     override fun onPlayerJoinEvent(event: PlayerJoinEvent) {
 
         event.player.apply {
@@ -64,9 +53,14 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
             level = 0
             gameMode = GameMode.ADVENTURE
             health = maxHealth
-            teleport(gameMap.spawn.randomLook())
+            teleport(gameMap.spawn/*.randomLook()*/)
 
-            setKit()
+            event.player.inventory.apply {
+                val kit = configService.kit.kit
+                armorContents = kit.take(4).toTypedArray()
+                addItem(*kit.drop(4).toTypedArray())
+            }
+
             sendScoreBoard()
             showAll()
             gameMap.sendHologram(event.player)
@@ -110,14 +104,12 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
                 playSound(location, Sound.ENDERMAN_HIT, 2f, 1f)
 //                broadcastKillStreak(killStreak++, this) TODO: Add broadcastKillStreak
                 sendScoreBoard()
-                upgrade()
                 heal()
                 gameMap.sendHologram(this)
 
             }
 
             playSound(location, Sound.GHAST_DEATH, 2f, 1f)
-            downgrade()
             sendScoreBoard()
             gameMap.sendHologram(this)
 

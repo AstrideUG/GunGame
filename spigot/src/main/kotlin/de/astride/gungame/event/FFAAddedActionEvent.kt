@@ -8,9 +8,9 @@ import java.util.*
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 11.04.2019 03:58.
- * Current Version: 1.0 (11.04.2019 - 11.04.2019)
+ * Current Version: 1.0 (11.04.2019 - 15.04.2019)
  */
-class GunGameAddedActionEvent(val uuid: UUID, val action: Action) : Event() {
+class FFAAddedActionEvent(val uuid: UUID, val action: Action) : Event() {
 
     override fun getHandlers(): HandlerList = handlerList
 

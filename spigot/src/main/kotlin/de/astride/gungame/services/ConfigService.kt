@@ -7,8 +7,6 @@ import de.astride.data.ItemStackSerializer
 import de.astride.data.UUIDSerializer
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.functions.allActions
-import de.astride.gungame.functions.messages
-import de.astride.gungame.kits.DefaultKits
 import de.astride.gungame.stats.Action
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.context.getOrDefault
@@ -21,7 +19,9 @@ import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonConfig
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService.loadAs
+import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService.save
 import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
+import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMaterial
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
@@ -33,12 +33,11 @@ import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
-import de.astride.gungame.kits.kits as allKits
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 29.03.2019 13:42.
- * Current Version: 1.0 (29.03.2019 - 14.04.2019)
+ * Current Version: 1.0 (29.03.2019 - 15.04.2019)
  */
 class ConfigService(private val directory: File) {
 
@@ -46,7 +45,7 @@ class ConfigService(private val directory: File) {
     val shops by lazy { Shops() }
     val maps by lazy { Maps() }
     val actions by lazy { Actions() }
-    val kits by lazy { Kits() }
+    val kit by lazy { Kit() }
 
     init {
         Messages()
@@ -89,23 +88,22 @@ class ConfigService(private val directory: File) {
                 commands.team.jsonObject == null ||
                 commands.teams.jsonObject == null ||
                 commands.top.jsonObject == null ||
-                commands.gungame.jsonObject == null ||
+                commands.ffa.jsonObject == null ||
                 shopItems.jsonObject == null ||
                 shopItems.instantKiller.jsonObject == null ||
-                shopItems.keepInventory.jsonObject == null ||
-                shopItems.levelUp.jsonObject == null ||
+                shopItems.arrows.jsonObject == null ||
                 shopItems.magicHeal.jsonObject == null
             ) {
 
-                GsonService.save(configData, JsonObject().apply {
+                save(configData, JsonObject().apply {
                     addProperty("allow-teams", allowTeams.type)
-                    add("rewards", JsonObject().apply { rewards.forEach { key, value -> addProperty(key, value) } })
+                    add("rewards", JsonObject().apply { rewards.forEach { (key, value) -> addProperty(key, value) } })
                     add(Files::class.simpleName, JsonObject().apply {
                         addProperty("maps", files.maps)
                         addProperty("shops", files.shops)
                         addProperty("actions", files.actions)
                         addProperty("messages", files.messages)
-                        addProperty("kits", files.kits)
+                        addProperty("kit", files.kits)
                     })
                     add(Commands::class.simpleName, JsonObject().apply {
                         add(Commands.Stats::class.simpleName, JsonObject().apply {
@@ -140,8 +138,8 @@ class ConfigService(private val directory: File) {
                             addProperty("permission", command.permission)
                             add("aliases", command.aliases.toJsonArray())
                         })
-                        add(Commands.GunGame::class.simpleName, JsonObject().apply {
-                            val command = commands.gungame
+                        add(Commands.FFA::class.simpleName, JsonObject().apply {
+                            val command = commands.ffa
                             addProperty("name", command.name)
                             addProperty("permission", command.permission)
                             add("aliases", command.aliases.toJsonArray())
@@ -157,17 +155,8 @@ class ConfigService(private val directory: File) {
                             addProperty("delay", item.delay)
                             addProperty("price", item.price)
                         })
-                        add(ShopItems.KeepInventory::class.simpleName, JsonObject().apply {
-                            val item = shopItems.keepInventory
-                            addProperty("material", item.material.name)
-                            addProperty("damage", item.damage)
-                            addProperty("name", item.name)
-                            add("lore", item.lore.toJsonArray())
-                            addProperty("delay", item.delay)
-                            addProperty("price", item.price)
-                        })
-                        add(ShopItems.LevelUp::class.simpleName, JsonObject().apply {
-                            val item = shopItems.levelUp
+                        add(ShopItems.Arrows::class.simpleName, JsonObject().apply {
+                            val item = shopItems.arrows
                             addProperty("material", item.material.name)
                             addProperty("damage", item.damage)
                             addProperty("name", item.name)
@@ -197,7 +186,7 @@ class ConfigService(private val directory: File) {
             val shops by lazy { file("shops") }
             val actions by lazy { file("actions") }
             val messages by lazy { file("messages") }
-            val kits by lazy { file("kits") }
+            val kits by lazy { file("kit") }
 
             /**
              * @author Lars Artmann | LartyHD
@@ -217,13 +206,13 @@ class ConfigService(private val directory: File) {
             val team by lazy { Team(jsonObject?.get(Team::class.java.simpleName)?.asJsonObject) }
             val teams by lazy { Teams(jsonObject?.get(Teams::class.java.simpleName)?.asJsonObject) }
             val top by lazy { Top(jsonObject?.get(Top::class.java.simpleName)?.asJsonObject) }
-            val gungame by lazy { GunGame(jsonObject?.get(GunGame::class.java.simpleName)?.asJsonObject) }
+            val ffa by lazy { FFA(jsonObject?.get(FFA::class.java.simpleName)?.asJsonObject) }
 
             inner class Stats internal constructor(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "Stats" }
-                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.stats" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "ffa.commands.stats" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
@@ -235,9 +224,9 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "StatsReset" }
-                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.statsreset" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "ffa.commands.statsreset" }
                 val permissionOther by lazy {
-                    jsonObject?.get("permission-other")?.asString() ?: "gungame.commands.statsreset.other"
+                    jsonObject?.get("permission-other")?.asString() ?: "ffa.commands.statsreset.other"
                 }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
@@ -250,7 +239,7 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "Team" }
-                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.team" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "ffa.commands.team" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
@@ -262,7 +251,7 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "Teams" }
-                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.teams" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "ffa.commands.teams" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
@@ -275,7 +264,7 @@ class ConfigService(private val directory: File) {
 
                 /* Values */
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "Top" }
-                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.top" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "ffa.commands.top" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
@@ -286,13 +275,13 @@ class ConfigService(private val directory: File) {
             /**
              * @author Lars Artmann | LartyHD
              * Created by Lars Artmann | LartyHD on 04.04.2019 18:36.
-             * Current Version: 1.0 (04.04.2019 - 04.04.2019)
+             * Current Version: 1.0 (04.04.2019 - 15.04.2019)
              */
-            inner class GunGame internal constructor(val jsonObject: JsonObject?) {
+            inner class FFA internal constructor(val jsonObject: JsonObject?) {
 
                 /* Values */
-                val name by lazy { jsonObject?.get("name")?.asString() ?: "GunGame" }
-                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "gungame.commands.gungame" }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "FFA" }
+                val permission by lazy { jsonObject?.get("permission")?.asString() ?: "ffa.commands.ffa" }
                 val aliases by lazy {
                     val jsonArray = jsonObject?.get("aliases") as? JsonArray ?: JsonArray()
                     jsonArray.mapNotNull { it.asString() }.toTypedArray()
@@ -306,8 +295,7 @@ class ConfigService(private val directory: File) {
 
             /* SubClass */
             val instantKiller by lazy { InstantKiller(jsonObject?.get(Commands.Stats::class.java.simpleName)?.asJsonObject) }
-            val keepInventory by lazy { KeepInventory(jsonObject?.get(Commands.StatsReset::class.java.simpleName)?.asJsonObject) }
-            val levelUp by lazy { LevelUp(jsonObject?.get(Commands.Team::class.java.simpleName)?.asJsonObject) }
+            val arrows by lazy { Arrows(jsonObject?.get(Commands.StatsReset::class.java.simpleName)?.asJsonObject) }
             val magicHeal by lazy { MagicHeal(jsonObject?.get(Commands.Teams::class.java.simpleName)?.asJsonObject) }
 
             inner class InstantKiller(val jsonObject: JsonObject?) {
@@ -327,12 +315,12 @@ class ConfigService(private val directory: File) {
 
             }
 
-            inner class KeepInventory(val jsonObject: JsonObject?) {
+            inner class Arrows(val jsonObject: JsonObject?) {
 
                 /* Values */
                 val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.PAPER }
                 val damage by lazy { jsonObject?.get("damage")?.asShort ?: 0 }
-                val name by lazy { jsonObject?.get("name")?.asString() ?: "${SECONDARY}KeepInventory" }
+                val name by lazy { jsonObject?.get("name")?.asString() ?: "${SECONDARY}Arrows" }
                 val lore by lazy {
                     val element = jsonObject?.get("lore")
                     val jsonArray = element as? JsonArray
@@ -341,23 +329,6 @@ class ConfigService(private val directory: File) {
                 }
                 val delay by lazy { jsonObject?.get("delay")?.asLong ?: 300 }
                 val price by lazy { jsonObject?.get("price")?.asInt ?: 500 }
-
-            }
-
-            inner class LevelUp(val jsonObject: JsonObject?) {
-
-                /* Values */
-                val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.DIAMOND }
-                val damage by lazy { jsonObject?.get("damage")?.asShort ?: 0 }
-                val name by lazy { jsonObject?.get("name")?.asString() ?: "${SECONDARY}LevelUp" }
-                val lore by lazy {
-                    val element = jsonObject?.get("lore")
-                    val jsonArray = element as? JsonArray
-                    val single = element?.asString() ?: "${TEXT}Erhöht dein Level um 5"
-                    jsonArray?.mapNotNull { it.asString() } ?: listOf(single)
-                }
-                val delay by lazy { jsonObject?.get("delay")?.asLong ?: 60 }
-                val price by lazy { jsonObject?.get("price")?.asInt ?: 100 }
 
             }
 
@@ -422,7 +393,7 @@ class ConfigService(private val directory: File) {
         }
 
         fun save(input: MutableMap<UUID, MutableList<Action>> = allActions, configData: ConfigData = this.configData) =
-            GsonService.save(configData, Json.indented.stringify(kSerializer, input))
+            save(configData, Json.indented.stringify(kSerializer, input))
 
     }
 
@@ -437,7 +408,7 @@ class ConfigService(private val directory: File) {
         /* Values */
         private val spigotGsonMessages by lazy { SpigotGsonMessages(gsonConfig) }
         internal val available by lazy { spigotGsonMessages.availableMessages }
-        val name by lazy { available["name"]?.firstOrNull() ?: "GunGame" }
+        val name by lazy { available["name"]?.firstOrNull() ?: "FFA" }
         val prefix by lazy {
             available["prefix"]?.firstOrNull()
                 ?: "%Colors.PRIMARY%%Colors.EXTRA%%name% %Colors.IMPORTANT%┃ %Colors.RESET%"
@@ -445,7 +416,7 @@ class ConfigService(private val directory: File) {
         val teamsAllow by lazy { available["teams-allow"]?.firstOrNull() ?: "erlaubt" }
         val teamsDisAllow by lazy { available["teams-dis-allow"]?.firstOrNull() ?: "verboten" }
         val scoreboardDisplayName by lazy {
-            available["scoreboard-displayname"]?.firstOrNull() ?: "%Colors.PRIMARY%%Colors.EXTRA%GunGame"
+            available["scoreboard-displayname"]?.firstOrNull() ?: "%Colors.PRIMARY%%Colors.EXTRA%%name%"
         }
         val scoreboardScores by lazy {
             available["scoreboard-scores"] ?: listOf(
@@ -468,7 +439,7 @@ class ConfigService(private val directory: File) {
         }
         val hologram by lazy {
             available["hologram"] ?: listOf(
-                "%Colors.TEXT%-= %GunGame.Stats% =-",
+                "%Colors.TEXT%-= %FFA.Stats% =-",
                 "",
                 "%Colors.TEXT%Dein Platz%Separator.Stats%@rank@",
                 "%Colors.TEXT%Kills%Separator.Stats%@kills@",
@@ -491,7 +462,7 @@ class ConfigService(private val directory: File) {
 
             //Very bad code but it works!
             if (available.isEmpty()) {
-                GsonService.save(configData, Json.indented.stringify(json {
+                save(configData, Json.indented.stringify(json {
                     "Messages" to json {
                         "language" to "de_DE"
                         "languages" to json {
@@ -511,16 +482,16 @@ class ConfigService(private val directory: File) {
                                 "Prefix.Warning" to "%prefix%%Colors.WARNING%"
                                 "Separator.Line" to "%Prefix.Text%%Colors.DESIGN%                                                               "
                                 "Separator.Stats" to "%Colors.IMPORTANT%: %Colors.PRIMARY%"
-                                "GunGame.Stats" to "%Colors.IMPORTANT%GunGame Stats%Colors.TEXT%"
-                                "GunGame.Stats.By" to "von %Colors.IMPORTANT%@sender@%Colors.TEXT%"
+                                "FFA.Stats" to "%Colors.IMPORTANT%FFA Stats%Colors.TEXT%"
+                                "FFA.Stats.By" to "von %Colors.IMPORTANT%@sender@%Colors.TEXT%"
                                 "teams-allow" to teamsAllow
                                 "teams-dis-allow" to teamsDisAllow
                                 "scoreboard-displayname" to scoreboardDisplayName
                                 "scoreboard-scores" to scoreboardScores.toJsonArray()
                                 "hologram" to hologram.toJsonArray()
                                 "add-action" to addAction.toJsonArray()
-                                "commands.gungame.successfully.saved" to commands.gungame.successfullySaved.toJsonArray()
-                                "commands.gungame.successfully.loaded" to commands.gungame.successfullyLoaded.toJsonArray()
+                                "commands.ffa.successfully.saved" to commands.ffa.successfullySaved.toJsonArray()
+                                "commands.ffa.successfully.loaded" to commands.ffa.successfullyLoaded.toJsonArray()
                                 "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray()
                                 "commands.stats.successfully" to commands.stats.successfully.toJsonArray()
                                 "commands.statsreset.info.confirm" to commands.statsReset.infoConfirm.toJsonArray()
@@ -547,8 +518,7 @@ class ConfigService(private val directory: File) {
                                 "shop.max-level" to shop.maxLevel.toJsonArray()
                                 "shop.money.successfully" to shop.money.successfully.toJsonArray()
                                 "shop.money.failed" to shop.money.failed.toJsonArray()
-                                "shop.keepinventory.successfully" to shop.keepInventory.successfully.toJsonArray()
-                                "shop.keepinventory.failed" to shop.keepInventory.failed.toJsonArray()
+                                "shop.arrows.successfully" to shop.arrows.successfully.toJsonArray()
                                 "regions.damage-in-player" to regions.damageInPlayer.toJsonArray()
                                 "regions.damage-in-target" to regions.damageInTarget.toJsonArray()
                                 "regions.launch-arrow" to regions.launchArrow.toJsonArray()
@@ -561,8 +531,8 @@ class ConfigService(private val directory: File) {
 
             }
 
-            net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages.NAME.message = messages.name
-            net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages.PREFIX.message = messages.prefix
+            net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages.NAME.message = name
+            net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages.PREFIX.message = prefix
 
         }
 
@@ -580,14 +550,14 @@ class ConfigService(private val directory: File) {
             internal val Any.prefix get() = "${commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
 
             /* SubClass */
-            val gungame by lazy { GunGame() }
+            val ffa by lazy { FFA() }
             val stats by lazy { Stats() }
             val statsReset by lazy { StatsReset() }
             val team by lazy { Team() }
             val teams by lazy { Teams() }
             val top by lazy { Top() }
 
-            inner class GunGame internal constructor() {
+            inner class FFA internal constructor() {
 
                 /* Values */
                 val successfullySaved by lazy {
@@ -631,14 +601,12 @@ class ConfigService(private val directory: File) {
                             entry("MaxDeathStreak", "max-death-streak"),
                             entry("MaxKillStreak", "max-kill-streak"),
                             lineSeparator,
-                            entry("Bought LevelUps", "bought-levelup"),
                             entry("Bought MagicHeal", "bought-magicheal"),
                             entry("Bought InstantKiller", "bought-instantkiller"),
-                            entry("Bought KeepInventory", "bought-keepinventory"),
+                            entry("Bought Arrows", "bought-arrows"),
                             lineSeparator,
                             entry("Used MagicHeal", "used-magicheal"),
                             entry("Used InstantKiller", "used-instantkiller"),
-                            entry("Used KeepInventory", "used-keepinventory"),
                             lineSeparator,
                             entry("Changed Shop Color", "shop-color-changes"),
                             entry("Shop openings", "shop-openings"),
@@ -655,7 +623,7 @@ class ConfigService(private val directory: File) {
                 val infoConfirm by lazy {
                     available["${prefix}info.confirm"] ?: listOf(
                         "",
-                        "%Prefix.Text%Nutze %Colors.IMPORTANT%\"/@command-name@ [Spieler] @confirm-key@\"%Colors.TEXT% um die %GunGame.Stats% zurückzusetzen",
+                        "%Prefix.Text%Nutze %Colors.IMPORTANT%\"/@command-name@ [Spieler] @confirm-key@\"%Colors.TEXT% um die %FFA.Stats% zurückzusetzen",
                         ""
                     )
                 }
@@ -678,7 +646,7 @@ class ConfigService(private val directory: File) {
                 val successfullySelf by lazy {
                     available["${prefix}successfully.self.stats-were-reset"] ?: listOf(
                         "",
-                        "%Prefix.Text%Deine %GunGame.Stats% wurden zurückgesetzt",
+                        "%Prefix.Text%Deine %FFA.Stats% wurden zurückgesetzt",
                         ""
                     )
                 }
@@ -686,7 +654,7 @@ class ConfigService(private val directory: File) {
                 val successfullySelfBy by lazy {
                     available["${prefix}successfully.self.by.stats-were-reset"] ?: listOf(
                         "",
-                        "%Prefix.Text%Deine @GunGame.Stats@ wurden @GunGame.Stats.By@ zurückgesetzt",
+                        "%Prefix.Text%Deine @FFA.Stats@ wurden @FFA.Stats.By@ zurückgesetzt",
                         ""
                     )
                 }
@@ -694,7 +662,7 @@ class ConfigService(private val directory: File) {
                 val successfullyTarget by lazy {
                     available["${prefix}successfully.target.stats-were-reset"] ?: listOf(
                         "",
-                        "%Prefix.Text%Du hast die @GunGame.Stats@ @GunGame.Stats.By@ zurückgesetzt",
+                        "%Prefix.Text%Du hast die @FFA.Stats@ @FFA.Stats.By@ zurückgesetzt",
                         ""
                     )
                 }
@@ -787,24 +755,19 @@ class ConfigService(private val directory: File) {
             }
             val maxLevel by lazy {
                 available["${prefix}max-health"]
-                    ?: listOf("%Prefix.Text%Du hast schon das maximahle Level (%Colors.IMPORTANT%@kits@%Colors.TEXT%) erreicht.")
+                    ?: listOf("%Prefix.Text%Du hast schon das maximahle Level (%Colors.IMPORTANT%@kit@%Colors.TEXT%) erreicht.")
             }
 
             /* SubClass */
             val money by lazy { Money() }
-            val keepInventory by lazy { KeepInventory() }
+            val arrows by lazy { Arrows() }
 
-            inner class KeepInventory internal constructor() {
+            inner class Arrows internal constructor() {
 
                 /* Values */
                 val successfully by lazy {
                     available["${prefix}successfully"]
-                        ?: listOf("%Prefix.Text%Du hast %Colors.IMPORTANT%KeepInventory %Colors.TEXT%aktiviert.")
-                }
-
-                val failed by lazy {
-                    available["${prefix}failed"]
-                        ?: listOf("%Prefix.Warning%Du hast %Colors.IMPORTANT%KeepInventory %Colors.Warning%schon aktiviert!")
+                        ?: listOf("%Prefix.Text%Du hast %Colors.IMPORTANT%Arrows %Colors.TEXT%aktiviert.")
                 }
 
             }
@@ -850,28 +813,38 @@ class ConfigService(private val directory: File) {
 
     }
 
-    inner class Kits internal constructor() {
+    inner class Kit internal constructor() {
 
         /* Main */
         val configData = ConfigData(directory, config.files.kits)
-        private val kSerializer: KSerializer<List<List<ItemStack>>> = ItemStackSerializer.list.list
+        private val kSerializer: KSerializer<List<ItemStack>> = ItemStackSerializer.list
+
+        val kit by lazy { load() }
 
         /* Values */
-        fun load(configData: ConfigData = this.configData): List<List<ItemStack?>> {
+        private fun load(configData: ConfigData = this.configData): List<ItemStack?> {
             val string = configData.file.readText()
-            return if (string.isEmpty()) DefaultKits.values().map {
-                listOf(it.helmet, it.chestplate, it.leggins, it.boots, it.item)
-            } else Json.nonstrict.parse(kSerializer, string).map {
-                it.map { itemStack -> if (itemStack.type == Material.AIR) null else itemStack }
+            return if (string.isEmpty()) listOf(
+                ItemBuilder(Material.IRON_HELMET).setName("Helm"),
+                ItemBuilder(Material.IRON_CHESTPLATE).setName("Brustpanzer"),
+                ItemBuilder(Material.IRON_LEGGINGS).setName("Hose"),
+                ItemBuilder(Material.IRON_BOOTS).setName("Schuhe"),
+                ItemBuilder(Material.IRON_SWORD).setName("Schwert"),
+                ItemBuilder(Material.BOW).setName("Bogen"),
+                ItemBuilder(Material.FISHING_ROD).setName("Angel"),
+                ItemBuilder(Material.ARROW, 5).setName("Pfeil")
+            ).map { it.setUnbreakable().build() }.apply { save() }
+            else Json.nonstrict.parse(kSerializer, string).map { itemStack ->
+                if (itemStack.type == Material.AIR) null else itemStack
             }
         }
 
-        fun save(input: List<List<ItemStack?>> = allKits, configData: ConfigData = this.configData) = GsonService.save(
+        fun save(input: List<ItemStack?> = kit, configData: ConfigData = this.configData) = save(
             configData,
             Json.indented.stringify(
                 kSerializer,
-                input.map { it.mapNotNull { itemStack -> itemStack ?: ItemStack(Material.AIR) } })
-        )
+                input.mapNotNull { itemStack -> itemStack ?: ItemStack(Material.AIR) }
+            ))
 
     }
 

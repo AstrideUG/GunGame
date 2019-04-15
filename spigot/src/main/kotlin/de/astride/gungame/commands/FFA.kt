@@ -13,13 +13,13 @@ import java.io.File
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 18:33.
- * Current Version: 1.0 (04.04.2019 - 13.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 15.04.2019)
  */
-class GunGame(javaPlugin: JavaPlugin) : Command(
+class FFA(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
     commandName = config.name,
     permission = config.permission,
-    usage = "save <actions/kits> [Path]" +
+    usage = "save <actions/kit> [Path]" +
             "|load <messages> [Path]",
     minLength = 2,
     maxLength = 3,
@@ -31,7 +31,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
         val configData = if (args.size < 3) when (args[0].toLowerCase()) {
             "save" -> when (args[1].toLowerCase()) {
                 "actions" -> configService.actions.configData
-                "kits" -> configService.kits.configData
+                "kit" -> configService.kit.configData
                 else -> {
                     sendUseMessage(sender)
                     return
@@ -62,17 +62,17 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "save" -> {
                 when (args[1].toLowerCase()) {
                     "actions" -> configService.actions.save(configData = configData)
-                    "kits" -> configService.kits.save(configData = configData)
+                    "kit" -> configService.kit.save(configData = configData)
                     else -> {
                         sendUseMessage(sender)
                         return
                     }
                 }
-                messages.commands.gungame.successfullySaved.map(transform).sendTo(sender)
+                messages.commands.ffa.successfullySaved.map(transform).sendTo(sender)
             }
             "load" -> {
                 configService.Messages(configData)
-                messages.commands.gungame.successfullyLoaded.map(transform).sendTo(sender)
+                messages.commands.ffa.successfullyLoaded.map(transform).sendTo(sender)
             }
             else -> {
                 sendUseMessage(sender)
@@ -89,7 +89,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
     }
 
     companion object {
-        private val config get() = configService.config.commands.gungame
+        private val config get() = configService.config.commands.ffa
     }
 
 }

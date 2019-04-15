@@ -8,13 +8,13 @@ import java.util.*
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 30.03.2019 09:19.
- * Current Version: 1.0 (30.03.2019 - 11.04.2019)
+ * Current Version: 1.0 (30.03.2019 - 15.04.2019)
  */
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 06.04.2019 03:47.
- * Current Version: 1.0 (06.04.2019 - 11.04.2019)
+ * Current Version: 1.0 (06.04.2019 - 15.04.2019)
  */
 val replacements = mutableMapOf<String, (UUID) -> Any>(
     "name" to { uuid -> Fetcher.getName(uuid) ?: uuid },
@@ -31,13 +31,12 @@ val replacements = mutableMapOf<String, (UUID) -> Any>(
     "shop-openings" to { uuid ->
         uuid.count("shop-change-color", uuid.activeActions.filter { !(it.meta["sneaking"] as? Boolean ?: true) })
     },
-    "bought-levelup" to { uuid -> uuid.count("bought-LevelUp") },
     "bought-magicheal" to { uuid -> uuid.count("bought-MagicHeal") },
     "bought-instantkiller" to { uuid -> uuid.count("bought-InstantKiller") },
-    "bought-keepinventory" to { uuid -> uuid.count("bought-KeepInventory") },
+    "bought-keepinventory" to { uuid -> uuid.count("bought-Arrows") },
     "used-magicheal" to { uuid -> uuid.count("used-MagicHeal") },
     "used-instantkiller" to { uuid -> uuid.count("used-InstantKiller") },
-    "used-keepinventory" to { uuid -> uuid.count("used-KeepInventory") }
+    "used-keepinventory" to { uuid -> uuid.count("used-Arrows") }
 )
 
 /**

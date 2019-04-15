@@ -1,6 +1,6 @@
 package de.astride.gungame.functions
 
-import de.astride.gungame.GunGame
+import de.astride.gungame.FFA
 import de.astride.gungame.services.ConfigService
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Map
 import org.bukkit.plugin.java.JavaPlugin
@@ -16,7 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin
  * Created by Lars Artmann | LartyHD on 27.03.2019 05:34.
  * Current Version: 1.0 (27.03.2019 - 27.03.2019)
  */
-val javaPlugin: JavaPlugin get() = JavaPlugin.getPlugin(GunGame::class.java)
+val javaPlugin: JavaPlugin get() = JavaPlugin.getPlugin(FFA::class.java)
 
 /**
  * @author Lars Artmann | LartyHD
@@ -49,7 +49,7 @@ lateinit var gameMap: Map
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 06.04.2019 00:03.
- * Current Version: 1.0 (06.04.2019 - 06.04.2019)
+ * Current Version: 1.0 (06.04.2019 - 15.04.2019)
  */
 sealed class AllowTeams {
 

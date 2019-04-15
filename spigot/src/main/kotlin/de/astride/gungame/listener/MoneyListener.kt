@@ -1,7 +1,7 @@
 package de.astride.gungame.listener
 
-import de.astride.gungame.event.GunGameAddedActionEvent
-import de.astride.gungame.event.GunGamePlayerShopHasEnoughMoneyEvent
+import de.astride.gungame.event.FFAAddedActionEvent
+import de.astride.gungame.event.FFAPlayerShopHasEnoughMoneyEvent
 import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.messages
 import de.astride.gungame.functions.replace
@@ -35,7 +35,7 @@ class MoneyListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
      * Current Version: 1.0 (29.03.2019 - 11.04.2019)
      */
     @EventHandler
-    fun onGunGamePlayerShopHasEnoughMoneyEvent(event: GunGamePlayerShopHasEnoughMoneyEvent) {
+    fun onGunGamePlayerShopHasEnoughMoneyEvent(event: FFAPlayerShopHasEnoughMoneyEvent) {
         val price = event.price
         val player = event.player
         val transform: (String?) -> String? = {
@@ -58,7 +58,7 @@ class MoneyListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
      * Current Version: 1.0 (11.04.2019 - 12.04.2019)
      */
     @EventHandler
-    fun onGunGameAddedActionEvent(event: GunGameAddedActionEvent) {
+    fun onGunGameAddedActionEvent(event: FFAAddedActionEvent) {
 
         val offlinePlayer = event.uuid.toOfflinePlayer()
         if (offlinePlayer != null) {
@@ -73,7 +73,7 @@ class MoneyListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
                     .replace("action-timestamp", event.action.timestamp)
                     .replace("action-uuid", event.action.uuid)
             }.sendTo(offlinePlayer as? CommandSender ?: return)
-        } else javaPlugin.logger.warning("Can't transfer '${event.uuid}' to a OfflinePlayer on GunGameAddedActionEvent")
+        } else javaPlugin.logger.warning("Can't transfer '${event.uuid}' to a OfflinePlayer on FFAAddedActionEvent")
 
     }
 

@@ -5,9 +5,8 @@ package de.astride.gungame
 
 import com.google.gson.JsonObject
 import de.astride.gungame.commands.*
-import de.astride.gungame.commands.GunGame
+import de.astride.gungame.commands.FFA
 import de.astride.gungame.functions.*
-import de.astride.gungame.kits.kits
 import de.astride.gungame.listener.InGameListener
 import de.astride.gungame.listener.MoneyListener
 import de.astride.gungame.listener.RegionsListener
@@ -28,9 +27,9 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 13.04.2019)
+ * Current Version: 1.0 (17.02.2018 - 15.04.2019)
  */
-class GunGame : DarkPlugin() {
+class FFA : DarkPlugin() {
 
     override fun onLoad(): Unit = onLoad {
         Bukkit.getServicesManager().register(
@@ -57,7 +56,7 @@ class GunGame : DarkPlugin() {
                 holograms[uuid]?.show(player)
             }
         }
-        logLoad("kits") { kits = configService.kits.load() }
+        logLoad("kit") { configService.kit.kit }
         logLoad("allow-teams") {
             AllowTeams.Random.update()
             allowTeams = configService.config.allowTeams
@@ -76,7 +75,7 @@ class GunGame : DarkPlugin() {
     }
 
     override fun onDisable(): Unit = onDisable {
-        logSave("kits") { configService.kits.save() }
+        logSave("kit") { configService.kit.save() }
         logSave("stats") { configService.actions.save() }
     }
 
@@ -96,7 +95,7 @@ class GunGame : DarkPlugin() {
         Stats(this)
         StatsReset(this)
         Top(this)
-        GunGame(this)
+        FFA(this)
     }
 
     private fun spawnShops() = configService.shops.locations.forEach {
