@@ -4,9 +4,6 @@ import de.astride.gungame.functions.actions
 import de.astride.gungame.functions.activeActions
 import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.replace
-import de.astride.gungame.kits.gunGameLevel
-import de.astride.gungame.kits.upgrade
-import de.astride.gungame.shop.items.keepInventory
 import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
@@ -18,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (19.08.2017 - 14.04.2019)
+ * Current Version: 1.0 (19.08.2017 - 15.04.2019)
  */
 class StatsReset(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -67,10 +64,6 @@ class StatsReset(javaPlugin: JavaPlugin) : Command(
         map { it.replace("target", name) }.sendTo(sender)
 
     private fun Player.reset(by: String) {
-
-        keepInventory = false
-        gunGameLevel = 0
-        upgrade()
 
         uniqueId.actions += Action(
             this@StatsReset.javaClass.simpleName,
