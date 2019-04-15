@@ -7,7 +7,7 @@
  * in the user guide at https://docs.gradle.org/4.9/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'GunGame'
+rootProject.name = 'FFA'
 
 include(":spigot")
 findProject(":spigot")?.name = rootProject.name + "-Spigot"
