@@ -328,7 +328,7 @@ class ConfigService(private val directory: File) {
                     jsonArray?.mapNotNull { it.asString() } ?: listOf(single)
                 }
                 val delay by lazy { jsonObject?.get("delay")?.asLong ?: 300 }
-                val price by lazy { jsonObject?.get("price")?.asInt ?: 500 }
+                val price by lazy { jsonObject?.get("price")?.asInt ?: 50 }
 
             }
 
