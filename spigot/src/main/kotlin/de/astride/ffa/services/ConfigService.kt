@@ -819,10 +819,7 @@ class ConfigService(private val directory: File) {
         val configData = ConfigData(directory, config.files.kit)
         private val kSerializer: KSerializer<List<ItemStack>> = ItemStackSerializer.list
 
-        val kit by lazy {
-            load()
-            save()
-        }
+        val kit by lazy { load() }
 
         /* Values */
         private fun load(configData: ConfigData = this.configData): List<ItemStack?> {
@@ -836,7 +833,7 @@ class ConfigService(private val directory: File) {
                 ItemBuilder(Material.BOW).setName("Bogen"),
                 ItemBuilder(Material.FISHING_ROD).setName("Angel"),
                 ItemBuilder(Material.ARROW, 5).setName("Pfeil")
-            ).map { it.setUnbreakable().build() }
+            ).map { it.setUnbreakable().build() }.apply { save(this) }
             else Json.nonstrict.parse(kSerializer, string).map { itemStack ->
                 if (itemStack.type == Material.AIR) null else itemStack
             }
