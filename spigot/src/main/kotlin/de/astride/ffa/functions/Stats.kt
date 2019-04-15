@@ -33,7 +33,7 @@ val replacements = mutableMapOf<String, (UUID) -> Any>(
     },
     "bought-magicheal" to { uuid -> uuid.count("bought-MagicHeal") },
     "bought-instantkiller" to { uuid -> uuid.count("bought-InstantKiller") },
-    "bought-keepinventory" to { uuid -> uuid.count("bought-Arrows") },
+    "bought-arrows" to { uuid -> uuid.count("bought-Arrows") },
     "used-magicheal" to { uuid -> uuid.count("used-MagicHeal") },
     "used-instantkiller" to { uuid -> uuid.count("used-InstantKiller") },
     "used-keepinventory" to { uuid -> uuid.count("used-Arrows") }
