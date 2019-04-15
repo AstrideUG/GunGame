@@ -318,7 +318,7 @@ class ConfigService(private val directory: File) {
             inner class Arrows(val jsonObject: JsonObject?) {
 
                 /* Values */
-                val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.PAPER }
+                val material by lazy { jsonObject?.get("material")?.asString()?.toMaterial() ?: Material.ARROW }
                 val damage by lazy { jsonObject?.get("damage")?.asShort ?: 0 }
                 val name by lazy { jsonObject?.get("name")?.asString() ?: "${SECONDARY}Arrows" }
                 val lore by lazy {
