@@ -131,7 +131,7 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
     @EventHandler
     fun onInventoryClickEvent(event: InventoryClickEvent) {
         if (event.clickedInventory == event.whoClicked.openInventory.bottomInventory)
-            if (event.slot == 9) event.cancel()
+            if (event.slot == 8) event.cancel()
     }
 
     @EventHandler
