@@ -140,8 +140,10 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
     @EventHandler
     fun onInventoryClickEvent(event: InventoryClickEvent) {
         if (event.clickedInventory == event.whoClicked.openInventory.bottomInventory)
-            if (event.slotType == InventoryType.SlotType.ARMOR || event.slot == 0)
-                event.cancel()
+            if (event.slotType == InventoryType.SlotType.ARMOR ||
+                event.slot == 0 ||
+                event.slot == 8
+            ) event.cancel()
     }
 
     @EventHandler
