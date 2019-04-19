@@ -121,9 +121,17 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
     @EventHandler
     fun onPlayerInteractEvent(event: PlayerInteractEvent) {
         if (event.hasItem()) {
-            val item = event.item
-            if (item == Items.LEAVE.itemStack) event.player.kickPlayer("LEAVE")
-            else if (item.type == Material.BOW || item.type == Material.FISHING_ROD) return
+            val type = event.item.type
+            val name = type.name
+            if (event.item == Items.LEAVE.itemStack) event.player.kickPlayer("LEAVE")
+            else if (
+                type == Material.BOW ||
+                type == Material.FISHING_ROD ||
+                name.endsWith("HELMET") ||
+                name.endsWith("CHESTPLATE") ||
+                name.endsWith("LEGGINGS") ||
+                name.endsWith("BOOTS")
+            ) return
         }
         event.cancel()
     }
