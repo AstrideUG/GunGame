@@ -30,6 +30,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.SpigotGsonMessages
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.util.*
@@ -835,7 +836,8 @@ class ConfigService(private val directory: File) {
                 ItemBuilder(Material.FISHING_ROD).setName("Angel"),
                 ItemBuilder(Material.ARROW, 5).setName("Pfeil")
             ).map {
-                it.setName("${Colors.SECONDARY.chatColor}${it.build().itemMeta.displayName}").setUnbreakable().build()
+                it.setName("${Colors.SECONDARY.chatColor}${it.build().itemMeta.displayName}").setUnbreakable()
+                    .addItemFlags(ItemFlag.HIDE_UNBREAKABLE).build()
             }.apply { save(this) }
             else Json.nonstrict.parse(kSerializer, string).map { itemStack ->
                 if (itemStack.type == Material.AIR) null else itemStack
