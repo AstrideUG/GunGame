@@ -142,7 +142,7 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
         if (event.clickedInventory == event.whoClicked.openInventory.bottomInventory)
             if (event.slotType == InventoryType.SlotType.ARMOR ||
                 event.slot == 0 ||
-                event.slot == 8
+                event.currentItem == Items.LEAVE.itemStack
             ) event.cancel()
     }
 
