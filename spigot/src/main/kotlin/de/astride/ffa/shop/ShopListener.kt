@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:32.
- * Current Version: 1.0 (19.02.2018 - 15.04.2019)
+ * Current Version: 1.0 (19.02.2018 - 19.04.2019)
  */
 class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
@@ -34,7 +34,7 @@ class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
         listOf(MagicHeal(javaPlugin), InstantKiller(javaPlugin), Arrows(javaPlugin))
 
     init {
-        for (i in 0 until inventory.size step 2) inventory.setItem(i, items[i].itemStack)
+        for (i in 0 until inventory.size step 2) inventory.setItem(i, items[i / 2].itemStack)
     }
 
     @EventHandler
