@@ -517,7 +517,6 @@ class ConfigService(private val directory: File) {
                                 "shop.price-lore" to shop.priceLore.toJsonArray()
                                 "shop.max-count" to shop.maxCount.toJsonArray()
                                 "shop.max-health" to shop.maxHealth.toJsonArray()
-                                "shop.max-level" to shop.maxLevel.toJsonArray()
                                 "shop.money.successfully" to shop.money.successfully.toJsonArray()
                                 "shop.money.failed" to shop.money.failed.toJsonArray()
                                 "shop.arrows.successfully" to shop.arrows.successfully.toJsonArray()
@@ -754,10 +753,6 @@ class ConfigService(private val directory: File) {
             val maxHealth by lazy {
                 available["${prefix}max-health"]
                     ?: listOf("%Prefix.Text%Du hast eine Behandlung echt nicht nötig ;).")
-            }
-            val maxLevel by lazy {
-                available["${prefix}max-health"]
-                    ?: listOf("%Prefix.Text%Du hast schon das maximahle Level (%Colors.IMPORTANT%@kit@%Colors.TEXT%) erreicht.")
             }
 
             /* SubClass */
