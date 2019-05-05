@@ -8,12 +8,13 @@ import de.astride.gungame.commands.*
 import de.astride.gungame.commands.GunGame
 import de.astride.gungame.functions.*
 import de.astride.gungame.kits.kits
-import de.astride.gungame.listener.InGameListener
+import de.astride.gungame.listener.InGameEventsTemplate
 import de.astride.gungame.listener.MoneyListener
 import de.astride.gungame.listener.RegionsListener
 import de.astride.gungame.services.ConfigService
 import de.astride.gungame.shop.ShopListener
 import de.astride.gungame.stats.Actions
+import net.darkdevelopers.darkbedrock.darkness.general.functions.performCraftPluginUpdater
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Holograms
@@ -28,11 +29,16 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 13.04.2019)
+ * Current Version: 1.0 (17.02.2018 - 05.05.2019)
  */
 class GunGame : DarkPlugin() {
 
     override fun onLoad(): Unit = onLoad {
+        val map = mapOf(
+            "type" to "GunGame-Spigot",
+            "javaplugin" to this
+        )
+        performCraftPluginUpdater(map)
         Bukkit.getServicesManager().register(
             ConfigService::class.java,
             ConfigService(dataFolder),
@@ -78,10 +84,11 @@ class GunGame : DarkPlugin() {
     override fun onDisable(): Unit = onDisable {
         logSave("kits") { configService.kits.save() }
         logSave("stats") { configService.actions.save() }
+        InGameEventsTemplate.reset()
     }
 
     private fun initListener() {
-        InGameListener(this)
+        InGameEventsTemplate.setup(this)
         RegionsListener(this)
         if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
             logger.info("Hooking to Vault...")
