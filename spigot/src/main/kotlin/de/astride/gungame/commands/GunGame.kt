@@ -101,8 +101,8 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                     return
                 }
                 when (args[3].toLowerCase()) {
-                    "name" -> maps.setNameAndSave(id, args[4], configData)
-                    "world" -> maps.setWorldAndSave(id, args[4], configData)
+                    "name" -> isSizeOrHigher(5, sender) { maps.setNameAndSave(id, args[4], configData) }
+                    "world" -> isSizeOrHigher(5, sender) { maps.setWorldAndSave(id, args[4], configData) }
                     "worldboarder" -> isSizeOrHigher(5, sender) {
                         when (args[4].toLowerCase()) {
                             "center" -> sender.isPlayer {
