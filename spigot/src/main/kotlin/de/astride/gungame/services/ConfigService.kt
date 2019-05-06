@@ -1,6 +1,7 @@
 package de.astride.gungame.services
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import de.astride.data.ItemStackSerializer
@@ -28,6 +29,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.SpigotGsonMessages
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.io.File
@@ -382,6 +384,7 @@ class ConfigService(private val directory: File) {
 
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     inner class Maps internal constructor() {
 
         /* Main */
@@ -391,17 +394,214 @@ class ConfigService(private val directory: File) {
         /* Values */
         val bukkitGsonConfig = BukkitGsonConfig(configData)
 
+        fun setName(
+            id: Int,
+            value: String,
+            jsonArray: JsonArray = this.maps
+        ): Unit = jsonArray.getJsonObject(id).addProperty("name", value)
+
+        fun setWorld(
+            id: Int,
+            value: String,
+            jsonArray: JsonArray = this.maps
+        ): Unit = jsonArray.getJsonObject(id).addProperty("world", value)
+
+        fun setLocation(location: Location, jsonObject: JsonObject = JsonObject()): JsonObject =
+            jsonObject.apply { bukkitGsonConfig.setLocation(location, jsonObject) }
+
+        fun setLocationWithOutYawAndPitch(location: Location, jsonObject: JsonObject = JsonObject()): JsonObject =
+            jsonObject.apply { bukkitGsonConfig.setLocationWithOutYawAndPitch(location, jsonObject) }
+
+        fun setNameAndSave(
+            id: Int,
+            value: String,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            setName(id, value)
+            save(configData, jsonArray)
+        }
+
+        fun setWorldAndSave(
+            id: Int,
+            value: String,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            setWorld(id, value)
+            save(configData, jsonArray)
+        }
+
+        fun setRegionPos1AndSave(
+            id: Int,
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            val jsonObject = jsonArray.getJsonObject(id)
+            val region = jsonObject.getJsonObject("region")
+            jsonObject.add("region", setLocationWithOutYawAndPitch(location, region.getJsonObject("pos1")))
+            save(configData, jsonArray)
+        }
+
+        fun setRegionPos2AndSave(
+            id: Int,
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            val jsonObject = jsonArray.getJsonObject(id)
+            val region = jsonObject.getJsonObject("region")
+            jsonObject.add("region", setLocationWithOutYawAndPitch(location, region.getJsonObject("pos2")))
+            save(configData, jsonArray)
+        }
+
+        fun setHologramAndSave(
+            id: Int,
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            jsonArray.getJsonObject(id).add("hologram", setLocationWithOutYawAndPitch(location))
+            save(configData, jsonArray)
+        }
+
+        fun setSpawnAndSave(
+            id: Int,
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            jsonArray.getJsonObject(id).add("spawn", setLocation(location))
+            save(configData, jsonArray)
+        }
+
+        fun setWorldBoarderSizeAndSave(
+            id: Int,
+            value: Double,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            val jsonObject = jsonArray.getJsonObject(id)
+            val worldBoarder = jsonObject.getJsonObject("worldBoarder")
+            worldBoarder.addProperty("size", value)
+            jsonObject.add("worldBoarder", worldBoarder)
+            save(configData, jsonArray)
+        }
+
+        fun setWorldBoarderCenterAndSave(
+            id: Int,
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            val jsonObject = jsonArray.getJsonObject(id)
+            val worldBoarder = jsonObject.getJsonObject("worldBoarder")
+            jsonObject.add(
+                "worldBoarder",
+                setLocationWithOutYawAndPitch(location, worldBoarder.getJsonObject("center"))
+            )
+            save(configData, jsonArray)
+        }
+
+        fun setWorldBoarderWarningTimeAndSave(
+            id: Int,
+            value: Int,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            val jsonObject = jsonArray.getJsonObject(id)
+            val worldBoarder = jsonObject.getJsonObject("worldBoarder")
+            jsonObject.add(
+                "worldBoarder",
+                worldBoarder.getJsonObject("warning").apply { this.addProperty("time", value) }
+            )
+            save(configData, jsonArray)
+        }
+
+        fun setWorldBoarderWarningDistanceAndSave(
+            id: Int,
+            value: Int,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            val jsonObject = jsonArray.getJsonObject(id)
+            val worldBoarder = jsonObject.getJsonObject("worldBoarder")
+            jsonObject.add(
+                "worldBoarder",
+                worldBoarder.getJsonObject("warning").apply { this.addProperty("distance", value) }
+            )
+            save(configData, jsonArray)
+        }
+
+        fun setWorldBoarderDamageBufferAndSave(
+            id: Int,
+            value: Double,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            val jsonObject = jsonArray.getJsonObject(id)
+            val worldBoarder = jsonObject.getJsonObject("worldBoarder")
+            jsonObject.add(
+                "worldBoarder",
+                worldBoarder.getJsonObject("damage").apply { this.addProperty("buffer", value) }
+            )
+            save(configData, jsonArray)
+        }
+
+        fun setWorldBoarderDamageAmountAndSave(
+            id: Int,
+            value: Double,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.maps
+        ) {
+            val jsonObject = jsonArray.getJsonObject(id)
+            val worldBoarder = jsonObject.getJsonObject("worldBoarder")
+            jsonObject.add(
+                "worldBoarder",
+                worldBoarder.getJsonObject("damage").apply { this.addProperty("amount", value) }
+            )
+            save(configData, jsonArray)
+        }
+
+        fun save(configData: ConfigData = this.configData, jsonElement: JsonElement = maps): Unit =
+            GsonService.save(configData, jsonElement)
+
+        private fun JsonArray.getJsonObject(id: Int): JsonObject = try {
+            this[id] as? JsonObject ?: JsonObject()
+        } catch (ex: IndexOutOfBoundsException) {
+            JsonObject()
+        }
+
+        private fun JsonObject.getJsonObject(key: String): JsonObject = this[key] as? JsonObject ?: JsonObject()
+
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     inner class Shops internal constructor() {
 
         /* Main */
-        private val configData = ConfigData(directory, config.files.shops)
+        val configData = ConfigData(directory, config.files.shops)
         private val jsonArray = GsonService.load(configData) as? JsonArray ?: JsonArray()
         private val bukkitGsonConfig = BukkitGsonConfig(configData)
 
         /* Values */
         val locations = jsonArray.map { bukkitGsonConfig.getLocation(it.asJsonObject) }
+
+        fun addAndSave(
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = this.jsonArray
+        ) {
+            add(location, jsonArray)
+            save(configData, jsonArray)
+        }
+
+        fun add(location: Location, jsonArray: JsonArray = this.jsonArray): Unit =
+            jsonArray.add(JsonObject().apply { bukkitGsonConfig.setLocation(location, this) })
+
+        fun save(configData: ConfigData = this.configData, jsonElement: JsonElement = jsonArray): Unit =
+            GsonService.save(configData, jsonElement)
 
     }
 
