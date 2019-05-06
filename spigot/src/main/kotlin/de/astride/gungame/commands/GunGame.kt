@@ -16,7 +16,7 @@ import java.io.File
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 18:33.
- * Current Version: 1.0 (04.04.2019 - 13.04.2019)
+ * Current Version: 1.0 (04.04.2019 - 06.05.2019)
  */
 class GunGame(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -34,7 +34,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "|set map <id> region pos1/pos2 [-o] [<Path>.json]" +
             "|add shop [-o] [<Path>.json]",
     minLength = 2,
-    maxLength = 3,
+    maxLength = 8,
     aliases = *config.aliases
 ) {
 
@@ -195,7 +195,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                             args.size >= 2 &&
                             args.dropLast(1).last().equals("-o", true)))
         ) location
-        else location.edit(x = location.blockX + 0.5, y = location.blockY + 0.5)
+        else location.edit(x = location.blockX + 0.5, z = location.blockZ + 0.5)
 
     private fun generatePath(input: String): ConfigData {
         val path = input.split('/')
