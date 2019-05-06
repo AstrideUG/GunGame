@@ -397,13 +397,13 @@ class ConfigService(private val directory: File) {
         fun setName(
             id: Int,
             value: String,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ): Unit = jsonArray.getJsonObject(id).addProperty("name", value)
 
         fun setWorld(
             id: Int,
             value: String,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ): Unit = jsonArray.getJsonObject(id).addProperty("world", value)
 
         fun setLocation(location: Location, jsonObject: JsonObject = JsonObject()): JsonObject =
@@ -416,7 +416,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             value: String,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             setName(id, value)
             save(configData, jsonArray)
@@ -426,7 +426,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             value: String,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             setWorld(id, value)
             save(configData, jsonArray)
@@ -436,7 +436,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             location: Location,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             val jsonObject = jsonArray.getJsonObject(id)
             val region = jsonObject.getJsonObject("region")
@@ -448,7 +448,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             location: Location,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             val jsonObject = jsonArray.getJsonObject(id)
             val region = jsonObject.getJsonObject("region")
@@ -460,7 +460,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             location: Location,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             jsonArray.getJsonObject(id).add("hologram", setLocationWithOutYawAndPitch(location))
             save(configData, jsonArray)
@@ -470,7 +470,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             location: Location,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             jsonArray.getJsonObject(id).add("spawn", setLocation(location))
             save(configData, jsonArray)
@@ -480,7 +480,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             value: Double,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             val jsonObject = jsonArray.getJsonObject(id)
             val worldBoarder = jsonObject.getJsonObject("worldBoarder")
@@ -493,7 +493,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             location: Location,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             val jsonObject = jsonArray.getJsonObject(id)
             val worldBoarder = jsonObject.getJsonObject("worldBoarder")
@@ -508,7 +508,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             value: Int,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             val jsonObject = jsonArray.getJsonObject(id)
             val worldBoarder = jsonObject.getJsonObject("worldBoarder")
@@ -523,7 +523,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             value: Int,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             val jsonObject = jsonArray.getJsonObject(id)
             val worldBoarder = jsonObject.getJsonObject("worldBoarder")
@@ -538,7 +538,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             value: Double,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             val jsonObject = jsonArray.getJsonObject(id)
             val worldBoarder = jsonObject.getJsonObject("worldBoarder")
@@ -553,7 +553,7 @@ class ConfigService(private val directory: File) {
             id: Int,
             value: Double,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.maps
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             val jsonObject = jsonArray.getJsonObject(id)
             val worldBoarder = jsonObject.getJsonObject("worldBoarder")
@@ -591,16 +591,16 @@ class ConfigService(private val directory: File) {
         fun addAndSave(
             location: Location,
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = this.jsonArray
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ) {
             add(location, jsonArray)
             save(configData, jsonArray)
         }
 
-        fun add(location: Location, jsonArray: JsonArray = this.jsonArray): Unit =
+        fun add(location: Location, jsonArray: JsonArray = loadAs(configData) ?: JsonArray()): Unit =
             jsonArray.add(JsonObject().apply { bukkitGsonConfig.setLocation(location, this) })
 
-        fun save(configData: ConfigData = this.configData, jsonElement: JsonElement = jsonArray): Unit =
+        fun save(configData: ConfigData = this.configData, jsonElement: JsonElement = this.jsonArray): Unit =
             GsonService.save(configData, jsonElement)
 
     }
