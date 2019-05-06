@@ -99,6 +99,8 @@ class GunGame : DarkPlugin() {
     }
 
     override fun onDisable(): Unit = onDisable {
+        @Suppress("LABEL_NAME_CLASH")
+        if (setup) return@onDisable
         logSave("kits") { configService.kits.save() }
         logSave("stats") { configService.actions.save() }
         InGameEventsTemplate.reset()
