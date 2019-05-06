@@ -33,6 +33,8 @@ import kotlin.random.Random
  */
 class GunGame : DarkPlugin() {
 
+    private var setup: Boolean = false
+
     override fun onLoad(): Unit = onLoad {
         val map = mapOf(
             "type" to "GunGame-Spigot",
@@ -53,7 +55,12 @@ class GunGame : DarkPlugin() {
 
         logLoad("map") {
             val config = configService.maps
-            if (config.maps.size() < 1) throw IllegalStateException("No Maps are configured")
+            if (config.maps.size() < 1) {
+                setup = true
+                logger.warning("No Maps are configured!")
+                logger.warning("The plugin needs at least one map to make it work!")
+                return@logLoad
+            }
             @Suppress("LABEL_NAME_CLASH")
             val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return@onEnable
             gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { player, holograms, map ->
@@ -63,6 +70,16 @@ class GunGame : DarkPlugin() {
                 holograms[uuid]?.show(player)
             }
         }
+
+        if (setup) {
+
+            logLoad("GunGame command") { GunGame(this) }
+
+            logger.info("Since the plugin is in setup mode, only the GunGame command has been initialized!")
+            @Suppress("LABEL_NAME_CLASH")
+            return@onEnable
+        }
+
         logLoad("kits") { kits = configService.kits.load() }
         logLoad("allow-teams") {
             AllowTeams.Random.update()
@@ -72,8 +89,8 @@ class GunGame : DarkPlugin() {
             allActions = configService.actions.load().map { it.key to Actions(it.key, it.value) }.toMap().toMutableMap()
         }
 
-        initListener()
-        initCommands()
+        logLoad("events") { initEvents() }
+        logLoad("commands") { initCommands() }
 
         ShopListener(this)
 
@@ -87,7 +104,7 @@ class GunGame : DarkPlugin() {
         InGameEventsTemplate.reset()
     }
 
-    private fun initListener() {
+    private fun initEvents() {
         InGameEventsTemplate.setup(this)
         RegionsListener(this)
         if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
