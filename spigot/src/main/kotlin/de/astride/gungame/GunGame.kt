@@ -12,6 +12,7 @@ import de.astride.gungame.listener.InGameEventsTemplate
 import de.astride.gungame.listener.MoneyListener
 import de.astride.gungame.listener.RegionsListener
 import de.astride.gungame.services.ConfigService
+import de.astride.gungame.setup.Events
 import de.astride.gungame.shop.ShopListener
 import de.astride.gungame.stats.Actions
 import net.darkdevelopers.darkbedrock.darkness.general.functions.performCraftPluginUpdater
@@ -29,11 +30,9 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 05.05.2019)
+ * Current Version: 1.0 (17.02.2018 - 07.05.2019)
  */
 class GunGame : DarkPlugin() {
-
-    private var setup: Boolean = false
 
     override fun onLoad(): Unit = onLoad {
         val map = mapOf(
@@ -41,22 +40,25 @@ class GunGame : DarkPlugin() {
             "javaplugin" to this
         )
         performCraftPluginUpdater(map)
-        Bukkit.getServicesManager().register(
-            ConfigService::class.java,
-            ConfigService(dataFolder),
-            this,
-            ServicePriority.Normal
-        ) //Important for ConfigService.instance
     }
 
     override fun onEnable(): Unit = onEnable {
+
+        logLoad("Config") {
+            Bukkit.getServicesManager().register(
+                ConfigService::class.java,
+                ConfigService(dataFolder),
+                this,
+                ServicePriority.Normal
+            ) //Important for ConfigService.instance
+        }
 
         EventsListener.autoRespawn = true
 
         logLoad("map") {
             val config = configService.maps
             if (config.maps.size() < 1) {
-                setup = true
+                isSetup = true
                 logger.warning("No Maps are configured!")
                 logger.warning("The plugin needs at least one map to make it work!")
                 return@logLoad
@@ -71,11 +73,13 @@ class GunGame : DarkPlugin() {
             }
         }
 
-        if (setup) {
+        logLoad("setup listener") { Events.setup(this) }
+
+        if (isSetup) {
 
             logLoad("GunGame command") { GunGame(this) }
 
-            logger.info("Since the plugin is in setup mode, only the GunGame command has been initialized!")
+            logger.info("Since the plugin is in setup mode, only the GunGame command & setup listener has been initialized!")
             @Suppress("LABEL_NAME_CLASH")
             return@onEnable
         }
@@ -99,11 +103,20 @@ class GunGame : DarkPlugin() {
     }
 
     override fun onDisable(): Unit = onDisable {
+        logUnregister("setup listener") { Events.reset() }
         @Suppress("LABEL_NAME_CLASH")
-        if (setup) return@onDisable
+        if (isSetup) {
+            isSetup = false
+            return@onDisable
+        }
         logSave("kits") { configService.kits.save() }
         logSave("stats") { configService.actions.save() }
-        InGameEventsTemplate.reset()
+        logLoad("ingame events") { InGameEventsTemplate.reset() }
+
+        logUnregister("Config") {
+            //must be after all "configService" calls
+            server.servicesManager.unregister(ConfigService::class.java, configService)
+        }
     }
 
     private fun initEvents() {
@@ -144,6 +157,7 @@ class GunGame : DarkPlugin() {
 
     private inline fun logLoad(suffix: String, block: () -> Unit) = log("Load", suffix, block)
     private inline fun logSave(suffix: String, block: () -> Unit) = log("Save", suffix, block)
+    private inline fun logUnregister(suffix: String, block: () -> Unit) = log("Unregister", suffix, block)
     private inline fun log(prefix: String, suffix: String, block: () -> Unit) {
         logger.info("$prefix $suffix...")
         block()

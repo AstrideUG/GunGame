@@ -4,9 +4,10 @@
 package de.astride.gungame.listener
 
 import de.astride.gungame.functions.*
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.Listener
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -16,11 +17,10 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.plugin.java.JavaPlugin
 
-
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 07.08.2017 03:20.
- * Current Version: 1.0 (07.08.2017 - 11.04.2019)
+ * Current Version: 1.0 (07.08.2017 - 07.05.2019)
  */
 class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
@@ -64,13 +64,15 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
     /**
      * @author Lars Artmann | LartyHD
      * Created by Lars Artmann | LartyHD on 29.03.2019 13:07.
-     * Current Version: 1.0 (29.03.2019 - 31.03.2019)
+     * Current Version: 1.0 (29.03.2019 - 07.05.2019)
      */
     @EventHandler
     fun onPlayerMoveEvent(event: PlayerMoveEvent) {
-        val inventory = event.player.inventory
-        if (inventory.getItem(leaveSlot) != null && !region.isInside(event.to)) inventory.setItem(leaveSlot, null)
-        else if (inventory.getItem(leaveSlot) == null && region.isInside(event.to)) inventory.setLeave()
+        val inventory = event.player.inventory ?: return
+        if (inventory.getItem(leaveSlot) == Items.LEAVE.itemStack && !region.isInside(event.to))
+            inventory.setItem(leaveSlot, null)
+        else if (inventory.getItem(leaveSlot) == null && region.isInside(event.to))
+            inventory.setLeave()
     }
 
     /**

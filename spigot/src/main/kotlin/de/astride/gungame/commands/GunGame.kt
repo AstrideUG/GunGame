@@ -4,10 +4,17 @@ import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.edit
 import de.astride.gungame.functions.messages
 import de.astride.gungame.functions.replace
+import de.astride.gungame.setup.Setup
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
+import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.Book
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.ClickAction
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.openBook
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.isPlayer
+import org.bukkit.ChatColor.GREEN
+import org.bukkit.ChatColor.UNDERLINE
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
@@ -16,7 +23,7 @@ import java.io.File
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 18:33.
- * Current Version: 1.0 (04.04.2019 - 06.05.2019)
+ * Current Version: 1.0 (04.04.2019 - 07.05.2019)
  */
 class GunGame(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -32,13 +39,23 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "|set map <id> worldboarder center [-o] [<Path>.json]" +
             "|set map <id> spawn/hologram [-o] [<Path>.json]" +
             "|set map <id> region pos1/pos2 [-o] [<Path>.json]" +
-            "|add shop [-o] [<Path>.json]",
+            "|add shop [-o] [<Path>.json]" +
+            "|setup help" +
+            "|setup all" +
+            "|setup maps" +
+            "|setup shops" +
+            "|setup reload",
     minLength = 2,
     maxLength = 8,
     aliases = *config.aliases
 ) {
 
     override fun perform(sender: CommandSender, args: Array<String>) {
+
+        if (args[0].toLowerCase() == "setup") {
+            setup(sender, args.drop(1))
+            return
+        }
 
         var failed = false
 
@@ -183,6 +200,32 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             }
         }
 
+    }
+
+    private fun setup(sender: CommandSender, args: List<String>): Unit = sender.isPlayer { player ->
+        when (args[0].toLowerCase()) {
+            "help" -> {
+                val book = Book("", "")
+                book.addPage()
+                    .add("\n\nDas ").build()
+                    .add("$PRIMARY${EXTRA}CraftPlugin$IMPORTANT$EXTRA.$PRIMARY${EXTRA}net")
+                    .clickEvent(ClickAction.OPEN_URL, "https://portal.craftplugin.net").build()
+                    .add(" Team wünscht dir viel Spaß mit GunGame.\n\n").build()
+                    .add("Die Einrichtung ist für dich so einfach wie möglich gehalten.\n\n\n").build()
+                    .add("$GREEN${UNDERLINE}Jetzt los legen")
+                    .clickEvent(ClickAction.RUN_COMMAND, "/$commandName setup all").build()
+                    .build()
+                player.openBook(book.build())
+            }
+            "all" -> player.openInventory(Setup.all)
+            "maps" -> player.openInventory(Setup.maps)
+            "shops" -> player.openInventory(Setup.shops)
+            "reload" -> {
+                val pluginManager = javaPlugin.server.pluginManager
+                pluginManager.disablePlugin(javaPlugin)
+                pluginManager.enablePlugin(javaPlugin)
+            }
+        }
     }
 
     private inline fun Array<String>.isSizeOrHigher(size: Int, sender: CommandSender, block: () -> Unit): Unit =

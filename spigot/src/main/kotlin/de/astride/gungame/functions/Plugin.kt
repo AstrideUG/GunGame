@@ -8,8 +8,15 @@ import org.bukkit.plugin.java.JavaPlugin
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 09:17.
- * Current Version: 1.0 (27.03.2019 - 06.04.2019)
+ * Current Version: 1.0 (27.03.2019 - 07.05.2019)
  */
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 07.05.2019 15:23.
+ * Current Version: 1.0 (07.05.2019 - 07.05.2019)
+ */
+var isSetup: Boolean = false
 
 /**
  * @author Lars Artmann | LartyHD
