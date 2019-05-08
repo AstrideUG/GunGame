@@ -7,16 +7,20 @@ import de.astride.gungame.functions.replace
 import de.astride.gungame.setup.Setup
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
+import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.AnvilGUI
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.Book
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.ClickAction
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.openBook
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.isPlayer
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.UNDERLINE
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
@@ -241,40 +245,40 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
 
                     player.openInventory(inventory)
                 }
-//                args.size >= 3 -> if (args[1].toLowerCase() == "edit") {
-//                    val id = args[2].toIntOrNull()
-//                    if (id != null) {
-//                        val location = configService.shops.locations[id]
-//                        when (args.size) {
-//                            3 -> player.openInventory(Setup.generateShopsEdit(location))
-//                            4 -> {
-////                                AnvilGUI(javaPlugin, player).apply {
-////                                    setSlot(
-////                                        AnvilGUI.AnvilSlot.INPUT_LEFT,
-////                                        ItemBuilder(Material.PAPER).setName("<Value>").build()
-////                                    )
-////                                }.open("GunGame Setup Shops Edit ${args[3]}")
-//                            }
-//                            5 -> try {
-//                                val value = args[4]
-//                                when (args[3].toLowerCase()) {
-//                                    "world" -> location.world =
-//                                        Bukkit.getWorld(value) ?: return@isPlayer //TODO: Add message
-//                                    "x" -> location.x = value.toDouble()
-//                                    "y" -> location.y = value.toDouble()
-//                                    "Z" -> location.z = value.toDouble()
-//                                    "yaw" -> location.yaw = value.toFloat()
-//                                    "pitch" -> location.pitch = value.toFloat()
-//                                }
-//                            } catch (ex: IndexOutOfBoundsException) {
-//                                sendUseMessage(sender) //TODO: Add message
-//                            } catch (ex: NumberFormatException) {
-//                                sendUseMessage(sender)//TODO: Add message
-//                            }
-//                            else -> sendUseMessage(sender)
-//                        }
-//                    } else sendUseMessage(sender) //TODO: Add message
-//                } else sendUseMessage(sender)
+                args.size >= 3 -> if (args[1].toLowerCase() == "edit") {
+                    val id = args[2].toIntOrNull()
+                    if (id != null) {
+                        val location = configService.shops.locations[id]
+                        when (args.size) {
+                            3 -> player.openInventory(Setup.generateShopsEdit(location))
+                            4 -> {
+                                AnvilGUI(javaPlugin, player).apply {
+                                    setSlot(
+                                        AnvilGUI.AnvilSlot.INPUT_LEFT,
+                                        ItemBuilder(Material.PAPER).setName("Value").build()
+                                    )
+                                }.open("GunGame Setup Shops Edit ${args[3]}")
+                            }
+                            5 -> try {
+                                val value = args[4]
+                                when (args[3].toLowerCase()) {
+                                    "world" -> location.world =
+                                        Bukkit.getWorld(value) ?: return@isPlayer //TODO: Add message
+                                    "x" -> location.x = value.toDouble()
+                                    "y" -> location.y = value.toDouble()
+                                    "Z" -> location.z = value.toDouble()
+                                    "yaw" -> location.yaw = value.toFloat()
+                                    "pitch" -> location.pitch = value.toFloat()
+                                }
+                            } catch (ex: IndexOutOfBoundsException) {
+                                sendUseMessage(sender) //TODO: Add message
+                            } catch (ex: NumberFormatException) {
+                                sendUseMessage(sender)//TODO: Add message
+                            }
+                            else -> sendUseMessage(sender)
+                        }
+                    } else sendUseMessage(sender) //TODO: Add message
+                } else sendUseMessage(sender)
                 else -> sendUseMessage(sender)
             }
             "reload" -> {

@@ -4,7 +4,6 @@ import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.isSetup
 import de.astride.gungame.functions.javaPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.AnvilClickEvent
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.listen
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.unregister
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.execute
@@ -75,14 +74,8 @@ object Events : EventsTemplate() {
     private fun setupInventory(plugin: Plugin) {
 
         //block item movement
-        val inventories: Set<String> =
-            setOf(Setup.all.name, Setup.shops.name, Setup.maps.name, "${SECONDARY}GunGame Setup Shops Edit")
-        inventories.listenTop(plugin) { it.cancel() }.add()
-
-        Setup.all.listenTop(plugin) {
-            println("fgnjfbng<älkfn l gokpl$it ${it.whoClicked}")
-            it.cancel()
-        }.add()
+        setOf(Setup.all.name, Setup.shops.name, Setup.maps.name, "${SECONDARY}GunGame Setup Shops Edit")
+            .listenTop(plugin, cancel = true).add()
 
 //        //back Item impl
         listenInventories(plugin, acceptCurrentItem = { it == Setup.backItem }) { event ->
@@ -111,6 +104,12 @@ object Events : EventsTemplate() {
             val id = getID(event.currentItem) ?: return@listenTop
             event.whoClicked.editID = id
             event.whoClicked.execute("$commandName setup shops edit $id")
+        }.add()
+
+        //add shop
+        Setup.shops.listenTop(plugin, onlyCheckName = true, acceptSlot = { it == 40 }) { event ->
+            event.whoClicked.execute("$commandName add shop")
+            event.whoClicked.closeInventory()
         }.add()
 
         //open shops edit gui by value
