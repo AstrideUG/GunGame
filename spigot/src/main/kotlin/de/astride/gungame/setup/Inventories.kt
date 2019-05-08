@@ -2,6 +2,7 @@ package de.astride.gungame.setup
 
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
+import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.SkullItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import org.bukkit.Location
@@ -16,7 +17,6 @@ import org.bukkit.inventory.ItemStack
  * Created by Lars Artmann | LartyHD on 07.05.2019 12:28.
  * Current Version: 1.0 (07.05.2019 - 07.05.2019)
  */
-
 
 /**
  * @author Lars Artmann | LartyHD
@@ -35,17 +35,52 @@ object Setup {
     val maps: Inventory = InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Maps").generate()
     val shops: Inventory = InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops").generate()
 
+    fun generateShopsEdit(
+        location: Location,
+        world: Boolean = true,
+        yawAndPitch: Boolean = true
+    ): Inventory =
+        InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops Edit").generateEdit(location, world, yawAndPitch)
+
     fun generateShopDisplayItem(id: Int, location: Location): ItemStack = ItemBuilder(Items.CHEST.itemStack)
-        .setName("${SECONDARY}Nummer $id")
+        .setName("${SECONDARY}Number $id")
         .setLore(
             "",
             "${TEXT}Location:",
-            "$TEXT    World: $IMPORTANT${location.world}",
+            "$TEXT    World: $IMPORTANT${location.world?.name}",
             "$TEXT    X: $IMPORTANT${location.x}",
             "$TEXT    Y: $IMPORTANT${location.y}",
             "$TEXT    Z: $IMPORTANT${location.z}",
             ""
         )
+        .build()
+
+    private fun InventoryBuilder.generateEdit(
+        location: Location,
+        world: Boolean = true,
+        yawAndPitch: Boolean = false
+    ): Inventory = setDesign()
+        .setRange(ItemStack(Material.AIR), 19, 26)
+        .setItem(20, ItemBuilder(Material.BANNER, damage = 1).setName("${TEXT}X: $IMPORTANT${location.x}").build())
+        .setItem(22, ItemBuilder(Material.BANNER, damage = 10).setName("${TEXT}Y: $IMPORTANT${location.y}").build())
+        .setItem(24, ItemBuilder(Material.BANNER, damage = 4).setName("${TEXT}Z: $IMPORTANT${location.z}").build())
+        .apply {
+            if (world) setItem(
+                40,
+                ItemBuilder(Material.EMPTY_MAP).setName("${TEXT}World: $IMPORTANT${location.world?.name}").build()
+            )
+            if (yawAndPitch) {
+                setItem(
+                    18,
+                    SkullItemBuilder().setOwner("MHF_ArrowLeft").setName("${TEXT}Yaw: $IMPORTANT${location.yaw}").build()
+                )
+                setItem(
+                    26,
+                    SkullItemBuilder().setOwner("MHF_ArrowRight").setName("${TEXT}Pitch: $IMPORTANT${location.pitch}").build()
+                )
+            }
+        }
+        .setItem(44, backItem)
         .build()
 
     private fun InventoryBuilder.generate(): Inventory = setDesign().apply {

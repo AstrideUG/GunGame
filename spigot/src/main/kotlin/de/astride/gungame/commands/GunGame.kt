@@ -6,6 +6,7 @@ import de.astride.gungame.functions.messages
 import de.astride.gungame.functions.replace
 import de.astride.gungame.setup.Setup
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
+import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
@@ -44,6 +45,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "|setup all" +
             "|setup maps" +
             "|setup shops" +
+            "|setup shops edit <id> <world/x/y/z/yaw/pitch> <value>" +
             "|setup reload",
     minLength = 2,
     maxLength = 8,
@@ -218,8 +220,63 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                 player.openBook(book.build())
             }
             "all" -> player.openInventory(Setup.all)
-            "maps" -> player.openInventory(Setup.maps)
-            "shops" -> player.openInventory(Setup.shops)
+            "maps" -> player.openInventory(Setup.maps) //TODO: generate maps display-items
+            "shops" -> when {
+                args.size == 1 -> {
+
+                    val shops = Setup.shops
+                    val inventory = InventoryBuilder(shops.size, shops.title).build().apply {
+                        contents = shops.contents
+                    }
+
+                    val itemsPerPage = 7
+                    val page = 0
+                    val add = page * itemsPerPage
+
+                    val locations = configService.shops.locations
+                    if (locations.isNotEmpty()) for (i in 0 until Math.min(locations.size, itemsPerPage)) {
+                        val location = locations[i + add]
+                        inventory.setItem(i + 19, Setup.generateShopDisplayItem(i + add, location))
+                    }
+
+                    player.openInventory(inventory)
+                }
+//                args.size >= 3 -> if (args[1].toLowerCase() == "edit") {
+//                    val id = args[2].toIntOrNull()
+//                    if (id != null) {
+//                        val location = configService.shops.locations[id]
+//                        when (args.size) {
+//                            3 -> player.openInventory(Setup.generateShopsEdit(location))
+//                            4 -> {
+////                                AnvilGUI(javaPlugin, player).apply {
+////                                    setSlot(
+////                                        AnvilGUI.AnvilSlot.INPUT_LEFT,
+////                                        ItemBuilder(Material.PAPER).setName("<Value>").build()
+////                                    )
+////                                }.open("GunGame Setup Shops Edit ${args[3]}")
+//                            }
+//                            5 -> try {
+//                                val value = args[4]
+//                                when (args[3].toLowerCase()) {
+//                                    "world" -> location.world =
+//                                        Bukkit.getWorld(value) ?: return@isPlayer //TODO: Add message
+//                                    "x" -> location.x = value.toDouble()
+//                                    "y" -> location.y = value.toDouble()
+//                                    "Z" -> location.z = value.toDouble()
+//                                    "yaw" -> location.yaw = value.toFloat()
+//                                    "pitch" -> location.pitch = value.toFloat()
+//                                }
+//                            } catch (ex: IndexOutOfBoundsException) {
+//                                sendUseMessage(sender) //TODO: Add message
+//                            } catch (ex: NumberFormatException) {
+//                                sendUseMessage(sender)//TODO: Add message
+//                            }
+//                            else -> sendUseMessage(sender)
+//                        }
+//                    } else sendUseMessage(sender) //TODO: Add message
+//                } else sendUseMessage(sender)
+                else -> sendUseMessage(sender)
+            }
             "reload" -> {
                 val pluginManager = javaPlugin.server.pluginManager
                 pluginManager.disablePlugin(javaPlugin)

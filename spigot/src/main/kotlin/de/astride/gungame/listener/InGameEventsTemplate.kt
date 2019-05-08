@@ -28,13 +28,12 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerRespawnEvent
-import org.bukkit.event.server.PluginEnableEvent
 import org.bukkit.plugin.Plugin
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:32.
- * Current Version: 1.0 (17.02.2018 - 07.05.2019)
+ * Current Version: 1.0 (17.02.2018 - 08.05.2019)
  */
 object InGameEventsTemplate : EventsTemplate() {
 
@@ -55,10 +54,6 @@ object InGameEventsTemplate : EventsTemplate() {
             if (event.player.health <= 0.0) return@listen
             val types = arrayOf(Material.WATER, Material.STATIONARY_WATER, Material.LAVA, Material.STATIONARY_LAVA)
             if (types.any { it == event.to.block.type }) event.player.health = 0.0
-        }.add()
-        listen<PluginEnableEvent>(plugin) { event ->
-            if (event.plugin != plugin) return@listen
-            players.forEach { it.setup() }
         }.add()
         listen<PlayerJoinEvent>(plugin) { event -> event.player.setup() }.add()
         listen<PlayerDisconnectEvent>(plugin) { event -> gameMap.removeHologram(event.player) }.add()
@@ -116,6 +111,7 @@ object InGameEventsTemplate : EventsTemplate() {
         }.add()
         listen<EntityDamageEvent>(plugin) { if (it.cause == EntityDamageEvent.DamageCause.FALL) it.cancel() }.add()
 
+        players.forEach { it.setup() }
 
     }
 
