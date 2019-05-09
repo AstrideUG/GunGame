@@ -30,7 +30,7 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 07.05.2019)
+ * Current Version: 1.0 (17.02.2018 - 09.05.2019)
  */
 class GunGame : DarkPlugin() {
 
@@ -73,7 +73,7 @@ class GunGame : DarkPlugin() {
             }
         }
 
-        logLoad("setup listener") { Events.setup(this) }
+        logLoad("setup events") { Events.setup(this) }
 
         if (isSetup) {
 
@@ -96,14 +96,13 @@ class GunGame : DarkPlugin() {
         logLoad("events") { initEvents() }
         logLoad("commands") { initCommands() }
 
-        ShopListener(this)
-
-        Bukkit.getScheduler().runTaskLater(this, { spawnShops() }, 5)
+        Bukkit.getScheduler().runTaskLater(this, { logLoad("shops") { spawnShops() } }, 5)
 //        ranksUpdater()
     }
 
     override fun onDisable(): Unit = onDisable {
-        logUnregister("setup listener") { Events.reset() }
+        logUnregister("setup events") { Events.reset() }
+        logSave("shops") { configService.shops.save() }
         @Suppress("LABEL_NAME_CLASH")
         if (isSetup) {
             isSetup = false
@@ -111,7 +110,7 @@ class GunGame : DarkPlugin() {
         }
         logSave("kits") { configService.kits.save() }
         logSave("stats") { configService.actions.save() }
-        logLoad("ingame events") { InGameEventsTemplate.reset() }
+        logSave("ingame events") { InGameEventsTemplate.reset() }
 
         logUnregister("Config") {
             //must be after all "configService" calls
@@ -127,6 +126,7 @@ class GunGame : DarkPlugin() {
             MoneyListener(this)
             logger.info("Hooked to Vault")
         } else logger.warning("Vault not found")
+        ShopListener(this)
     }
 
     private fun initCommands() {
@@ -138,9 +138,9 @@ class GunGame : DarkPlugin() {
         GunGame(this)
     }
 
-    private fun spawnShops() = configService.shops.locations.forEach {
+    private fun spawnShops(): Unit = configService.shops.locations.forEach {
 
-        val armorStand = it.world.spawnEntity(it, EntityType.ARMOR_STAND) as ArmorStand
+        val armorStand = it.world?.spawnEntity(it, EntityType.ARMOR_STAND) as? ArmorStand ?: return@forEach
         armorStand.apply {
 
             customName = messages.shop.entityName
