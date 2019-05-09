@@ -91,8 +91,8 @@ object Events : EventsTemplate() {
         //open shops edit gui
         Setup.shops.listenTop(plugin, onlyCheckName = true, acceptSlot = { it in 19..25 }) { event ->
             val id = getID(event.currentItem) ?: return@listenTop
-            event.whoClicked.editID = id
-            event.whoClicked.execute("$commandName setup shops edit $id")
+            val type = if (event.isShiftClick) "teleport" else "edit"
+            event.whoClicked.execute("$commandName setup shops $type $id")
         }.add()
 
         //add shop

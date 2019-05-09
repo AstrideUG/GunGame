@@ -1,12 +1,12 @@
 package de.astride.gungame.setup
 
 import de.astride.gungame.functions.javaPlugin
+import de.astride.location.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.SkullItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
@@ -45,18 +45,22 @@ object Setup {
     ): Inventory =
         InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops Edit").generateEdit(location, world, yawAndPitch)
 
-    fun generateShopDisplayItem(id: Int, location: Location): ItemStack = ItemBuilder(Items.CHEST.itemStack)
-        .setName("${SECONDARY}Number $id")
-        .setLore(
-            "",
-            "${TEXT}Location:",
-            "$TEXT    World: $IMPORTANT${location.world?.name}",
-            "$TEXT    X: $IMPORTANT${location.x}",
-            "$TEXT    Y: $IMPORTANT${location.y}",
-            "$TEXT    Z: $IMPORTANT${location.z}",
-            ""
-        )
-        .build()
+    fun generateShopDisplayItem(id: Int, location: Location): ItemStack =
+        ItemBuilder(Items.CHEST.itemStack)
+            .setName("${SECONDARY}Number $id")
+            .setLore(
+                "",
+                "${TEXT}Location:",
+                "$TEXT    World: $IMPORTANT${location.world}",
+                "$TEXT    X: $IMPORTANT${location.x}",
+                "$TEXT    Y: $IMPORTANT${location.y}",
+                "$TEXT    Z: $IMPORTANT${location.z}",
+                "",
+                "${TEXT}Klicken zum editieren",
+                "${TEXT}Shift klicken zum telportieren",
+                ""
+            )
+            .build()
 
     private fun InventoryBuilder.generateEdit(
         location: Location,
@@ -70,7 +74,7 @@ object Setup {
         .apply {
             if (world) setItem(
                 40,
-                ItemBuilder(Material.EMPTY_MAP).setName("${TEXT}World: $IMPORTANT${location.world?.name}").build()
+                ItemBuilder(Material.EMPTY_MAP).setName("${TEXT}World: $IMPORTANT${location.world}").build()
             )
             if (yawAndPitch) {
                 setItem(

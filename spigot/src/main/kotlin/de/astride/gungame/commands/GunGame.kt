@@ -9,6 +9,7 @@ import de.astride.gungame.setup.editID
 import de.astride.gungame.setup.editType
 import de.astride.location.copy
 import de.astride.location.lookable.Lookable
+import de.astride.location.toBukkitLocation
 import de.astride.location.toLocation
 import de.astride.location.vector.Vector3D
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
@@ -54,6 +55,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "|setup all" +
             "|setup maps" +
             "|setup shops" +
+            "|setup shops teleport <id>" +
             "|setup shops edit <id> <world/x/y/z/yaw/pitch> <value>" +
             "|setup reload",
     minLength = 2,
@@ -257,50 +259,54 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
 
                         player.openInventory(inventory)
                     }
-                    args.size >= 3 -> if (args[1].toLowerCase() == "edit") {
+                    args.size >= 3 -> {
                         val id = args[2].toIntOrNull()
                         if (id != null) {
-                            player.editID = id
                             val location = shopLocations[id]
-                            when (args.size) {
-                                3 -> player.openInventory(Setup.generateShopsEdit(location.toBukkitLocation()))
-                                4 -> {
-                                    AnvilGUI(javaPlugin, player).apply {
-                                        setSlot(
-                                            AnvilGUI.AnvilSlot.INPUT_LEFT,
-                                            ItemBuilder(Material.PAPER).setName("Value").build()
-                                        )
-                                    }.open("GunGame Setup Shops Edit ${args[3]}")
-                                    player.editType = args[3]
-                                }
-                                5 -> try {
-                                    fun de.astride.location.Location.edit(
-                                        world: String = this.world,
-                                        vector: Vector3D = this.vector,
-                                        lookable: Lookable? = this.lookable
-                                    ) {
-                                        shopLocations.removeAt(id)
-                                        shopLocations.add(id, this.copy(world, vector, lookable))
+                            player.editID = id
+                            when (args[1].toLowerCase()) {
+                                "teleport" -> player.teleport(location.toBukkitLocation())
+                                "edit" -> when (args.size) {
+                                    3 -> player.openInventory(Setup.generateShopsEdit(location))
+                                    4 -> {
+                                        AnvilGUI(javaPlugin, player).apply {
+                                            setSlot(
+                                                AnvilGUI.AnvilSlot.INPUT_LEFT,
+                                                ItemBuilder(Material.PAPER).setName("Value").build()
+                                            )
+                                        }.open("GunGame Setup Shops Edit ${args[3]}")
+                                        player.editType = args[3]
                                     }
+                                    5 -> try {
+                                        fun de.astride.location.Location.edit(
+                                            world: String = this.world,
+                                            vector: Vector3D = this.vector,
+                                            lookable: Lookable? = this.lookable
+                                        ) {
+                                            shopLocations.removeAt(id)
+                                            shopLocations.add(id, this.copy(world, vector, lookable))
+                                        }
 
-                                    val value = args[4]
-                                    when (args[3].toLowerCase()) {
-                                        "world" -> location.edit(world = value)
-                                        "x" -> location.edit(vector = location.vector.copy(x = value.toDouble()))
-                                        "y" -> location.edit(vector = location.vector.copy(y = value.toDouble()))
-                                        "z" -> location.edit(vector = location.vector.copy(z = value.toDouble()))
-                                        "yaw" -> location.edit(lookable = location.lookable?.copy(yaw = value.toFloat()))
-                                        "pitch" -> location.edit(lookable = location.lookable?.copy(pitch = value.toFloat()))
+                                        val value = args[4]
+                                        when (args[3].toLowerCase()) {
+                                            "world" -> location.edit(world = value)
+                                            "x" -> location.edit(vector = location.vector.copy(x = value.toDouble()))
+                                            "y" -> location.edit(vector = location.vector.copy(y = value.toDouble()))
+                                            "z" -> location.edit(vector = location.vector.copy(z = value.toDouble()))
+                                            "yaw" -> location.edit(lookable = location.lookable?.copy(yaw = value.toFloat()))
+                                            "pitch" -> location.edit(lookable = location.lookable?.copy(pitch = value.toFloat()))
+                                        }
+                                    } catch (ex: IndexOutOfBoundsException) {
+                                        sendUseMessage(sender) //TODO: Add message
+                                    } catch (ex: NumberFormatException) {
+                                        sendUseMessage(sender)//TODO: Add message
                                     }
-                                } catch (ex: IndexOutOfBoundsException) {
-                                    sendUseMessage(sender) //TODO: Add message
-                                } catch (ex: NumberFormatException) {
-                                    sendUseMessage(sender)//TODO: Add message
+                                    else -> sendUseMessage(sender)
                                 }
                                 else -> sendUseMessage(sender)
                             }
                         } else sendUseMessage(sender) //TODO: Add message
-                    } else sendUseMessage(sender)
+                    }
                     else -> sendUseMessage(sender)
                 }
             }

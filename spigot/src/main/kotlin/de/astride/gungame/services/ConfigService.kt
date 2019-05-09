@@ -559,7 +559,10 @@ class ConfigService(private val directory: File) {
         val bukkitGsonConfig = BukkitGsonConfig(configData)
 
         /* Values */
-        val locations = jsonArray.map { it.asJsonObject.toMap().toLocation() }.toMutableList()
+        val locations = jsonArray.mapNotNull {
+            val jsonObject = it as? JsonObject ?: return@mapNotNull null
+            jsonObject.toMap().toLocation()
+        }.toMutableList()
 
         fun addAndSave(
             location: Location,
