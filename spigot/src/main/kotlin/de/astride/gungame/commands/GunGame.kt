@@ -57,6 +57,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "|setup shops" +
             "|setup shops teleport <id>" +
             "|setup shops edit <id> <world/x/y/z/yaw/pitch> <value>" +
+            "|setup shops delete <id>" +
             "|setup reload",
     minLength = 2,
     maxLength = 8,
@@ -265,6 +266,10 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                             val location = shopLocations[id]
                             player.editID = id
                             when (args[1].toLowerCase()) {
+                                "delete" -> {
+                                    configService.shops.locations -= location
+                                    Bukkit.getConsoleSender().execute("$commandName save shops")
+                                }
                                 "teleport" -> player.teleport(location.toBukkitLocation())
                                 "edit" -> when (args.size) {
                                     3 -> player.openInventory(Setup.generateShopsEdit(location))
