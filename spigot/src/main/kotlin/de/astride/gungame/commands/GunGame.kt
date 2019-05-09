@@ -5,6 +5,13 @@ import de.astride.gungame.functions.edit
 import de.astride.gungame.functions.messages
 import de.astride.gungame.functions.replace
 import de.astride.gungame.setup.Setup
+import de.astride.gungame.setup.editID
+import de.astride.gungame.setup.editType
+import de.astride.location.copy
+import de.astride.location.lookable.Lookable
+import de.astride.location.toBukkitLocation
+import de.astride.location.toLocation
+import de.astride.location.vector.Vector3D
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
@@ -16,7 +23,6 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.Book
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.ClickAction
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.openBook
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.isPlayer
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.UNDERLINE
 import org.bukkit.Location
@@ -199,7 +205,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "add" -> if (toLowerCase == "shop") sender.isPlayer {
                 val location = roundLocation(args, it.location)
                 configService.shops.addAndSave(location, configData)
-                if (configData == configService.shops.configData) configService.shops.locations += location
+                if (configData == configService.shops.configData) configService.shops.locations += location.toLocation()
             } else sendUseMessage(sender)
             else -> {
                 sendUseMessage(sender)
@@ -226,61 +232,77 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             }
             "all" -> player.openInventory(Setup.all)
             "maps" -> player.openInventory(Setup.maps) //TODO: generate maps display-items
-            "shops" -> when {
-                args.size == 1 -> {
+            "shops" -> {
+                val shopLocations = configService.shops.locations
+                when {
+                    args.size == 1 -> {
 
-                    val shops = Setup.shops
-                    val inventory = InventoryBuilder(shops.size, shops.title).build().apply {
-                        contents = shops.contents
-                    }
-
-                    val itemsPerPage = 7
-                    val page = 0
-                    val add = page * itemsPerPage
-
-                    val locations = configService.shops.locations
-                    if (locations.isNotEmpty()) for (i in 0 until Math.min(locations.size, itemsPerPage)) {
-                        val location = locations[i + add]
-                        inventory.setItem(i + 19, Setup.generateShopDisplayItem(i + add, location))
-                    }
-
-                    player.openInventory(inventory)
-                }
-                args.size >= 3 -> if (args[1].toLowerCase() == "edit") {
-                    val id = args[2].toIntOrNull()
-                    if (id != null) {
-                        val location = configService.shops.locations[id]
-                        when (args.size) {
-                            3 -> player.openInventory(Setup.generateShopsEdit(location))
-                            4 -> {
-                                AnvilGUI(javaPlugin, player).apply {
-                                    setSlot(
-                                        AnvilGUI.AnvilSlot.INPUT_LEFT,
-                                        ItemBuilder(Material.PAPER).setName("Value").build()
-                                    )
-                                }.open("GunGame Setup Shops Edit ${args[3]}")
-                            }
-                            5 -> try {
-                                val value = args[4]
-                                when (args[3].toLowerCase()) {
-                                    "world" -> location.world =
-                                        Bukkit.getWorld(value) ?: return@isPlayer //TODO: Add message
-                                    "x" -> location.x = value.toDouble()
-                                    "y" -> location.y = value.toDouble()
-                                    "Z" -> location.z = value.toDouble()
-                                    "yaw" -> location.yaw = value.toFloat()
-                                    "pitch" -> location.pitch = value.toFloat()
-                                }
-                            } catch (ex: IndexOutOfBoundsException) {
-                                sendUseMessage(sender) //TODO: Add message
-                            } catch (ex: NumberFormatException) {
-                                sendUseMessage(sender)//TODO: Add message
-                            }
-                            else -> sendUseMessage(sender)
+                        val shops = Setup.shops
+                        val inventory = InventoryBuilder(shops.size, shops.title).build().apply {
+                            contents = shops.contents
                         }
-                    } else sendUseMessage(sender) //TODO: Add message
-                } else sendUseMessage(sender)
-                else -> sendUseMessage(sender)
+
+                        val itemsPerPage = 7
+                        val page = 0
+                        val add = page * itemsPerPage
+
+                        val locations = shopLocations
+                        if (locations.isNotEmpty()) for (i in 0 until Math.min(locations.size, itemsPerPage)) {
+                            val location = locations[i + add]
+                            inventory.setItem(
+                                i + 19,
+                                Setup.generateShopDisplayItem(i + add, location.toBukkitLocation())
+                            )
+                        }
+
+                        player.openInventory(inventory)
+                    }
+                    args.size >= 3 -> if (args[1].toLowerCase() == "edit") {
+                        val id = args[2].toIntOrNull()
+                        if (id != null) {
+                            player.editID = id
+                            val location = shopLocations[id]
+                            when (args.size) {
+                                3 -> player.openInventory(Setup.generateShopsEdit(location.toBukkitLocation()))
+                                4 -> {
+                                    AnvilGUI(javaPlugin, player).apply {
+                                        setSlot(
+                                            AnvilGUI.AnvilSlot.INPUT_LEFT,
+                                            ItemBuilder(Material.PAPER).setName("Value").build()
+                                        )
+                                    }.open("GunGame Setup Shops Edit ${args[3]}")
+                                    player.editType = args[3]
+                                }
+                                5 -> try {
+                                    fun de.astride.location.Location.edit(
+                                        world: String = this.world,
+                                        vector: Vector3D = this.vector,
+                                        lookable: Lookable? = this.lookable
+                                    ) {
+                                        shopLocations.removeAt(id)
+                                        shopLocations.add(id, this.copy(world, vector, lookable))
+                                    }
+
+                                    val value = args[4]
+                                    when (args[3].toLowerCase()) {
+                                        "world" -> location.edit(world = value)
+                                        "x" -> location.edit(vector = location.vector.copy(x = value.toDouble()))
+                                        "y" -> location.edit(vector = location.vector.copy(y = value.toDouble()))
+                                        "z" -> location.edit(vector = location.vector.copy(z = value.toDouble()))
+                                        "yaw" -> location.edit(lookable = location.lookable?.copy(yaw = value.toFloat()))
+                                        "pitch" -> location.edit(lookable = location.lookable?.copy(pitch = value.toFloat()))
+                                    }
+                                } catch (ex: IndexOutOfBoundsException) {
+                                    sendUseMessage(sender) //TODO: Add message
+                                } catch (ex: NumberFormatException) {
+                                    sendUseMessage(sender)//TODO: Add message
+                                }
+                                else -> sendUseMessage(sender)
+                            }
+                        } else sendUseMessage(sender) //TODO: Add message
+                    } else sendUseMessage(sender)
+                    else -> sendUseMessage(sender)
+                }
             }
             "reload" -> {
                 val pluginManager = javaPlugin.server.pluginManager

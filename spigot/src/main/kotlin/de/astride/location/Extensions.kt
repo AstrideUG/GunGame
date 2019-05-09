@@ -6,6 +6,10 @@ import de.astride.gungame.functions.JsonArray
 import de.astride.gungame.functions.toJsonObject
 import de.astride.gungame.functions.toJsonPrimitive
 import de.astride.location.data.DataLocation
+import de.astride.location.data.DataLookable
+import de.astride.location.data.DataVector3D
+import de.astride.location.lookable.Lookable
+import de.astride.location.vector.Vector3D
 import org.bukkit.Bukkit
 
 /**
@@ -53,3 +57,35 @@ fun Location.toJsonObject(serializeNull: Boolean = false): JsonObject = toMap().
     jsonElement ?: return@mapNotNull null
     key to jsonElement
 }.toMap().toJsonObject()
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 09.05.2019 14:37.
+ * Current Version: 1.0 (09.05.2019 - 09.05.2019)
+ */
+fun Location.copy(
+    world: String = this.world,
+    vector: Vector3D = this.vector,
+    lookable: Lookable? = this.lookable
+): DataLocation = DataLocation(world, vector, lookable)
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 09.05.2019 14:48.
+ * Current Version: 1.0 (09.05.2019 - 09.05.2019)
+ */
+fun Vector3D.copy(
+    x: Double = this.x,
+    y: Double = this.y,
+    z: Double = this.z
+): Vector3D = DataVector3D(y, x, z)
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 09.05.2019 14:50.
+ * Current Version: 1.0 (09.05.2019 - 09.05.2019)
+ */
+fun Lookable.copy(
+    yaw: Float = this.yaw,
+    pitch: Float = this.pitch
+): Lookable = DataLookable(yaw, pitch)

@@ -2,7 +2,6 @@ package de.astride.gungame.setup
 
 import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.isSetup
-import de.astride.gungame.functions.javaPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.AnvilClickEvent
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.listen
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.unregister
@@ -25,8 +24,6 @@ import org.bukkit.ChatColor.UNDERLINE
 import org.bukkit.Material
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.metadata.FixedMetadataValue
-import org.bukkit.metadata.Metadatable
 import org.bukkit.plugin.Plugin
 
 /**
@@ -35,14 +32,6 @@ import org.bukkit.plugin.Plugin
  * Current Version: 1.0 (07.05.2019 - 08.05.2019)
  */
 object Events : EventsTemplate() {
-
-    var Metadatable.editID: Int?
-        get() = getMetadata("edit-id").firstOrNull()?.asInt()
-        set(value) = setMetadata("edit-id", FixedMetadataValue(javaPlugin, value))
-
-    var Metadatable.editType: String?
-        get() = getMetadata("edit-type").firstOrNull()?.asString()
-        set(value) = setMetadata("edit-id", FixedMetadataValue(javaPlugin, value))
 
     fun setup(plugin: Plugin) {
 

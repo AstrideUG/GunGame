@@ -1,5 +1,6 @@
 package de.astride.gungame.setup
 
+import de.astride.gungame.functions.javaPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.SkullItemBuilder
@@ -11,6 +12,8 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.metadata.FixedMetadataValue
+import org.bukkit.metadata.Metadatable
 
 /*
  * @author Lars Artmann | LartyHD
@@ -95,3 +98,17 @@ object Setup {
         .build()
 
 }
+
+var Metadatable.editID: Int?
+    get() = getMetadata("edit-id").firstOrNull()?.asInt()
+    set(value) {
+        removeMetadata("edit-id", javaPlugin)
+        setMetadata("edit-id", FixedMetadataValue(javaPlugin, value))
+    }
+
+var Metadatable.editType: String?
+    get() = getMetadata("edit-type").firstOrNull()?.asString()
+    set(value) {
+        removeMetadata("edit-type", javaPlugin)
+        setMetadata("edit-type", FixedMetadataValue(javaPlugin, value))
+    }

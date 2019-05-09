@@ -15,6 +15,8 @@ import de.astride.gungame.services.ConfigService
 import de.astride.gungame.setup.Events
 import de.astride.gungame.shop.ShopListener
 import de.astride.gungame.stats.Actions
+import de.astride.location.toBukkitLocation
+import de.astride.location.toJsonObject
 import net.darkdevelopers.darkbedrock.darkness.general.functions.performCraftPluginUpdater
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
@@ -102,7 +104,13 @@ class GunGame : DarkPlugin() {
 
     override fun onDisable(): Unit = onDisable {
         logUnregister("setup events") { Events.reset() }
-        logSave("shops") { configService.shops.save() }
+
+        logSave("shops") {
+            val shops = configService.shops
+            val list = shops.locations.map { it.toJsonObject() }
+            shops.save(jsonElement = JsonArray(list))
+        }
+
         @Suppress("LABEL_NAME_CLASH")
         if (isSetup) {
             isSetup = false
@@ -140,7 +148,9 @@ class GunGame : DarkPlugin() {
 
     private fun spawnShops(): Unit = configService.shops.locations.forEach {
 
-        val armorStand = it.world?.spawnEntity(it, EntityType.ARMOR_STAND) as? ArmorStand ?: return@forEach
+        val location = it.toBukkitLocation()
+
+        val armorStand = location.world?.spawnEntity(location, EntityType.ARMOR_STAND) as? ArmorStand ?: return@forEach
         armorStand.apply {
 
             customName = messages.shop.entityName

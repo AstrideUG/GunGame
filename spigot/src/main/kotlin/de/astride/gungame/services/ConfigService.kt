@@ -9,8 +9,10 @@ import de.astride.data.UUIDSerializer
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.functions.allActions
 import de.astride.gungame.functions.messages
+import de.astride.gungame.functions.toMap
 import de.astride.gungame.kits.DefaultKits
 import de.astride.gungame.stats.Action
+import de.astride.location.toLocation
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.context.getOrDefault
 import kotlinx.serialization.json.Json
@@ -554,10 +556,10 @@ class ConfigService(private val directory: File) {
         /* Main */
         val configData = ConfigData(directory, config.files.shops)
         private val jsonArray = GsonService.load(configData) as? JsonArray ?: JsonArray()
-        private val bukkitGsonConfig = BukkitGsonConfig(configData)
+        val bukkitGsonConfig = BukkitGsonConfig(configData)
 
         /* Values */
-        val locations = jsonArray.map { bukkitGsonConfig.getLocation(it.asJsonObject) }.toMutableList()
+        val locations = jsonArray.map { it.asJsonObject.toMap().toLocation() }.toMutableList()
 
         fun addAndSave(
             location: Location,
