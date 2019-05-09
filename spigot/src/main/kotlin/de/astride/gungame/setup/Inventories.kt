@@ -1,13 +1,22 @@
 package de.astride.gungame.setup
 
+import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.javaPlugin
+import de.astride.gungame.setup.page.ShopPage
+import de.astride.inventory.pages.Page
+import de.astride.inventory.pages.setItems
 import de.astride.location.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.SkullItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
+import org.bukkit.ChatColor.GREEN
+import org.bukkit.ChatColor.RED
 import org.bukkit.Material
+import org.bukkit.Sound
+import org.bukkit.entity.HumanEntity
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
@@ -21,6 +30,27 @@ import org.bukkit.metadata.Metadatable
  * Current Version: 1.0 (07.05.2019 - 07.05.2019)
  */
 
+var Metadatable.editID: Int?
+    get() = getMetadata("edit-id").firstOrNull()?.asInt()
+    set(value) {
+        removeMetadata("edit-id", javaPlugin)
+        setMetadata("edit-id", FixedMetadataValue(javaPlugin, value))
+    }
+
+var Metadatable.editType: String?
+    get() = getMetadata("edit-type").firstOrNull()?.asString()
+    set(value) {
+        removeMetadata("edit-type", javaPlugin)
+        setMetadata("edit-type", FixedMetadataValue(javaPlugin, value))
+    }
+
+var Metadatable.page: Int
+    get() = getMetadata("page").firstOrNull()?.asInt() ?: 0
+    set(value) {
+        removeMetadata("page", javaPlugin)
+        setMetadata("page", FixedMetadataValue(javaPlugin, value))
+    }
+
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 07.05.2019 12:30.
@@ -28,7 +58,7 @@ import org.bukkit.metadata.Metadatable
  */
 object Setup {
 
-    val backItem: ItemStack = ItemBuilder(Items.LEAVE.itemStack).setName("${SECONDARY}Zurück").build()
+    val backItem: ItemStack = ItemBuilder(Items.LEAVE.itemStack.clone()).setName("${SECONDARY}Zurück").build()
 
     val all: Inventory = InventoryBuilder(InventoryType.HOPPER, "${SECONDARY}GunGame Setup All")
         .setDesign()
@@ -45,22 +75,22 @@ object Setup {
     ): Inventory =
         InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops Edit").generateEdit(location, world, yawAndPitch)
 
-    fun generateShopDisplayItem(id: Int, location: Location): ItemStack =
-        ItemBuilder(Items.CHEST.itemStack)
-            .setName("${SECONDARY}Number $id")
-            .setLore(
-                "",
-                "${TEXT}Location:",
-                "$TEXT    World: $IMPORTANT${location.world}",
-                "$TEXT    X: $IMPORTANT${location.x}",
-                "$TEXT    Y: $IMPORTANT${location.y}",
-                "$TEXT    Z: $IMPORTANT${location.z}",
-                "",
-                "${TEXT}Klicken zum editieren",
-                "${TEXT}Shift klicken zum telportieren",
-                ""
-            )
-            .build()
+    fun generateShopDisplayItem(id: Int, location: Location): ItemStack = ItemBuilder(Items.CHEST.itemStack.clone())
+        .setName("${SECONDARY}Number $id")
+        .setLore(
+            "",
+            "${TEXT}Location:",
+            "$TEXT    World: $IMPORTANT${location.world}",
+            "$TEXT    X: $IMPORTANT${location.x}",
+            "$TEXT    Y: $IMPORTANT${location.y}",
+            "$TEXT    Z: $IMPORTANT${location.z}",
+            "",
+            "${GREEN}Klicken zum editieren",
+            "${GREEN}Shift links klicken zum telportieren",
+            "${RED}Shift rechts klicken zum löschen",
+            ""
+        )
+        .build()
 
     private fun InventoryBuilder.generateEdit(
         location: Location,
@@ -92,7 +122,6 @@ object Setup {
 
     private fun InventoryBuilder.generate(): Inventory = setDesign().apply {
         val base = ItemBuilder(Material.PAPER).addItemFlags(ItemFlag.HIDE_ENCHANTS)
-        //TODO: add enchantment if can be used
         setItem(38, base.setName("${SECONDARY}Vorherige Seite").build())
         setItem(42, base.setName("${SECONDARY}Nächste Seite").build())
     }
@@ -103,16 +132,25 @@ object Setup {
 
 }
 
-var Metadatable.editID: Int?
-    get() = getMetadata("edit-id").firstOrNull()?.asInt()
-    set(value) {
-        removeMetadata("edit-id", javaPlugin)
-        setMetadata("edit-id", FixedMetadataValue(javaPlugin, value))
+fun HumanEntity.openShop(pageID: Int) {
+
+    val shops = Setup.shops
+    val inventory = InventoryBuilder(shops.size, shops.title).build().apply {
+        contents = shops.contents
     }
 
-var Metadatable.editType: String?
-    get() = getMetadata("edit-type").firstOrNull()?.asString()
-    set(value) {
-        removeMetadata("edit-type", javaPlugin)
-        setMetadata("edit-type", FixedMetadataValue(javaPlugin, value))
+    val pages = mutableListOf<Page>().apply {
+        for (i in 0 until configService.shops.locations.size / 7 + 1) add(ShopPage(i))
+        if (isEmpty()) add(ShopPage(0)) else if (configService.shops.locations.size % 7 == 0) removeAt(lastIndex)
     }
+    val page = try {
+        pages[pageID].apply { page = pageID }
+    } catch (ex: IndexOutOfBoundsException) {
+        (this as? Player)?.playSound(location, Sound.ANVIL_LAND, 1f, 1f)
+        return
+    }
+
+    page.setItems(inventory)
+    openInventory(inventory)
+
+}

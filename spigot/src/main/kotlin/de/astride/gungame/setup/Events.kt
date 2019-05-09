@@ -78,6 +78,13 @@ object Events : EventsTemplate() {
             }
         }.add()
 
+        //shops
+
+        //open maps gui
+        Setup.all.listenTop(plugin, acceptSlot = { it == 1 }) { event ->
+            event.whoClicked.execute("$commandName setup maps")
+        }.add()
+
         //open maps gui
         Setup.all.listenTop(plugin, acceptSlot = { it == 1 }) { event ->
             event.whoClicked.execute("$commandName setup maps")
@@ -104,6 +111,15 @@ object Events : EventsTemplate() {
         Setup.shops.listenTop(plugin, onlyCheckName = true, acceptSlot = { it == 40 }) { event ->
             event.whoClicked.execute("$commandName add shop")
             event.whoClicked.closeInventory()
+        }.add()
+
+        //shops page management
+        Setup.shops.listenTop(
+            plugin,
+            onlyCheckName = true,
+            acceptSlot = { it == 38 || it == 42 }
+        ) { event ->
+            event.whoClicked.openShop(event.whoClicked.page + if (event.slot == 38) -1 else 1)
         }.add()
 
         //open shops edit gui by value

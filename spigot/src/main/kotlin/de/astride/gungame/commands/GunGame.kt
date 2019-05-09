@@ -7,15 +7,16 @@ import de.astride.gungame.functions.replace
 import de.astride.gungame.setup.Setup
 import de.astride.gungame.setup.editID
 import de.astride.gungame.setup.editType
+import de.astride.gungame.setup.openShop
 import de.astride.location.copy
 import de.astride.location.lookable.Lookable
 import de.astride.location.toBukkitLocation
 import de.astride.location.toLocation
 import de.astride.location.vector.Vector3D
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
-import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.execute
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.AnvilGUI
@@ -23,6 +24,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.Book
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.ClickAction
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.openBook
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.isPlayer
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.UNDERLINE
 import org.bukkit.Location
@@ -239,27 +241,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "shops" -> {
                 val shopLocations = configService.shops.locations
                 when {
-                    args.size == 1 -> {
-
-                        val shops = Setup.shops
-                        val inventory = InventoryBuilder(shops.size, shops.title).build().apply {
-                            contents = shops.contents
-                        }
-
-                        val itemsPerPage = 7
-                        val page = 0
-                        val add = page * itemsPerPage
-
-                        if (shopLocations.isNotEmpty()) for (i in 0 until Math.min(shopLocations.size, itemsPerPage)) {
-                            val location = shopLocations[i + add]
-                            inventory.setItem(
-                                i + 19,
-                                Setup.generateShopDisplayItem(i + add, location)
-                            )
-                        }
-
-                        player.openInventory(inventory)
-                    }
+                    args.size == 1 -> player.openShop(0)
                     args.size >= 3 -> {
                         val id = args[2].toIntOrNull()
                         if (id != null) {
