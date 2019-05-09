@@ -19,7 +19,7 @@ fun Location.toBukkitLocation(): org.bukkit.Location = org.bukkit.Location(
 
 fun org.bukkit.Location.toLocation(): Location = DataLocation(world?.name ?: "null", x, y, z, yaw, pitch)
 
-fun Map<String, Any>.toLocation(): Location = DataLocation(
+fun Map<String, Any?>.toLocation(): Location = DataLocation(
     this["world"] as? String ?: "null",
     this["x"] as? Double ?: 0.0,
     this["y"] as? Double ?: 0.0,
