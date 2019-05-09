@@ -1,5 +1,10 @@
 package de.astride.location
 
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
+import de.astride.gungame.functions.JsonArray
+import de.astride.gungame.functions.toJsonObject
+import de.astride.gungame.functions.toJsonPrimitive
 import de.astride.location.data.DataLocation
 import org.bukkit.Bukkit
 
@@ -37,3 +42,14 @@ fun Location.toMap(): Map<String, Any?> = mutableMapOf<String, Any?>().apply {
     if (lookable.yaw != 0f) this["yaw"] = lookable.yaw
     if (lookable.pitch != 0f) this["pitch"] = lookable.pitch
 }
+
+fun Location.toJsonObject(serializeNull: Boolean = false): JsonObject = toMap().mapNotNull { (key, value) ->
+    val jsonElement = when (value) {
+        null -> if (serializeNull) JsonNull.INSTANCE else null
+        is Iterable<*> -> JsonArray(value.mapNotNull { it?.toJsonPrimitive() })
+        //TODO     is Map<String, Any?> -> JsonObject()
+        else -> value.toJsonPrimitive()
+    }
+    jsonElement ?: return@mapNotNull null
+    key to jsonElement
+}.toMap().toJsonObject()
