@@ -9,10 +9,9 @@ import de.astride.data.UUIDSerializer
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.functions.allActions
 import de.astride.gungame.functions.messages
-import de.astride.gungame.functions.toMap
+import de.astride.gungame.functions.withReplacements
 import de.astride.gungame.kits.DefaultKits
 import de.astride.gungame.stats.Action
-import de.astride.location.toLocation
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.context.getOrDefault
 import kotlinx.serialization.json.Json
@@ -26,10 +25,14 @@ import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService.loadAs
 import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMap
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMaterial
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.toLocation
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.SpigotGsonMessages
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Holograms
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.MapsUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -395,6 +398,13 @@ class ConfigService(private val directory: File) {
 
         /* Values */
         val bukkitGsonConfig = BukkitGsonConfig(configData)
+
+        fun load() = MapsUtils.getMapsAndLoad(bukkitGsonConfig) { player, holograms, map ->
+            val uuid = player.uniqueId
+            holograms[uuid] =
+                Holograms(messages.hologram.withReplacements(uuid).mapNotNull { it }.toTypedArray(), map.hologram)
+            holograms[uuid]?.show(player)
+        }
 
         fun setLocation(location: Location, jsonObject: JsonObject = JsonObject()): JsonObject =
             jsonObject.apply { bukkitGsonConfig.setLocation(location, jsonObject) }

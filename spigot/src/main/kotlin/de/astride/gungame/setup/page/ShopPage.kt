@@ -2,7 +2,7 @@ package de.astride.gungame.setup.page
 
 import de.astride.gungame.functions.configService
 import de.astride.gungame.setup.Setup
-import de.astride.inventory.pages.Page
+import net.darkdevelopers.darkbedrock.darkness.spigot.inventory.pages.Page
 import org.bukkit.inventory.ItemStack
 
 /**

@@ -7,17 +7,19 @@ import de.astride.gungame.functions.replace
 import de.astride.gungame.setup.Setup
 import de.astride.gungame.setup.editID
 import de.astride.gungame.setup.editType
-import de.astride.gungame.setup.openShop
-import de.astride.location.copy
-import de.astride.location.lookable.Lookable
-import de.astride.location.toBukkitLocation
-import de.astride.location.toLocation
-import de.astride.location.vector.Vector3D
+import de.astride.gungame.setup.openShops
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.execute
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.copy
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.lookable.Lookable
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.lookable.copy
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.toBukkitLocation
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.toLocation
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.vector.Vector3D
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.vector.copy
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.AnvilGUI
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.book.Book
@@ -237,11 +239,15 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                 player.openBook(book.build())
             }
             "all" -> player.openInventory(Setup.all)
-            "maps" -> player.openInventory(Setup.maps) //TODO: generate maps display-items
+            "maps" -> when {
+                args.size == 1 -> {
+                    player.openInventory(Setup.maps) //TODO: generate maps display-items
+                }
+            }
             "shops" -> {
                 val shopLocations = configService.shops.locations
                 when {
-                    args.size == 1 -> player.openShop(0)
+                    args.size == 1 -> player.openShops(0)
                     args.size >= 3 -> {
                         val id = args[2].toIntOrNull()
                         if (id != null) {
@@ -265,7 +271,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                                         player.editType = args[3]
                                     }
                                     5 -> try {
-                                        fun de.astride.location.Location.edit(
+                                        fun net.darkdevelopers.darkbedrock.darkness.spigot.location.Location.edit(
                                             world: String = this.world,
                                             vector: Vector3D = this.vector,
                                             lookable: Lookable? = this.lookable

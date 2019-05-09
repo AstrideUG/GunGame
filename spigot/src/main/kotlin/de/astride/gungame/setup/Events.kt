@@ -75,15 +75,11 @@ object Events : EventsTemplate() {
                 Setup.shops.name -> event.whoClicked.execute("$commandName setup all")
                 Setup.maps.name -> event.whoClicked.execute("$commandName setup all")
                 "${SECONDARY}GunGame Setup Shops Edit" -> event.whoClicked.execute("$commandName setup shops")
+                "${SECONDARY}GunGame Setup Maps Edit" -> event.whoClicked.execute("$commandName setup maps")
             }
         }.add()
 
         //shops
-
-        //open maps gui
-        Setup.all.listenTop(plugin, acceptSlot = { it == 1 }) { event ->
-            event.whoClicked.execute("$commandName setup maps")
-        }.add()
 
         //open maps gui
         Setup.all.listenTop(plugin, acceptSlot = { it == 1 }) { event ->
@@ -119,7 +115,7 @@ object Events : EventsTemplate() {
             onlyCheckName = true,
             acceptSlot = { it == 38 || it == 42 }
         ) { event ->
-            event.whoClicked.openShop(event.whoClicked.page + if (event.slot == 38) -1 else 1)
+            event.whoClicked.openShops(event.whoClicked.page + if (event.slot == 38) -1 else 1)
         }.add()
 
         //open shops edit gui by value

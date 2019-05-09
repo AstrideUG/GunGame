@@ -3,7 +3,6 @@
  */
 package de.astride.gungame
 
-import com.google.gson.JsonObject
 import de.astride.gungame.commands.*
 import de.astride.gungame.commands.GunGame
 import de.astride.gungame.functions.*
@@ -15,14 +14,13 @@ import de.astride.gungame.services.ConfigService
 import de.astride.gungame.setup.Events
 import de.astride.gungame.shop.ShopListener
 import de.astride.gungame.stats.Actions
-import de.astride.location.toBukkitLocation
-import de.astride.location.toJsonObject
 import net.darkdevelopers.darkbedrock.darkness.general.functions.performCraftPluginUpdater
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.JsonArray
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.toBukkitLocation
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.toJsonObject
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
-import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Holograms
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
-import net.darkdevelopers.darkbedrock.darkness.spigot.utils.MapsUtils
 import org.bukkit.Bukkit
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
@@ -65,14 +63,9 @@ class GunGame : DarkPlugin() {
                 logger.warning("The plugin needs at least one map to make it work!")
                 return@logLoad
             }
-            @Suppress("LABEL_NAME_CLASH")
-            val jsonObject = config.maps[Random.nextInt(config.maps.size())] as? JsonObject ?: return@onEnable
-            gameMap = MapsUtils.getMapAndLoad(config.bukkitGsonConfig, jsonObject) { player, holograms, map ->
-                val uuid = player.uniqueId
-                holograms[uuid] =
-                    Holograms(messages.hologram.withReplacements(uuid).mapNotNull { it }.toTypedArray(), map.hologram)
-                holograms[uuid]?.show(player)
-            }
+
+            gameMaps = config.load()
+            gameMap = gameMaps.toList()[Random.nextInt(config.maps.size())]
         }
 
         logLoad("setup events") { Events.setup(this) }

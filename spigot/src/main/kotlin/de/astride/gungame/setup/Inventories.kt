@@ -1,14 +1,15 @@
 package de.astride.gungame.setup
 
 import de.astride.gungame.functions.configService
+import de.astride.gungame.functions.gameMaps
 import de.astride.gungame.functions.javaPlugin
 import de.astride.gungame.setup.page.ShopPage
-import de.astride.inventory.pages.Page
-import de.astride.inventory.pages.setItems
-import de.astride.location.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.SkullItemBuilder
+import net.darkdevelopers.darkbedrock.darkness.spigot.inventory.pages.Page
+import net.darkdevelopers.darkbedrock.darkness.spigot.inventory.pages.setItems
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import org.bukkit.ChatColor.GREEN
@@ -68,12 +69,19 @@ object Setup {
     val maps: Inventory = InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Maps").generate()
     val shops: Inventory = InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops").generate()
 
+    fun generateMapsEdit(
+        location: Location,
+        world: Boolean = true,
+        yawAndPitch: Boolean = true
+    ): Inventory =
+        InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Maps Edit").generateMapsEdit(location, world, yawAndPitch)
+
     fun generateShopsEdit(
         location: Location,
         world: Boolean = true,
         yawAndPitch: Boolean = true
     ): Inventory =
-        InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops Edit").generateEdit(location, world, yawAndPitch)
+        InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops Edit").generateShopsEdit(location, world, yawAndPitch)
 
     fun generateShopDisplayItem(id: Int, location: Location): ItemStack = ItemBuilder(Items.CHEST.itemStack.clone())
         .setName("${SECONDARY}Number $id")
@@ -92,7 +100,20 @@ object Setup {
         )
         .build()
 
-    private fun InventoryBuilder.generateEdit(
+    private fun InventoryBuilder.generateMapsEdit(
+        location: Location,
+        world: Boolean = true,
+        yawAndPitch: Boolean = false
+    ): Inventory = setDesign()
+        .setRange(ItemStack(Material.AIR), 19, 26)
+        .setItem(19, ItemBuilder(Material.IRON_SWORD).setName("${SECONDARY}Region").build())
+        .setItem(21, ItemBuilder(Material.PAPER).setName("${SECONDARY}Name").build())
+        .setItem(23, ItemBuilder(Material.EMPTY_MAP).setName("${SECONDARY}Spawn").build())
+        .setItem(23, ItemBuilder(Material.ARMOR_STAND).setName("${SECONDARY}Hologram").build())
+        .setItem(44, backItem)
+        .build()
+
+    private fun InventoryBuilder.generateShopsEdit(
         location: Location,
         world: Boolean = true,
         yawAndPitch: Boolean = false
@@ -132,16 +153,41 @@ object Setup {
 
 }
 
-fun HumanEntity.openShop(pageID: Int) {
+fun HumanEntity.openShops(pageID: Int, rawInventory: Inventory = Setup.shops) {
 
-    val shops = Setup.shops
-    val inventory = InventoryBuilder(shops.size, shops.title).build().apply {
-        contents = shops.contents
+    val inventory = InventoryBuilder(rawInventory.size, rawInventory.title).build().apply {
+        contents = rawInventory.contents
     }
 
     val pages = mutableListOf<Page>().apply {
         for (i in 0 until configService.shops.locations.size / 7 + 1) add(ShopPage(i))
         if (isEmpty()) add(ShopPage(0)) else if (configService.shops.locations.size % 7 == 0) removeAt(lastIndex)
+    }
+    val page = try {
+        pages[pageID].apply { page = pageID }
+    } catch (ex: IndexOutOfBoundsException) {
+        (this as? Player)?.playSound(location, Sound.ANVIL_LAND, 1f, 1f)
+        return
+    }
+
+    page.setItems(inventory)
+    openInventory(inventory)
+
+}
+
+fun HumanEntity.openMaps(pageID: Int): Unit = open(pageID, Setup.maps, gameMaps.size) { ShopPage(it) }
+fun HumanEntity.openShops(pageID: Int): Unit =
+    open(pageID, Setup.shops, configService.shops.locations.size) { ShopPage(it) }
+
+fun HumanEntity.open(pageID: Int, rawInventory: Inventory, listSize: Int, pageGetter: (Int) -> Page) {
+
+    val inventory = InventoryBuilder(rawInventory.size, rawInventory.title).build().apply {
+        contents = rawInventory.contents
+    }
+
+    val pages = mutableListOf<Page>().apply {
+        for (i in 0 until listSize / 7 + 1) add(pageGetter(i))
+        if (isEmpty()) add(pageGetter(0)) else if (listSize % 7 == 0) removeAt(lastIndex)
     }
     val page = try {
         pages[pageID].apply { page = pageID }
