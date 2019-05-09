@@ -27,3 +27,13 @@ fun Map<String, Any?>.toLocation(): Location = DataLocation(
     this["yaw"] as? Float ?: 0f,
     this["pitch"] as? Float ?: 0f
 )
+
+fun Location.toMap(): Map<String, Any?> = mutableMapOf<String, Any?>().apply {
+    this["world"] = world
+    if (vector.x != 0.0) this["x"] = vector.x
+    if (vector.y != 0.0) this["y"] = vector.y
+    if (vector.z != 0.0) this["z"] = vector.z
+    val lookable = lookable ?: return@apply
+    if (lookable.yaw != 0f) this["yaw"] = lookable.yaw
+    if (lookable.pitch != 0f) this["pitch"] = lookable.pitch
+}
