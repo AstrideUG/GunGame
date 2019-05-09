@@ -32,7 +32,7 @@ import org.bukkit.plugin.Plugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 07.05.2019 13:19.
- * Current Version: 1.0 (07.05.2019 - 07.05.2019)
+ * Current Version: 1.0 (07.05.2019 - 08.05.2019)
  */
 object Events : EventsTemplate() {
 
@@ -73,21 +73,21 @@ object Events : EventsTemplate() {
 
     private fun setupInventory(plugin: Plugin) {
 
+        val commandName = configService.config.commands.gungame.name
+
         //block item movement
         setOf(Setup.all.name, Setup.shops.name, Setup.maps.name, "${SECONDARY}GunGame Setup Shops Edit")
             .listenTop(plugin, cancel = true).add()
 
-//        //back Item impl
+        //back Item impl
         listenInventories(plugin, acceptCurrentItem = { it == Setup.backItem }) { event ->
             val whoClicked = event.whoClicked ?: return@listenInventories
             when (whoClicked.openInventory.topInventory.name) {
-                Setup.shops.name -> whoClicked.openInventory(Setup.all)
-                Setup.maps.name -> whoClicked.openInventory(Setup.all)
-                "${SECONDARY}GunGame Setup Shops Edit" -> whoClicked.openInventory(Setup.shops)
+                Setup.shops.name -> event.whoClicked.execute("$commandName setup all")
+                Setup.maps.name -> event.whoClicked.execute("$commandName setup all")
+                "${SECONDARY}GunGame Setup Shops Edit" -> event.whoClicked.execute("$commandName setup shops")
             }
         }.add()
-
-        val commandName = configService.config.commands.gungame.name
 
         //open maps gui
         Setup.all.listenTop(plugin, acceptSlot = { it == 1 }) { event ->
@@ -113,9 +113,8 @@ object Events : EventsTemplate() {
         }.add()
 
         //open shops edit gui by value
-        Setup.shops.listenTop(
+        "${SECONDARY}GunGame Setup Shops Edit".listenTop(
             plugin,
-            onlyCheckName = true,
             acceptSlot = { it in 18..26 || it == 40 },
             acceptCurrentItem = { it != null && it.type != Material.STAINED_GLASS_PANE }
         ) { event ->

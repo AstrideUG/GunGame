@@ -40,7 +40,7 @@ import de.astride.gungame.kits.kits as allKits
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 29.03.2019 13:42.
- * Current Version: 1.0 (29.03.2019 - 14.04.2019)
+ * Current Version: 1.0 (29.03.2019 - 09.05.2019)
  */
 class ConfigService(private val directory: File) {
 
@@ -557,7 +557,7 @@ class ConfigService(private val directory: File) {
         private val bukkitGsonConfig = BukkitGsonConfig(configData)
 
         /* Values */
-        val locations = jsonArray.map { bukkitGsonConfig.getLocation(it.asJsonObject) }
+        val locations = jsonArray.map { bukkitGsonConfig.getLocation(it.asJsonObject) }.toMutableList()
 
         fun addAndSave(
             location: Location,

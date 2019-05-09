@@ -199,6 +199,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "add" -> if (toLowerCase == "shop") sender.isPlayer {
                 val location = roundLocation(args, it.location)
                 configService.shops.addAndSave(location, configData)
+                if (configData == configService.shops.configData) configService.shops.locations += location
             } else sendUseMessage(sender)
             else -> {
                 sendUseMessage(sender)
