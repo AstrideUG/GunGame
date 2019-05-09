@@ -317,6 +317,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             }
             "reload" -> {
                 val pluginManager = javaPlugin.server.pluginManager
+                Bukkit.getOnlinePlayers().forEach { it.kickPlayer("GunGame Plugin reload") }
                 pluginManager.disablePlugin(javaPlugin)
                 pluginManager.enablePlugin(javaPlugin)
             }
