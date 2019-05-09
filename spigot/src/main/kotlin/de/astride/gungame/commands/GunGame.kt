@@ -9,7 +9,6 @@ import de.astride.gungame.setup.editID
 import de.astride.gungame.setup.editType
 import de.astride.location.copy
 import de.astride.location.lookable.Lookable
-import de.astride.location.toBukkitLocation
 import de.astride.location.toLocation
 import de.astride.location.vector.Vector3D
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
@@ -40,7 +39,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
     commandName = config.name,
     permission = config.permission,
-    usage = "save actions/kits [<Path>.json]" +
+    usage = "save actions/kits/shops [<Path>.json]" +
             "|load messages [<Path>.json]" +
             "|set map <id> name <value> [<Path>.json]" +
             "|set map <id> world <value> [<Path>.json]" +
@@ -78,6 +77,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "save" -> when (toLowerCase) {
                 "actions" -> configService.actions.configData
                 "kits" -> configService.kits.configData
+                "shops" -> configService.shops.configData
                 else -> failed = true
             }
             "load" -> when (toLowerCase) {
@@ -112,6 +112,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                 when (toLowerCase) {
                     "actions" -> configService.actions.save(configData = configData)
                     "kits" -> configService.kits.save(configData = configData)
+                    "shops" -> configService.shops.save(configData = configData)
                     else -> {
                         sendUseMessage(sender)
                         return
@@ -246,12 +247,11 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                         val page = 0
                         val add = page * itemsPerPage
 
-                        val locations = shopLocations
-                        if (locations.isNotEmpty()) for (i in 0 until Math.min(locations.size, itemsPerPage)) {
-                            val location = locations[i + add]
+                        if (shopLocations.isNotEmpty()) for (i in 0 until Math.min(shopLocations.size, itemsPerPage)) {
+                            val location = shopLocations[i + add]
                             inventory.setItem(
                                 i + 19,
-                                Setup.generateShopDisplayItem(i + add, location.toBukkitLocation())
+                                Setup.generateShopDisplayItem(i + add, location)
                             )
                         }
 
