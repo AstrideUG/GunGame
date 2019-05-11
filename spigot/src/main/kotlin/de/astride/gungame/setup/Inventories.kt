@@ -1,7 +1,6 @@
 package de.astride.gungame.setup
 
 import de.astride.gungame.functions.configService
-import de.astride.gungame.functions.gameMaps
 import de.astride.gungame.functions.javaPlugin
 import de.astride.gungame.setup.page.ShopPage
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
@@ -12,6 +11,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.inventory.pages.setItems
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.GameMap
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.RED
 import org.bukkit.Material
@@ -70,11 +70,9 @@ object Setup {
     val shops: Inventory = InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops").generate()
 
     fun generateMapsEdit(
-        location: Location,
-        world: Boolean = true,
-        yawAndPitch: Boolean = true
+        gameMap: GameMap
     ): Inventory =
-        InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Maps Edit").generateMapsEdit(location, world, yawAndPitch)
+        InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Maps Edit").generateMapsEdit(gameMap)
 
     fun generateShopsEdit(
         location: Location,
@@ -82,6 +80,20 @@ object Setup {
         yawAndPitch: Boolean = true
     ): Inventory =
         InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops Edit").generateShopsEdit(location, world, yawAndPitch)
+
+    fun generateMapDisplayItem(id: Int, gameMap: GameMap): ItemStack = ItemBuilder(ItemStack(Material.MAP))
+        .setName("${SECONDARY}Number $id")
+        .setLore(
+            "",
+            "${TEXT}Name: $IMPORTANT${gameMap.name}",
+            "",
+            "${GREEN}Klicken zum editieren",
+            "${GREEN}Shift links klicken zum telportieren",
+            "${RED}Shift rechts klicken zum löschen",
+            ""
+        )
+        .addAllItemFlags()
+        .build()
 
     fun generateShopDisplayItem(id: Int, location: Location): ItemStack = ItemBuilder(Items.CHEST.itemStack.clone())
         .setName("${SECONDARY}Number $id")
@@ -92,6 +104,8 @@ object Setup {
             "$TEXT    X: $IMPORTANT${location.x}",
             "$TEXT    Y: $IMPORTANT${location.y}",
             "$TEXT    Z: $IMPORTANT${location.z}",
+            "$TEXT    Yaw: $IMPORTANT${location.yawOr0}",
+            "$TEXT    Pitch: $IMPORTANT${location.pitchOr0}",
             "",
             "${GREEN}Klicken zum editieren",
             "${GREEN}Shift links klicken zum telportieren",
@@ -101,15 +115,70 @@ object Setup {
         .build()
 
     private fun InventoryBuilder.generateMapsEdit(
-        location: Location,
-        world: Boolean = true,
-        yawAndPitch: Boolean = false
+        gameMap: GameMap
     ): Inventory = setDesign()
         .setRange(ItemStack(Material.AIR), 19, 26)
-        .setItem(19, ItemBuilder(Material.IRON_SWORD).setName("${SECONDARY}Region").build())
-        .setItem(21, ItemBuilder(Material.PAPER).setName("${SECONDARY}Name").build())
-        .setItem(23, ItemBuilder(Material.EMPTY_MAP).setName("${SECONDARY}Spawn").build())
-        .setItem(23, ItemBuilder(Material.ARMOR_STAND).setName("${SECONDARY}Hologram").build())
+        .setItem(
+            19, ItemBuilder(Material.IRON_SWORD).setName("${SECONDARY}Region").setLore(
+                mutableListOf("").apply {
+                    val region = gameMap.region
+                    if (region == null) add("Region is null") else addAll(
+                        listOf(
+                            "${TEXT}World: $IMPORTANT${region.world}",
+                            "",
+                            "${TEXT}Min:",
+                            "$TEXT    X: $IMPORTANT${region.min.x}",
+                            "$TEXT    Y: $IMPORTANT${region.min.y}",
+                            "$TEXT    Z: $IMPORTANT${region.min.z}",
+                            "",
+                            "${TEXT}Max:",
+                            "$TEXT    X: $IMPORTANT${region.max.x}",
+                            "$TEXT    Y: $IMPORTANT${region.max.y}",
+                            "$TEXT    Z: $IMPORTANT${region.max.z}",
+                            ""
+                        )
+                    )
+                }
+            ).build()
+        )
+        .setItem(
+            21, ItemBuilder(Material.PAPER).setName("${SECONDARY}Name")
+                .setLore("", "${TEXT}Name: $IMPORTANT${gameMap.name}")
+                .build()
+        )
+        .setItem(
+            23, ItemBuilder(Material.EMPTY_MAP).setName("${SECONDARY}Spawn")
+                .setLore(
+                    "",
+                    "${TEXT}Location:",
+                    "$TEXT    World: $IMPORTANT${gameMap.spawn.world}",
+                    "$TEXT    X: $IMPORTANT${gameMap.spawn.x}",
+                    "$TEXT    Y: $IMPORTANT${gameMap.spawn.y}",
+                    "$TEXT    Z: $IMPORTANT${gameMap.spawn.z}",
+                    ""
+                )
+                .build()
+        )
+        .setItem(
+            23, ItemBuilder(Material.ARMOR_STAND).setName("${SECONDARY}Hologram")
+                .setLore(
+                    mutableListOf("").apply {
+                        val hologram = gameMap.hologram
+                        if (hologram == null) add("Hologram is null") else addAll(
+                            listOf(
+                                "${TEXT}Location:",
+                                "$TEXT    World: $IMPORTANT${hologram.world}",
+                                "$TEXT    X: $IMPORTANT${hologram.x}",
+                                "$TEXT    Y: $IMPORTANT${hologram.y}",
+                                "$TEXT    Z: $IMPORTANT${hologram.z}",
+                                ""
+                            )
+                        )
+                    }
+
+                )
+                .build()
+        )
         .setItem(44, backItem)
         .build()
 
@@ -175,7 +244,7 @@ fun HumanEntity.openShops(pageID: Int, rawInventory: Inventory = Setup.shops) {
 
 }
 
-fun HumanEntity.openMaps(pageID: Int): Unit = open(pageID, Setup.maps, gameMaps.size) { ShopPage(it) }
+fun HumanEntity.openMaps(pageID: Int): Unit = open(pageID, Setup.maps, configService.maps.maps.size) { ShopPage(it) }
 fun HumanEntity.openShops(pageID: Int): Unit =
     open(pageID, Setup.shops, configService.shops.locations.size) { ShopPage(it) }
 

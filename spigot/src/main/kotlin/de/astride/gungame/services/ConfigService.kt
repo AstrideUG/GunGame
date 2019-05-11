@@ -9,7 +9,6 @@ import de.astride.data.UUIDSerializer
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.functions.allActions
 import de.astride.gungame.functions.messages
-import de.astride.gungame.functions.withReplacements
 import de.astride.gungame.kits.DefaultKits
 import de.astride.gungame.stats.Action
 import kotlinx.serialization.KSerializer
@@ -31,8 +30,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.location.toLocation
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.SpigotGsonMessages
-import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Holograms
-import net.darkdevelopers.darkbedrock.darkness.spigot.utils.MapsUtils
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.toGameMap
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -394,17 +392,21 @@ class ConfigService(private val directory: File) {
 
         /* Main */
         private val configData = ConfigData(directory, config.files.maps)
-        val maps = GsonService.load(configData) as? JsonArray ?: JsonArray()
+        val rawMaps = GsonService.load(configData) as? JsonArray ?: JsonArray()
+        val maps = rawMaps.mapNotNull {
+            val jsonObject = it as? JsonObject ?: return@mapNotNull null
+            jsonObject.toMap().toGameMap()
+        }
 
         /* Values */
         val bukkitGsonConfig = BukkitGsonConfig(configData)
 
-        fun load() = MapsUtils.getMapsAndLoad(bukkitGsonConfig) { player, holograms, map ->
-            val uuid = player.uniqueId
-            holograms[uuid] =
-                Holograms(messages.hologram.withReplacements(uuid).mapNotNull { it }.toTypedArray(), map.hologram)
-            holograms[uuid]?.show(player)
-        }
+        /*fun load()= MapsUtils.getMapsAndLoad(bukkitGsonConfig) { player, holograms, map ->
+           val uuid = player.uniqueId
+           holograms[uuid] =
+               Holograms(messages.hologram.withReplacements(uuid).mapNotNull { it }.toTypedArray(), map.hologram)
+           holograms[uuid]?.show(player)
+       }*/
 
         fun setLocation(location: Location, jsonObject: JsonObject = JsonObject()): JsonObject =
             jsonObject.apply { bukkitGsonConfig.setLocation(location, jsonObject) }
@@ -520,7 +522,7 @@ class ConfigService(private val directory: File) {
             jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ): Unit = set(id, value, configData, jsonArray, "worldBoarder", "damage", "amount")
 
-        fun save(configData: ConfigData = this.configData, jsonElement: JsonElement = maps): Unit =
+        fun save(configData: ConfigData = this.configData, jsonElement: JsonElement = rawMaps): Unit =
             GsonService.save(configData, jsonElement)
 
         private fun set(

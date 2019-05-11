@@ -75,7 +75,7 @@ object Events : EventsTemplate() {
                 Setup.shops.name -> event.whoClicked.execute("$commandName setup all")
                 Setup.maps.name -> event.whoClicked.execute("$commandName setup all")
                 "${SECONDARY}GunGame Setup Shops Edit" -> event.whoClicked.execute("$commandName setup shops")
-                "${SECONDARY}GunGame Setup Maps Edit" -> event.whoClicked.execute("$commandName setup maps")
+                "${SECONDARY}GunGame Setup Maps Edit" -> event.whoClicked.execute("$commandName setup rawMaps")
             }
         }.add()
 

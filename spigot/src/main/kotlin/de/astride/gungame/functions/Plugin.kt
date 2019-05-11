@@ -2,7 +2,7 @@ package de.astride.gungame.functions
 
 import de.astride.gungame.GunGame
 import de.astride.gungame.services.ConfigService
-import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Map
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.GameMap
 import org.bukkit.plugin.java.JavaPlugin
 
 /*
@@ -48,17 +48,10 @@ lateinit var allowTeams: AllowTeams
 
 /**
  * @author Lars Artmann | LartyHD
- * Created by Lars Artmann | LartyHD on 09.05.2019 19:13.
- * Current Version: 1.0 (09.05.2019 - 09.05.2019)
- */
-lateinit var gameMaps: MutableSet<Map>
-
-/**
- * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 06:47.
  * Current Version: 1.0 (27.03.2019 - 27.03.2019)
  */
-lateinit var gameMap: Map
+lateinit var gameMap: GameMap
 
 /**
  * @author Lars Artmann | LartyHD

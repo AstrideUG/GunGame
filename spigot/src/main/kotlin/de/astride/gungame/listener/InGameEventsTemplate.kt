@@ -11,11 +11,14 @@ import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.PlayerDisconnectEvent
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.randomLook
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.toBukkitLocation
 import net.darkdevelopers.darkbedrock.darkness.spigot.manager.game.EventsTemplate
 import net.darkdevelopers.darkbedrock.darkness.spigot.manager.game.InGameEventsTemplate
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Holograms
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Utils.players
 import org.bukkit.GameMode
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -28,12 +31,13 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerRespawnEvent
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.plugin.Plugin
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:32.
- * Current Version: 1.0 (17.02.2018 - 08.05.2019)
+ * Current Version: 1.0 (17.02.2018 - 11.05.2019)
  */
 object InGameEventsTemplate : EventsTemplate() {
 
@@ -49,6 +53,7 @@ object InGameEventsTemplate : EventsTemplate() {
         cancelBlockPlace = true
 
         setKeepInventory { true }
+        setRespawn { gameMap.spawn.toBukkitLocation().randomLook() }
 
         listen<PlayerMoveEvent>(plugin) { event ->
             if (event.player.health <= 0.0) return@listen
@@ -56,7 +61,7 @@ object InGameEventsTemplate : EventsTemplate() {
             if (types.any { it == event.to.block.type }) event.player.health = 0.0
         }.add()
         listen<PlayerJoinEvent>(plugin) { event -> event.player.setup() }.add()
-        listen<PlayerDisconnectEvent>(plugin) { event -> gameMap.removeHologram(event.player) }.add()
+        listen<PlayerDisconnectEvent>(plugin) { event -> event.player.removeHologram() }.add()
         listen<PlayerDeathEvent>(plugin) { event ->
             event.droppedExp = 0
 
@@ -66,7 +71,6 @@ object InGameEventsTemplate : EventsTemplate() {
             )
         }.add()
         listen<PlayerRespawnEvent>(plugin, priority = EventPriority.LOW) { event ->
-            event.respawnLocation = gameMap.spawn.randomLook()
             event.player.apply player@{
 
                 InGameEventsTemplate.killer[uniqueId]?.apply {
@@ -83,14 +87,14 @@ object InGameEventsTemplate : EventsTemplate() {
                     sendScoreBoard()
                     upgrade()
                     heal()
-                    gameMap.sendHologram(this)
+                    sendHologram()
 
                 }
 
                 playSound(location, Sound.GHAST_DEATH, 2f, 1f)
                 downgrade()
                 sendScoreBoard()
-                gameMap.sendHologram(this)
+                sendHologram()
 
             }
         }.add()
@@ -139,12 +143,12 @@ object InGameEventsTemplate : EventsTemplate() {
         level = 0
         gameMode = GameMode.ADVENTURE
         health = maxHealth
-        teleport(gameMap.spawn.randomLook())
+        teleport(gameMap.spawn.toBukkitLocation().randomLook())
 
         setKit()
         sendScoreBoard()
         showAll()
-        gameMap.sendHologram(this)
+        sendHologram()
 
     }
 
@@ -152,6 +156,19 @@ object InGameEventsTemplate : EventsTemplate() {
         if (name.equals(it.name, ignoreCase = true)) return@forEach
         it.hidePlayer(this)
         it.showPlayer(this)
+    }
+
+    private fun Player.sendHologram(location: Location? = gameMap.hologram?.toBukkitLocation()) {
+        val lines = messages.hologram.withReplacements(uniqueId).mapNotNull { it }.toTypedArray()
+        val holograms = Holograms(lines, location ?: return)
+        setMetadata("holograms", FixedMetadataValue(javaPlugin, holograms))
+        holograms.show(this)
+    }
+
+    private fun Player.removeHologram() {
+        val metadata = getMetadata("holograms").firstOrNull()?.value() as? Holograms
+        metadata?.hide(this)
+        removeMetadata("holograms", javaPlugin)
     }
 
 //    private fun broadcastKillStreak(killStreak: Int, killer: Player) {

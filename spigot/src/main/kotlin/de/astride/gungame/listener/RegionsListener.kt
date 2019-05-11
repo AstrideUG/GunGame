@@ -7,6 +7,7 @@ import de.astride.gungame.functions.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.Listener
+import net.darkdevelopers.darkbedrock.darkness.spigot.region.isInside
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
@@ -38,6 +39,7 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
         val damager = event.damager ?: return
         val transform: (String?) -> String? = { it.replace("target", event.entity.name) }
+        val region = region ?: return
         when {
             region.isInside(event.entity.location) -> messages.regions.damageInTarget.map(transform).sendTo(damager)
             region.isInside(damager.location) -> messages.regions.damageInPlayer.map(transform).sendTo(damager)
@@ -56,7 +58,7 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
     fun onProjectileLaunchEvent(event: ProjectileLaunchEvent) {
         val arrow = event.entity as? Arrow ?: return
         val player = arrow.shooter as? Player ?: return
-        if (!region.isInside(player.location)) return
+        if (region?.isInside(player.location) != true) return
         event.cancel()
         messages.regions.launchArrow.sendTo(player)
     }
@@ -69,6 +71,7 @@ class RegionsListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
     @EventHandler
     fun onPlayerMoveEvent(event: PlayerMoveEvent) {
         val inventory = event.player.inventory ?: return
+        val region = region ?: return
         if (inventory.getItem(leaveSlot) == Items.LEAVE.itemStack && !region.isInside(event.to))
             inventory.setItem(leaveSlot, null)
         else if (inventory.getItem(leaveSlot) == null && region.isInside(event.to))

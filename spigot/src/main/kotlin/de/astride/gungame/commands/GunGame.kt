@@ -57,7 +57,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             "|add shop [-o] [<Path>.json]" +
             "|setup help" +
             "|setup all" +
-            "|setup maps" +
+            "|setup rawMaps" +
             "|setup shops" +
             "|setup shops teleport <id>" +
             "|setup shops edit <id> <world/x/y/z/yaw/pitch> <value>" +
@@ -231,7 +231,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                     .add("\n\nDas ").build()
                     .add("$PRIMARY${EXTRA}CraftPlugin$IMPORTANT$EXTRA.$PRIMARY${EXTRA}net")
                     .clickEvent(ClickAction.OPEN_URL, "https://portal.craftplugin.net").build()
-                    .add(" Team wünscht dir viel Spaß mit GunGame.\n\n").build()
+                    .add("$RESET Team wünscht dir viel Spaß mit GunGame.\n\n").build()
                     .add("Die Einrichtung ist für dich so einfach wie möglich gehalten.\n\n\n").build()
                     .add("$GREEN${UNDERLINE}Jetzt los legen")
                     .clickEvent(ClickAction.RUN_COMMAND, "/$commandName setup all").build()
@@ -239,9 +239,9 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                 player.openBook(book.build())
             }
             "all" -> player.openInventory(Setup.all)
-            "maps" -> when {
+            "rawMaps" -> when {
                 args.size == 1 -> {
-                    player.openInventory(Setup.maps) //TODO: generate maps display-items
+                    player.openInventory(Setup.maps) //TODO: generate rawMaps display-items
                 }
             }
             "shops" -> {

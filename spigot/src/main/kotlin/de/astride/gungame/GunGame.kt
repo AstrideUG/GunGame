@@ -17,8 +17,9 @@ import de.astride.gungame.stats.Actions
 import net.darkdevelopers.darkbedrock.darkness.general.functions.performCraftPluginUpdater
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.JsonArray
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toJsonObject
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.toBukkitLocation
-import net.darkdevelopers.darkbedrock.darkness.spigot.location.toJsonObject
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.toMap
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import org.bukkit.Bukkit
@@ -57,15 +58,14 @@ class GunGame : DarkPlugin() {
 
         logLoad("map") {
             val config = configService.maps
-            if (config.maps.size() < 1) {
+            if (config.rawMaps.size() < 1) {
                 isSetup = true
                 logger.warning("No Maps are configured!")
                 logger.warning("The plugin needs at least one map to make it work!")
                 return@logLoad
             }
 
-            gameMaps = config.load()
-            gameMap = gameMaps.toList()[Random.nextInt(config.maps.size())]
+            gameMap = config.maps.toList()[Random.nextInt(config.maps.size)]
         }
 
         logLoad("setup events") { Events.setup(this) }
@@ -100,7 +100,7 @@ class GunGame : DarkPlugin() {
 
         logSave("shops") {
             val shops = configService.shops
-            val list = shops.locations.map { it.toJsonObject() }
+            val list = shops.locations.map { it.toMap().toJsonObject() }
             shops.save(jsonElement = JsonArray(list))
         }
 
