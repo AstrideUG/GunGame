@@ -12,11 +12,11 @@ import de.astride.gungame.functions.messages
 import de.astride.gungame.kits.DefaultKits
 import de.astride.gungame.stats.Action
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.context.getOrDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.json
 import kotlinx.serialization.list
 import kotlinx.serialization.map
+import kotlinx.serialization.modules.getContextualOrDefault
 import kotlinx.serialization.stringify
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonConfig
@@ -598,7 +598,7 @@ class ConfigService(private val directory: File) {
         /* Main */
         val configData: ConfigData = ConfigData(directory, config.files.actions)
         private val kSerializer: KSerializer<Map<UUID, List<Action>>> =
-            (UUIDSerializer to Json.context.getOrDefault(Action::class).list).map
+            (UUIDSerializer to Json.context.getContextualOrDefault(Action::class).list).map
 
         /* Values */
         fun load(configData: ConfigData = this.configData): MutableMap<UUID, MutableList<Action>> {
