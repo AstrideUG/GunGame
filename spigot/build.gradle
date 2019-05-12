@@ -6,6 +6,7 @@ dependencies {
 
     compileOnly("org.spigotmc:spigot-api:${versions_spigot}")
     testCompile("org.spigotmc:spigot-api:${versions_spigot}")
+    compileOnly("com.github.AstrideUG.DarkBedrock:Darkness-Spigot:d8203de903")
     compileOnly(group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.6') {
         exclude(group: "org.bukkit")
     }
