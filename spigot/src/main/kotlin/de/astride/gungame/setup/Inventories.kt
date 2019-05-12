@@ -3,7 +3,7 @@ package de.astride.gungame.setup
 import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.javaPlugin
 import de.astride.gungame.setup.page.ShopPage
-import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
+import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inventory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.SkullItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.inventory.pages.Page
@@ -28,7 +28,7 @@ import org.bukkit.metadata.Metadatable
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 07.05.2019 12:28.
- * Current Version: 1.0 (07.05.2019 - 07.05.2019)
+ * Current Version: 1.0 (07.05.2019 - 12.05.2019)
  */
 
 var Metadatable.editID: Int?
