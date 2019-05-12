@@ -9,7 +9,7 @@ import de.astride.gungame.functions.*
 import de.astride.gungame.kits.kits
 import de.astride.gungame.listener.InGameEventsTemplate
 import de.astride.gungame.listener.MoneyListener
-import de.astride.gungame.listener.RegionsListener
+import de.astride.gungame.listener.RegionsEventsTemplate
 import de.astride.gungame.services.ConfigService
 import de.astride.gungame.setup.Events
 import de.astride.gungame.shop.ShopListener
@@ -17,11 +17,14 @@ import de.astride.gungame.stats.Actions
 import net.darkdevelopers.darkbedrock.darkness.general.functions.performCraftPluginUpdater
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.JsonArray
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.setup
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toBukkitWorld
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toJsonObject
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.toBukkitLocation
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.toMap
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.setupWorldBorder
 import org.bukkit.Bukkit
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
@@ -31,7 +34,7 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 09.05.2019)
+ * Current Version: 1.0 (17.02.2018 - 12.05.2019)
  */
 class GunGame : DarkPlugin() {
 
@@ -66,6 +69,8 @@ class GunGame : DarkPlugin() {
             }
 
             gameMap = config.maps.toList()[Random.nextInt(config.maps.size)]
+            gameMap.spawn.world.toBukkitWorld()?.setup()
+            gameMap.setupWorldBorder()
         }
 
         logLoad("setup events") { Events.setup(this) }
@@ -111,7 +116,8 @@ class GunGame : DarkPlugin() {
         }
         logSave("kits") { configService.kits.save() }
         logSave("stats") { configService.actions.save() }
-        logSave("ingame events") { InGameEventsTemplate.reset() }
+        logUnregister("ingame events") { InGameEventsTemplate.reset() }
+        logUnregister("regions events") { RegionsEventsTemplate.reset() }
 
         logUnregister("Config") {
             //must be after all "configService" calls
@@ -121,7 +127,7 @@ class GunGame : DarkPlugin() {
 
     private fun initEvents() {
         InGameEventsTemplate.setup(this)
-        RegionsListener(this)
+        RegionsEventsTemplate.setup(this)
         if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
             logger.info("Hooking to Vault...")
             MoneyListener(this)
