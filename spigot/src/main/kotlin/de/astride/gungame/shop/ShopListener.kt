@@ -11,8 +11,8 @@ import de.astride.gungame.shop.items.KeepInventory
 import de.astride.gungame.shop.items.LevelUp
 import de.astride.gungame.shop.items.MagicHeal
 import de.astride.gungame.stats.Action
-import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inverntory.InventoryBuilder
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
+import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inventory.InventoryBuilder
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.Listener
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
@@ -26,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.02.2018 02:32.
- * Current Version: 1.0 (19.02.2018 - 13.04.2019)
+ * Current Version: 1.0 (19.02.2018 - 12.05.2019)
  */
 class ShopListener(javaPlugin: JavaPlugin) : Listener(javaPlugin) {
 
