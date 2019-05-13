@@ -13,6 +13,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.execute
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.ReadOnlyLocation
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.copy
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.lookable.Lookable
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.lookable.copy
@@ -271,7 +272,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                                         player.editType = args[3]
                                     }
                                     5 -> try {
-                                        fun net.darkdevelopers.darkbedrock.darkness.spigot.location.Location.edit(
+                                        fun ReadOnlyLocation.edit(
                                             world: String = this.world,
                                             vector: Vector3D = this.vector,
                                             lookable: Lookable? = this.lookable

@@ -4,7 +4,6 @@ import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.isSetup
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.AnvilClickEvent
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.listen
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.unregister
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.execute
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.listenInventories
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.listenTop
@@ -155,11 +154,6 @@ object Events : EventsTemplate() {
 
         }.add()
 
-    }
-
-    fun reset() {
-        listener.unregister()
-        listener.clear()
     }
 
     private fun getID(itemStack: ItemStack): Int? {
