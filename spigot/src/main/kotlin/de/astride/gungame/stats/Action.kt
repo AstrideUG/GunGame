@@ -1,6 +1,7 @@
 package de.astride.gungame.stats
 
 import de.astride.data.UUIDSerializer
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import java.util.*
 
@@ -9,7 +10,7 @@ import java.util.*
  * Created by Lars Artmann | LartyHD on 30.03.2019 17:14.
  * Current Version: 1.0 (30.03.2019 - 11.04.2019)
  */
-@Serializable
+@Serializable(with = KSerializer::class)
 data class Action(
     val key: String,
     val meta: Map<String, Any?> = mapOf(),

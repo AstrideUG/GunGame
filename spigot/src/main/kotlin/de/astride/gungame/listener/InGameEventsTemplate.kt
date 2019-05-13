@@ -119,14 +119,13 @@ object InGameEventsTemplate : EventsTemplate() {
 
     }
 
-    fun reset() {
+    override fun reset() {
 
         InGameEventsTemplate.reset()
 
         unregisterKeepInventory()
 
-        listener.unregister()
-        listener.clear()
+        super.reset()
 
     }
 

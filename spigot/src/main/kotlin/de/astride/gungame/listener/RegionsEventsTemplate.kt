@@ -6,7 +6,6 @@ package de.astride.gungame.listener
 import de.astride.gungame.functions.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.cancel
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.listen
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.unregister
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.manager.game.EventsTemplate
 import net.darkdevelopers.darkbedrock.darkness.spigot.region.isInside
@@ -59,11 +58,6 @@ object RegionsEventsTemplate : EventsTemplate() {
                 inventory.setLeave()
         }.add()
         listen<PlayerRespawnEvent>(plugin) { it.player.inventory.setLeave() }.add()
-    }
-
-    fun reset() {
-        listener.unregister()
-        listener.clear()
     }
 
 }

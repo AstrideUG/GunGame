@@ -75,7 +75,7 @@ object Setup {
         InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Maps Edit").generateMapsEdit(gameMap)
 
     fun generateShopsEdit(
-        location: Location,
+        location: ReadOnlyLocation,
         world: Boolean = true,
         yawAndPitch: Boolean = true
     ): Inventory =
@@ -95,24 +95,25 @@ object Setup {
         .addAllItemFlags()
         .build()
 
-    fun generateShopDisplayItem(id: Int, location: Location): ItemStack = ItemBuilder(Items.CHEST.itemStack.clone())
-        .setName("${SECONDARY}Number $id")
-        .setLore(
-            "",
-            "${TEXT}Location:",
-            "$TEXT    World: $IMPORTANT${location.world}",
-            "$TEXT    X: $IMPORTANT${location.x}",
-            "$TEXT    Y: $IMPORTANT${location.y}",
-            "$TEXT    Z: $IMPORTANT${location.z}",
-            "$TEXT    Yaw: $IMPORTANT${location.yawOr0}",
-            "$TEXT    Pitch: $IMPORTANT${location.pitchOr0}",
-            "",
-            "${GREEN}Klicken zum editieren",
-            "${GREEN}Shift links klicken zum telportieren",
-            "${RED}Shift rechts klicken zum löschen",
-            ""
-        )
-        .build()
+    fun generateShopDisplayItem(id: Int, location: ReadOnlyLocation): ItemStack =
+        ItemBuilder(Items.CHEST.itemStack.clone())
+            .setName("${SECONDARY}Number $id")
+            .setLore(
+                "",
+                "${TEXT}Location:",
+                "$TEXT    World: $IMPORTANT${location.world}",
+                "$TEXT    X: $IMPORTANT${location.x}",
+                "$TEXT    Y: $IMPORTANT${location.y}",
+                "$TEXT    Z: $IMPORTANT${location.z}",
+                "$TEXT    Yaw: $IMPORTANT${location.yawOr0}",
+                "$TEXT    Pitch: $IMPORTANT${location.pitchOr0}",
+                "",
+                "${GREEN}Klicken zum editieren",
+                "${GREEN}Shift links klicken zum telportieren",
+                "${RED}Shift rechts klicken zum löschen",
+                ""
+            )
+            .build()
 
     private fun InventoryBuilder.generateMapsEdit(
         gameMap: GameMap
@@ -183,7 +184,7 @@ object Setup {
         .build()
 
     private fun InventoryBuilder.generateShopsEdit(
-        location: Location,
+        location: ReadOnlyLocation,
         world: Boolean = true,
         yawAndPitch: Boolean = false
     ): Inventory = setDesign()
