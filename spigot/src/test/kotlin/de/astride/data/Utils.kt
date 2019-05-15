@@ -2,9 +2,6 @@ package de.astride.data
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.parse
-import kotlinx.serialization.stringify
 import org.bukkit.World
 
 /*
@@ -24,10 +21,10 @@ inline fun <reified T : Any> `(de)serialize`(expectedJson: String, expectedSourc
     //then
     //
 
-    val json = Json.stringify(expectedSource)
+//    val json = Json.stringify(expectedSource)
 //    assertEquals(expectedJson, json)
 
-    val source = Json.parse<T>(expectedJson)
+//    val source = Json.parse<T>(expectedJson)
 //    assertEquals(expectedSource, source)
 
 }
