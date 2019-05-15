@@ -157,8 +157,8 @@ object Events : EventsTemplate() {
     }
 
     private fun getID(itemStack: ItemStack): Int? {
-        val rawName = ChatColor.stripColor(itemStack.itemMeta?.displayName)
-        return rawName.replaceFirst("Number ", "").toIntOrNull() ?: return null
+        val rawName: String? = ChatColor.stripColor(itemStack.itemMeta?.displayName)
+        return rawName?.replaceFirst("Number ", "")?.toIntOrNull()
     }
 
 
