@@ -25,7 +25,9 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.location.toLocation
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.SpigotGsonMessages
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.GameMap
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.toGameMap
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.toMap
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -386,12 +388,12 @@ class ConfigService(private val directory: File) {
     inner class Maps internal constructor() {
 
         /* Main */
-        private val configData = ConfigData(directory, config.files.maps)
+        val configData = ConfigData(directory, config.files.maps)
         val rawMaps = GsonService.load(configData) as? JsonArray ?: JsonArray()
         val maps = rawMaps.mapNotNull {
             val jsonObject = it as? JsonObject ?: return@mapNotNull null
             jsonObject.toMap().toGameMap()
-        }
+        }.toMutableList()
 
         /* Values */
         val bukkitGsonConfig = BukkitGsonConfig(configData)
@@ -402,6 +404,18 @@ class ConfigService(private val directory: File) {
                Holograms(messages.hologram.withReplacements(uuid).mapNotNull { it }.toTypedArray(), map.hologram)
            holograms[uuid]?.show(player)
        }*/
+
+        fun addAndSave(
+            gameMap: GameMap,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ) {
+            add(gameMap, jsonArray)
+            save(configData, jsonArray)
+        }
+
+        fun add(gameMap: GameMap, jsonArray: JsonArray = loadAs(configData) ?: JsonArray()): Unit =
+            jsonArray.add(gameMap.toMap().toJsonObject())
 
         fun setLocation(location: Location, jsonObject: JsonObject = JsonObject()): JsonObject =
             jsonObject.apply { bukkitGsonConfig.setLocation(location, jsonObject) }

@@ -22,6 +22,7 @@ import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.UNDERLINE
 import org.bukkit.Material
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
@@ -31,6 +32,8 @@ import org.bukkit.plugin.Plugin
  * Current Version: 1.0 (07.05.2019 - 08.05.2019)
  */
 object Events : EventsTemplate() {
+
+    private val commandName: String = configService.config.commands.gungame.name
 
     fun setup(plugin: Plugin) {
 
@@ -61,8 +64,6 @@ object Events : EventsTemplate() {
 
     private fun setupInventory(plugin: Plugin) {
 
-        val commandName = configService.config.commands.gungame.name
-
         //block item movement
         setOf(Setup.all.name, Setup.shops.name, Setup.maps.name, "${SECONDARY}GunGame Setup Shops Edit")
             .listenTop(plugin, cancel = true).add()
@@ -78,17 +79,10 @@ object Events : EventsTemplate() {
             }
         }.add()
 
-        //shops
-
-        //open maps gui
-        Setup.all.listenTop(plugin, acceptSlot = { it == 1 }) { event ->
-            event.whoClicked.execute("$commandName setup maps")
-        }.add()
-
-        //open shops gui
-        Setup.all.listenTop(plugin, acceptSlot = { it == 3 }) { event ->
-            event.whoClicked.execute("$commandName setup shops")
-        }.add()
+        openSubGUIs(plugin)
+        pageManagement(plugin)
+        Setup.maps.addEntry(plugin, "add map")
+        Setup.shops.addEntry(plugin, "add shop")
 
         //open shops edit gui
         Setup.shops.listenTop(plugin, onlyCheckName = true, acceptSlot = { it in 19..25 }) { event ->
@@ -102,19 +96,14 @@ object Events : EventsTemplate() {
             event.whoClicked.execute("$commandName setup shops $type $id")
         }.add()
 
-        //add shop
-        Setup.shops.listenTop(plugin, onlyCheckName = true, acceptSlot = { it == 40 }) { event ->
-            event.whoClicked.execute("$commandName add shop")
-            event.whoClicked.closeInventory()
-        }.add()
-
-        //shops page management
-        Setup.shops.listenTop(
-            plugin,
-            onlyCheckName = true,
-            acceptSlot = { it == 38 || it == 42 }
-        ) { event ->
-            event.whoClicked.openShops(event.whoClicked.page + if (event.slot == 38) -1 else 1)
+        //open maps edit gui
+        Setup.maps.listenTop(plugin, onlyCheckName = true, acceptSlot = { it in 19..25 }) { event ->
+            val id = getID(event.currentItem) ?: return@listenTop
+            val type = if (event.isShiftClick && event.isRightClick) {
+                event.whoClicked.closeInventory()
+                "delete"
+            } else "edit"
+            event.whoClicked.execute("$commandName setup maps $type $id")
         }.add()
 
         //open shops edit gui by value
@@ -142,12 +131,25 @@ object Events : EventsTemplate() {
 
         //shops edit type to value
         listen<AnvilClickEvent>(plugin) { event ->
-            if (event.slot != AnvilGUI.AnvilSlot.OUTPUT) return@listen
-
             val player = event.anvilGUI.player
             val editType = player.editType ?: return@listen
             val editID = player.editID ?: return@listen
+
+            if (event.slot != AnvilGUI.AnvilSlot.OUTPUT) return@listen
+            if (player.anvilType != "setup-shops-edit") return@listen
+
             player.execute("$commandName setup shops edit $editID $editType ${event.itemStack?.itemMeta?.displayName}")
+        }
+
+        //add map
+        listen<AnvilClickEvent>(plugin) { event ->
+            val player = event.anvilGUI.player
+
+            if (event.slot != AnvilGUI.AnvilSlot.OUTPUT) return@listen
+            if (player.anvilType != "add-map") return@listen
+
+            player.execute("$commandName add map ${event.itemStack?.itemMeta?.displayName}")
+            player.closeInventory()
         }
 
         Setup.maps.listenTop(plugin) {
@@ -155,6 +157,45 @@ object Events : EventsTemplate() {
         }.add()
 
     }
+
+    private fun pageManagement(plugin: Plugin) {
+        //shops page management
+        Setup.shops.listenTop(
+            plugin,
+            onlyCheckName = true,
+            acceptSlot = { it == 38 || it == 42 }
+        ) { event ->
+            event.whoClicked.openShops(event.whoClicked.page + if (event.slot == 38) -1 else 1)
+        }.add()
+
+        //maps page management
+        Setup.maps.listenTop(
+            plugin,
+            onlyCheckName = true,
+            acceptSlot = { it == 38 || it == 42 }
+        ) { event ->
+            event.whoClicked.openMaps(event.whoClicked.page + if (event.slot == 38) -1 else 1)
+        }.add()
+    }
+
+    private fun Inventory.addEntry(plugin: Plugin, command: String): Unit =
+        listenTop(plugin, onlyCheckName = true, acceptSlot = { it == 40 }) { event ->
+            event.whoClicked.closeInventory()
+            event.whoClicked.execute("$commandName $command")
+        }.add()
+
+    private fun openSubGUIs(plugin: Plugin) {
+        //open maps gui
+        Setup.all.listenTop(plugin, acceptSlot = { it == 1 }) { event ->
+            event.whoClicked.execute("$commandName setup maps")
+        }.add()
+
+        //open shops gui
+        Setup.all.listenTop(plugin, acceptSlot = { it == 3 }) { event ->
+            event.whoClicked.execute("$commandName setup shops")
+        }.add()
+    }
+
 
     private fun getID(itemStack: ItemStack): Int? {
         val rawName: String? = ChatColor.stripColor(itemStack.itemMeta?.displayName)
