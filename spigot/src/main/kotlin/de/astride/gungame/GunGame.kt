@@ -17,8 +17,8 @@ import de.astride.gungame.stats.Actions
 import net.darkdevelopers.darkbedrock.darkness.general.functions.performCraftPluginUpdater
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.JsonArray
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.loadBukkitWorld
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.setup
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toBukkitWorld
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toJsonObject
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.toBukkitLocation
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.toMap
@@ -69,7 +69,7 @@ class GunGame : DarkPlugin() {
             }
 
             gameMap = config.maps.toList()[Random.nextInt(config.maps.size)]
-            gameMap.spawn.world.toBukkitWorld()?.setup()
+            gameMap.spawn.world.loadBukkitWorld().setup()
             gameMap.setupWorldBorder()
         }
 
