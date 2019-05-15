@@ -1,22 +1,18 @@
 package de.astride.gungame.services
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
+import com.google.gson.*
 import de.astride.data.ItemStackSerializer
-import de.astride.data.UUIDSerializer
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.functions.allActions
 import de.astride.gungame.functions.messages
 import de.astride.gungame.kits.DefaultKits
 import de.astride.gungame.stats.Action
+import de.astride.gungame.stats.toAction
+import de.astride.gungame.stats.toMap
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.json
 import kotlinx.serialization.list
-import kotlinx.serialization.map
-import kotlinx.serialization.modules.getContextualOrDefault
 import kotlinx.serialization.stringify
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonConfig
@@ -24,8 +20,7 @@ import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService.loadAs
 import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMap
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMaterial
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.toLocation
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
@@ -597,20 +592,36 @@ class ConfigService(private val directory: File) {
 
         /* Main */
         val configData: ConfigData = ConfigData(directory, config.files.actions)
-        private val kSerializer: KSerializer<Map<UUID, List<Action>>> =
-            (UUIDSerializer to Json.context.getContextualOrDefault(Action::class).list).map
 
         /* Values */
         fun load(configData: ConfigData = this.configData): MutableMap<UUID, MutableList<Action>> {
-            val string = configData.file.readText()
-            return if (string.isEmpty()) mutableMapOf() else Json.parse(
-                kSerializer,
-                string
-            ).map { it.key to it.value.toMutableList() }.toMap().toMutableMap()
+
+            val jsonObject = GsonService.load(configData) as? JsonObject ?: JsonObject()
+
+            val map = jsonObject.toMap().mapNotNull {
+                (UUID.fromString(it.key) to it.value).toFirstNotNull()
+            }
+
+            return map.mapNotNull { (key, value) ->
+                val jsonArray = value.toJsonElement() as? JsonArray ?: return@mapNotNull null
+                key to jsonArray.actions()
+            }.toMap().toMutableMap()
+
         }
 
-        fun save(input: MutableMap<UUID, MutableList<Action>> = allActions, configData: ConfigData = this.configData) =
-            GsonService.save(configData, Json.indented.stringify(kSerializer, input))
+        private fun JsonArray.actions() = mapNotNull {
+            val action = it as? JsonObject ?: return@mapNotNull null
+            action.toMap().toAction()
+        }.toMutableList()
+
+        fun save(
+            input: MutableMap<UUID, MutableList<Action>> = allActions,
+            configData: ConfigData = this.configData
+        ): Unit = GsonService.save(
+            configData,
+            input.map { (key, value) -> key to value.map { it.toMap().toJsonObject() } }.toJsonElement()
+                ?: JsonNull.INSTANCE
+        )
 
     }
 
