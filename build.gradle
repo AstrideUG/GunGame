@@ -80,13 +80,7 @@ subprojects {
     }
 
     processResources {
-        from(sourceSets.main.kotlin.srcDirs) {
-            filter ReplaceTokens, tokens: [version: version, group: pluginGroup, name: rootProject.name, lowerName: rootProject.name.toLowerCase()]
-        }
         from(sourceSets.main.resources.srcDirs) {
-            filter ReplaceTokens, tokens: [version: version, group: pluginGroup, name: rootProject.name, lowerName: rootProject.name.toLowerCase()]
-        }
-        from(sourceSets.main.allJava.srcDirs) {
             filter ReplaceTokens, tokens: [version: version, group: pluginGroup, name: rootProject.name, lowerName: rootProject.name.toLowerCase()]
         }
     }

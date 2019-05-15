@@ -2,6 +2,7 @@ package de.astride.gungame.setup
 
 import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.javaPlugin
+import de.astride.gungame.setup.page.MapsPage
 import de.astride.gungame.setup.page.ShopPage
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.inventory.InventoryBuilder
 import net.darkdevelopers.darkbedrock.darkness.spigot.builder.item.ItemBuilder
@@ -43,6 +44,13 @@ var Metadatable.editType: String?
     set(value) {
         removeMetadata("edit-type", javaPlugin)
         setMetadata("edit-type", FixedMetadataValue(javaPlugin, value))
+    }
+
+var Metadatable.anvilType: String?
+    get() = getMetadata("anvil-type").firstOrNull()?.asString()
+    set(value) {
+        removeMetadata("anvil-type", javaPlugin)
+        setMetadata("anvil-type", FixedMetadataValue(javaPlugin, value))
     }
 
 var Metadatable.page: Int
@@ -88,7 +96,6 @@ object Setup {
             "${TEXT}Name: $IMPORTANT${gameMap.name}",
             "",
             "${GREEN}Klicken zum editieren",
-            "${GREEN}Shift links klicken zum telportieren",
             "${RED}Shift rechts klicken zum löschen",
             ""
         )
@@ -123,8 +130,12 @@ object Setup {
             19, ItemBuilder(Material.IRON_SWORD).setName("${SECONDARY}Region").setLore(
                 mutableListOf("").apply {
                     val region = gameMap.region
-                    if (region == null) add("Region is null") else addAll(
-                        listOf(
+                    addAll(
+                        if (region == null) listOf(
+                            "Region is null", "",
+                            "${GREEN}Klicken zum erstellen",
+                            ""
+                        ) else listOf(
                             "${TEXT}World: $IMPORTANT${region.world}",
                             "",
                             "${TEXT}Min:",
@@ -136,6 +147,9 @@ object Setup {
                             "$TEXT    X: $IMPORTANT${region.max.x}",
                             "$TEXT    Y: $IMPORTANT${region.max.y}",
                             "$TEXT    Z: $IMPORTANT${region.max.z}",
+                            "",
+                            "${GREEN}Klicken zum editieren",
+                            "${RED}Shift rechts klicken zum löschen",
                             ""
                         )
                     )
@@ -144,7 +158,7 @@ object Setup {
         )
         .setItem(
             21, ItemBuilder(Material.PAPER).setName("${SECONDARY}Name")
-                .setLore("", "${TEXT}Name: $IMPORTANT${gameMap.name}")
+                .setLore("", "${TEXT}Name: $IMPORTANT${gameMap.name}", "")
                 .build()
         )
         .setItem(
@@ -156,22 +170,34 @@ object Setup {
                     "$TEXT    X: $IMPORTANT${gameMap.spawn.x}",
                     "$TEXT    Y: $IMPORTANT${gameMap.spawn.y}",
                     "$TEXT    Z: $IMPORTANT${gameMap.spawn.z}",
+                    "",
+                    "${GREEN}Klicken zum editieren",
+                    "${GREEN}Shift links klicken zum telportieren",
                     ""
                 )
                 .build()
         )
         .setItem(
-            23, ItemBuilder(Material.ARMOR_STAND).setName("${SECONDARY}Hologram")
+            25, ItemBuilder(Material.ARMOR_STAND).setName("${SECONDARY}Hologram")
                 .setLore(
                     mutableListOf("").apply {
                         val hologram = gameMap.hologram
-                        if (hologram == null) add("Hologram is null") else addAll(
-                            listOf(
+                        addAll(
+                            if (hologram == null) listOf(
+                                "Hologram is null",
+                                "",
+                                "${GREEN}Klicken zum erstellen",
+                                ""
+                            ) else listOf(
                                 "${TEXT}Location:",
                                 "$TEXT    World: $IMPORTANT${hologram.world}",
                                 "$TEXT    X: $IMPORTANT${hologram.x}",
                                 "$TEXT    Y: $IMPORTANT${hologram.y}",
                                 "$TEXT    Z: $IMPORTANT${hologram.z}",
+                                "",
+                                "${GREEN}Klicken zum editieren",
+                                "${GREEN}Shift links klicken zum telportieren",
+                                "${RED}Shift rechts klicken zum löschen",
                                 ""
                             )
                         )
@@ -245,7 +271,7 @@ fun HumanEntity.openShops(pageID: Int, rawInventory: Inventory = Setup.shops) {
 
 }
 
-fun HumanEntity.openMaps(pageID: Int): Unit = open(pageID, Setup.maps, configService.maps.maps.size) { ShopPage(it) }
+fun HumanEntity.openMaps(pageID: Int): Unit = open(pageID, Setup.maps, configService.maps.maps.size) { MapsPage(it) }
 fun HumanEntity.openShops(pageID: Int): Unit =
     open(pageID, Setup.shops, configService.shops.locations.size) { ShopPage(it) }
 
