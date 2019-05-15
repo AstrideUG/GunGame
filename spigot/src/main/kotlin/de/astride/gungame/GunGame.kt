@@ -3,6 +3,9 @@
  */
 package de.astride.gungame
 
+import com.rollbar.api.payload.data.Server
+import com.rollbar.notifier.Rollbar
+import com.rollbar.notifier.config.ConfigBuilder.withAccessToken
 import de.astride.gungame.commands.*
 import de.astride.gungame.commands.GunGame
 import de.astride.gungame.functions.*
@@ -29,7 +32,9 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.plugin.ServicePriority
+import java.net.InetAddress
 import kotlin.random.Random
+
 
 /**
  * @author Lars Artmann | LartyHD
@@ -47,57 +52,59 @@ class GunGame : DarkPlugin() {
     }
 
     override fun onEnable(): Unit = onEnable {
+        reportThrowable {
 
-        logLoad("Config") {
-            Bukkit.getServicesManager().register(
-                ConfigService::class.java,
-                ConfigService(dataFolder),
-                this,
-                ServicePriority.Normal
-            ) //Important for ConfigService.instance
-        }
-
-        EventsListener.autoRespawn = true
-
-        logLoad("map") {
-            val config = configService.maps
-            if (config.rawMaps.size() < 1) {
-                isSetup = true
-                logger.warning("No Maps are configured!")
-                logger.warning("The plugin needs at least one map to make it work!")
-                return@logLoad
+            logLoad("Config") {
+                Bukkit.getServicesManager().register(
+                    ConfigService::class.java,
+                    ConfigService(dataFolder),
+                    this,
+                    ServicePriority.Normal
+                ) //Important for ConfigService.instance
             }
 
-            gameMap = config.maps.toList()[Random.nextInt(config.maps.size)]
-            gameMap.spawn.world.loadBukkitWorld().setup()
-            gameMap.setupWorldBorder()
+            EventsListener.autoRespawn = true
+
+            logLoad("map") {
+                val config = configService.maps
+                if (config.rawMaps.size() < 1) {
+                    isSetup = true
+                    logger.warning("No Maps are configured!")
+                    logger.warning("The plugin needs at least one map to make it work!")
+                    return@logLoad
+                }
+
+                gameMap = config.maps.toList()[Random.nextInt(config.maps.size)]
+                gameMap.spawn.world.loadBukkitWorld().setup()
+                gameMap.setupWorldBorder()
+            }
+
+            logLoad("setup events") { Events.setup(this) }
+
+            if (isSetup) {
+
+                logLoad("GunGame command") { GunGame(this) }
+
+                logger.info("Since the plugin is in setup mode, only the GunGame command & setup listener has been initialized!")
+                @Suppress("LABEL_NAME_CLASH")
+                return@onEnable
+            }
+
+            logLoad("kits") { kits = configService.kits.load() }
+            logLoad("allow-teams") {
+                AllowTeams.Random.update()
+                allowTeams = configService.config.allowTeams
+            }
+            logLoad("actions") {
+                allActions =
+                    configService.actions.load().map { it.key to Actions(it.key, it.value) }.toMap().toMutableMap()
+            }
+
+            logLoad("events") { initEvents() }
+            logLoad("commands") { initCommands() }
+
+            Bukkit.getScheduler().runTaskLater(this, { logLoad("shops") { spawnShops() } }, 5)
         }
-
-        logLoad("setup events") { Events.setup(this) }
-
-        if (isSetup) {
-
-            logLoad("GunGame command") { GunGame(this) }
-
-            logger.info("Since the plugin is in setup mode, only the GunGame command & setup listener has been initialized!")
-            @Suppress("LABEL_NAME_CLASH")
-            return@onEnable
-        }
-
-        logLoad("kits") { kits = configService.kits.load() }
-        logLoad("allow-teams") {
-            AllowTeams.Random.update()
-            allowTeams = configService.config.allowTeams
-        }
-        logLoad("actions") {
-            allActions = configService.actions.load().map { it.key to Actions(it.key, it.value) }.toMap().toMutableMap()
-        }
-
-        logLoad("events") { initEvents() }
-        logLoad("commands") { initCommands() }
-
-        Bukkit.getScheduler().runTaskLater(this, { logLoad("shops") { spawnShops() } }, 5)
-//        ranksUpdater()
     }
 
     override fun onDisable(): Unit = onDisable {
@@ -173,8 +180,19 @@ class GunGame : DarkPlugin() {
         logger.info("${if (prefix.endsWith('e')) prefix.dropLast(1) else prefix}ed $suffix")
     }
 
-//    private fun ranksUpdater() =
-//        Bukkit.getScheduler().runTaskTimerAsynchronously(this, { ranks = ranks() }, 0, TimeUnit.SECONDS.toMillis(20))
+    private inline fun reportThrowable(code: () -> Unit): Unit = try {
+        code()
+    } catch (throwable: Throwable) {
+        throwable.printStackTrace()
 
+        val rollbar: Rollbar = Rollbar.init(withAccessToken("364c0eca3f6f49e98201dc8dabec501d")
+            .codeVersion("1.1.0")
+            .server {
+                Server.Builder().host(InetAddress.getLocalHost().toString()).build()
+            }
+            .build())
+        rollbar.critical(throwable)
+        rollbar.close(true)
+    }
 
 }
