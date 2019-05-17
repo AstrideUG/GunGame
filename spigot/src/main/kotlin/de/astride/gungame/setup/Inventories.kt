@@ -17,6 +17,7 @@ import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.RED
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
@@ -63,31 +64,48 @@ var Metadatable.page: Int
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 07.05.2019 12:30.
- * Current Version: 1.0 (07.05.2019 - 07.05.2019)
+ * Current Version: 1.0 (07.05.2019 - 17.05.2019)
  */
 object Setup {
 
+    private val gungamePrefix: String = "${SECONDARY}GunGame Setup "
+    private val mapsName: String = "${SECONDARY}Maps"
+    private val shopsName: String = "${SECONDARY}Shops"
+    private const val editSuffix: String = " Edit"
+    val mapsInventoryName: String = "$gungamePrefix$mapsName"
+    val shopsInventoryName: String = "$gungamePrefix$shopsName"
+    val mapsInventoryEditName = "$mapsInventoryName$editSuffix"
+    val shopsInventoryEditName = "$shopsInventoryName$editSuffix"
+
     val backItem: ItemStack = ItemBuilder(Items.LEAVE.itemStack.clone()).setName("${SECONDARY}Zurück").build()
 
-    val all: Inventory = InventoryBuilder(InventoryType.HOPPER, "${SECONDARY}GunGame Setup All")
+    val all: Inventory = InventoryBuilder(InventoryType.HOPPER, "${gungamePrefix}All")
         .setDesign()
-        .setItem(1, ItemBuilder(Material.MAP).setName("${SECONDARY}Maps").addAllItemFlags().build())
-        .setItem(3, ItemBuilder(Items.CHEST.itemStack).setName("${SECONDARY}Shops").build())
+        .setItem(1, ItemBuilder(Material.MAP).setName(mapsName).addAllItemFlags().build())
+        .setItem(3, ItemBuilder(Items.CHEST.itemStack).setName(shopsName).build())
         .build()
-    val maps: Inventory = InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Maps").generate()
-    val shops: Inventory = InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops").generate()
+    val maps: Inventory = InventoryBuilder(5 * 9, mapsInventoryName).generate()
+    val shops: Inventory = InventoryBuilder(5 * 9, shopsInventoryName).generate()
 
     fun generateMapsEdit(
         gameMap: GameMap
     ): Inventory =
-        InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Maps Edit").generateMapsEdit(gameMap)
+        InventoryBuilder(5 * 9, mapsInventoryEditName).generateMapsEdit(gameMap)
 
-    fun generateShopsEdit(
+    fun generateMapsEditLocation(
+        gameMap: GameMap,
+        entity: Entity,
+        type: String
+    ): Inventory = InventoryBuilder(5 * 9, mapsInventoryEditName + type).generateMapsEditLocation(
+        if (type == "hologram") gameMap.hologram ?: entity.location.toLocation() else gameMap.spawn
+    )
+
+    fun generateLocationEdit(
         location: ReadOnlyLocation,
         world: Boolean = true,
         yawAndPitch: Boolean = true
     ): Inventory =
-        InventoryBuilder(5 * 9, "${SECONDARY}GunGame Setup Shops Edit").generateShopsEdit(location, world, yawAndPitch)
+        InventoryBuilder(5 * 9, shopsInventoryEditName).generateLocationEdit(location, world, yawAndPitch)
 
     fun generateMapDisplayItem(id: Int, gameMap: GameMap): ItemStack = ItemBuilder(ItemStack(Material.MAP))
         .setName("${SECONDARY}Number $id")
@@ -132,7 +150,8 @@ object Setup {
                     val region = gameMap.region
                     addAll(
                         if (region == null) listOf(
-                            "Region is null", "",
+                            "Region is null",
+                            "",
                             "${GREEN}Klicken zum erstellen",
                             ""
                         ) else listOf(
@@ -155,29 +174,28 @@ object Setup {
                     )
                 }
             ).build()
-        )
-        .setItem(
-            21, ItemBuilder(Material.PAPER).setName("${SECONDARY}Name")
-                .setLore("", "${TEXT}Name: $IMPORTANT${gameMap.name}", "")
-                .build()
-        )
-        .setItem(
-            23, ItemBuilder(Material.EMPTY_MAP).setName("${SECONDARY}Spawn")
-                .setLore(
-                    "",
-                    "${TEXT}Location:",
-                    "$TEXT    World: $IMPORTANT${gameMap.spawn.world}",
-                    "$TEXT    X: $IMPORTANT${gameMap.spawn.x}",
-                    "$TEXT    Y: $IMPORTANT${gameMap.spawn.y}",
-                    "$TEXT    Z: $IMPORTANT${gameMap.spawn.z}",
-                    "",
-                    "${GREEN}Klicken zum editieren",
-                    "${GREEN}Shift links klicken zum telportieren",
-                    ""
-                )
-                .build()
-        )
-        .setItem(
+        ).setItem(
+            21, ItemBuilder(Material.PAPER).setName("${SECONDARY}Name").setLore(
+                "",
+                "${TEXT}Name: $IMPORTANT${gameMap.name}",
+                "",
+                "${GREEN}Klicken zum editieren",
+                ""
+            ).build()
+        ).setItem(
+            23, ItemBuilder(Material.EMPTY_MAP).setName("${SECONDARY}Spawn").setLore(
+                "",
+                "${TEXT}Location:",
+                "$TEXT    World: $IMPORTANT${gameMap.spawn.world}",
+                "$TEXT    X: $IMPORTANT${gameMap.spawn.x}",
+                "$TEXT    Y: $IMPORTANT${gameMap.spawn.y}",
+                "$TEXT    Z: $IMPORTANT${gameMap.spawn.z}",
+                "",
+                "${GREEN}Klicken zum editieren",
+                "${GREEN}Shift links klicken zum telportieren",
+                ""
+            ).build()
+        ).setItem(
             25, ItemBuilder(Material.ARMOR_STAND).setName("${SECONDARY}Hologram")
                 .setLore(
                     mutableListOf("").apply {
@@ -202,14 +220,24 @@ object Setup {
                             )
                         )
                     }
-
-                )
-                .build()
+                ).build()
+        ).setItem(
+            40, ItemBuilder(Material.MAP).addAllItemFlags().setName("${SECONDARY}Worlds").setLore(
+                "",
+                "${TEXT}World: $IMPORTANT${gameMap.spawn.world}",
+                "",
+                "${GREEN}Klicken zum editieren",
+                ""
+            ).build()
         )
         .setItem(44, backItem)
         .build()
 
-    private fun InventoryBuilder.generateShopsEdit(
+    private fun InventoryBuilder.generateMapsEditLocation(
+        location: ReadOnlyLocation
+    ): Inventory = generateLocationEdit(location, world = false, yawAndPitch = false)
+
+    private fun InventoryBuilder.generateLocationEdit(
         location: ReadOnlyLocation,
         world: Boolean = true,
         yawAndPitch: Boolean = false

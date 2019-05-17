@@ -321,8 +321,12 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                                             )
                                             gameMap.setupWorldBorder()
                                         }
-//                                        "hologram" -> gameMap.editTo(maps, id, hologram = arg4)
-//                                        "spawn" -> gameMap.editTo(maps, id, name = arg4)
+                                        "hologram" -> player.openInventory(
+                                            Setup.generateMapsEditLocation(gameMap, player, "hologram")
+                                        )
+                                        "spawn" -> player.openInventory(
+                                            Setup.generateMapsEditLocation(gameMap, player, "spawn")
+                                        )
 //                                        "region" -> when (arg4.toLowerCase()) {
 //                                            "pos1" -> {
 //                                            }
@@ -357,7 +361,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                                 }
                                 "teleport" -> player.teleport(location.toBukkitLocation())
                                 "edit" -> when (args.size) {
-                                    3 -> player.openInventory(Setup.generateShopsEdit(location))
+                                    3 -> player.openInventory(Setup.generateLocationEdit(location))
                                     4 -> {
                                         AnvilGUI(javaPlugin, player).apply {
                                             setSlot(

@@ -9,7 +9,6 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.functions.listenInventorie
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.listenTop
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.schedule
 import net.darkdevelopers.darkbedrock.darkness.spigot.manager.game.EventsTemplate
-import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.AnvilGUI
@@ -21,6 +20,7 @@ import org.bukkit.ChatColor
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.UNDERLINE
 import org.bukkit.Material
+import org.bukkit.entity.HumanEntity
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -65,17 +65,22 @@ object Events : EventsTemplate() {
     private fun setupInventory(plugin: Plugin) {
 
         //block item movement
-        setOf(Setup.all.name, Setup.shops.name, Setup.maps.name, "${SECONDARY}GunGame Setup Shops Edit")
-            .listenTop(plugin, cancel = true).add()
+        setOf(
+            Setup.all.name,
+            Setup.shopsInventoryName,
+            Setup.mapsInventoryName,
+            Setup.shopsInventoryEditName,
+            Setup.mapsInventoryEditName
+        ).listenTop(plugin, cancel = true).add()
 
         //back Item impl
         listenInventories(plugin, acceptCurrentItem = { it == Setup.backItem }) { event ->
             val whoClicked = event.whoClicked ?: return@listenInventories
             when (whoClicked.openInventory.topInventory.name) {
-                Setup.shops.name -> event.whoClicked.execute("$commandName setup all")
-                Setup.maps.name -> event.whoClicked.execute("$commandName setup all")
-                "${SECONDARY}GunGame Setup Shops Edit" -> event.whoClicked.execute("$commandName setup shops")
-                "${SECONDARY}GunGame Setup Maps Edit" -> event.whoClicked.execute("$commandName setup rawMaps")
+                Setup.shopsInventoryName -> whoClicked.execute("$commandName setup all")
+                Setup.mapsInventoryName -> whoClicked.execute("$commandName setup all")
+                Setup.shopsInventoryEditName -> whoClicked.execute("$commandName setup shops")
+                Setup.mapsInventoryEditName -> whoClicked.execute("$commandName setup maps")
             }
         }.add()
 
@@ -107,27 +112,48 @@ object Events : EventsTemplate() {
         }.add()
 
         //open shops edit gui by value
-        "${SECONDARY}GunGame Setup Shops Edit".listenTop(
+        Setup.shopsInventoryEditName.listenTop(
             plugin,
             acceptSlot = { it in 18..26 || it == 40 },
             acceptCurrentItem = { it != null && it.type != Material.STAINED_GLASS_PANE }
         ) { event ->
-            val id = event.whoClicked.editID ?: return@listenTop
+            val whoClicked = event.whoClicked ?: return@listenTop
+            val id = whoClicked.editID ?: return@listenTop
+            val type = event.slot.toType() ?: return@listenTop
 
-            val type = when (event.slot) {
-                18 -> "yaw"
-                20 -> "x"
-                22 -> "y"
-                24 -> "z"
-                26 -> "pitch"
-                40 -> "world"
-                else -> return@listenTop
-            }
-
-            event.whoClicked.editType = type
-            event.whoClicked.execute("$commandName setup shops edit $id $type")
+            whoClicked.editType = type
+            whoClicked.execute("$commandName setup shops edit $id $type")
         }.add()
 
+        //open maps edit gui
+        Setup.maps.listenTop(plugin, onlyCheckName = true, acceptSlot = { it in 19..25 }) { event ->
+            val id = getID(event.currentItem) ?: return@listenTop
+            val type = if (event.isShiftClick && event.isRightClick) {
+                event.whoClicked.closeInventory()
+                "delete"
+            } else "edit"
+            event.whoClicked.execute("$commandName setup maps $type $id")
+        }.add()
+
+        //open "maps edit name" gui
+        Setup.mapsInventoryEditName.listenTop(
+            plugin,
+            acceptSlot = { it == 20 || it == 40 }
+        ) { event ->
+            val id = event.whoClicked.editID ?: return@listenTop
+            event.whoClicked.execute("$commandName setup maps edit $id name")
+        }.add()
+
+        //maps edit hologram/spawn ##<world/x/y/z> <value>
+        Setup.mapsInventoryEditName.listenTop(
+            plugin,
+            acceptSlot = { it == 22 || it == 24 }
+        ) { event ->
+            val player: HumanEntity = event.whoClicked ?: return@listenTop
+            val type = event.slot.toType() ?: return@listenTop
+            val id = player.editID ?: return@listenTop
+            event.whoClicked.execute("$commandName setup maps edit $id $type")
+        }.add()
 
         //shops edit type to value
         listen<AnvilClickEvent>(plugin) { event ->
@@ -152,9 +178,17 @@ object Events : EventsTemplate() {
             player.closeInventory()
         }
 
-        Setup.maps.listenTop(plugin) {
+        //anvil gui for "setup maps edit <id> name/world <value>"
+        listen<AnvilClickEvent>(plugin) { event ->
+            val player = event.anvilGUI.player
+            val id = player.editID ?: return@listen
 
-        }.add()
+            if (event.slot != AnvilGUI.AnvilSlot.OUTPUT) return@listen
+            if (player.anvilType != "setup-maps-edit-4") return@listen
+
+            player.execute("$commandName setup maps edit $id ${player.editType} ${event.itemStack?.itemMeta?.displayName}")
+            player.closeInventory()
+        }
 
     }
 
@@ -200,6 +234,16 @@ object Events : EventsTemplate() {
     private fun getID(itemStack: ItemStack): Int? {
         val rawName: String? = ChatColor.stripColor(itemStack.itemMeta?.displayName)
         return rawName?.replaceFirst("Number ", "")?.toIntOrNull()
+    }
+
+    private fun Int.toType(): String? = when (this) {
+        18 -> "yaw"
+        20 -> "x"
+        22 -> "y"
+        24 -> "z"
+        26 -> "pitch"
+        40 -> "world"
+        else -> null
     }
 
 
