@@ -92,12 +92,14 @@ object Events : EventsTemplate() {
         //open shops edit gui
         Setup.shops.listenTop(plugin, onlyCheckName = true, acceptSlot = { it in 19..25 }) { event ->
             val id = getID(event.currentItem) ?: return@listenTop
-            val type = if (event.isShiftClick)
-                if (event.isRightClick) {
-                    event.whoClicked.closeInventory()
-                    "delete"
-                } else "teleport"
-            else "edit"
+            event.whoClicked.closeInventory()
+            val type = when {
+                event.isShiftClick && event.isLeftClick -> "teleport"
+                event.isShiftClick && event.isRightClick -> "delete"
+                event.isLeftClick -> "edit"
+                event.isRightClick -> "movehere"
+                else -> return@listenTop
+            }
             event.whoClicked.execute("$commandName setup shops $type $id")
         }.add()
 
@@ -125,20 +127,10 @@ object Events : EventsTemplate() {
             whoClicked.execute("$commandName setup shops edit $id $type")
         }.add()
 
-        //open maps edit gui
-        Setup.maps.listenTop(plugin, onlyCheckName = true, acceptSlot = { it in 19..25 }) { event ->
-            val id = getID(event.currentItem) ?: return@listenTop
-            val type = if (event.isShiftClick && event.isRightClick) {
-                event.whoClicked.closeInventory()
-                "delete"
-            } else "edit"
-            event.whoClicked.execute("$commandName setup maps $type $id")
-        }.add()
-
         //open "maps edit name" gui
         Setup.mapsInventoryEditName.listenTop(
             plugin,
-            acceptSlot = { it == 20 || it == 40 }
+            acceptSlot = { it == 21 }
         ) { event ->
             val id = event.whoClicked.editID ?: return@listenTop
             event.whoClicked.execute("$commandName setup maps edit $id name")
@@ -147,12 +139,24 @@ object Events : EventsTemplate() {
         //maps edit hologram/spawn ##<world/x/y/z> <value>
         Setup.mapsInventoryEditName.listenTop(
             plugin,
-            acceptSlot = { it == 22 || it == 24 }
+            acceptSlot = { it in 19 until 26 step 2 }
         ) { event ->
             val player: HumanEntity = event.whoClicked ?: return@listenTop
-            val type = event.slot.toType() ?: return@listenTop
             val id = player.editID ?: return@listenTop
-            event.whoClicked.execute("$commandName setup maps edit $id $type")
+            player.closeInventory()
+            val type = when (event.slot) {
+                19 -> if (event.isShiftClick && event.isRightClick) {
+                    player.execute("$commandName setup maps delete $id region")
+                    return@listenTop
+                } else "region ${if (event.isLeftClick) "pos1" else "pos2"}"
+                23 -> "spawn"
+                25 -> if (event.isShiftClick && event.isRightClick) {
+                    player.execute("$commandName setup maps delete $id hologram")
+                    return@listenTop
+                } else "hologram"
+                else -> return@listenTop
+            }
+            player.execute("$commandName setup maps edit $id $type")
         }.add()
 
         //shops edit type to value

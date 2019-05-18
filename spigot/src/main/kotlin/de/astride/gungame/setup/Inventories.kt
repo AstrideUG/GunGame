@@ -133,7 +133,9 @@ object Setup {
                 "$TEXT    Yaw: $IMPORTANT${location.yawOr0}",
                 "$TEXT    Pitch: $IMPORTANT${location.pitchOr0}",
                 "",
-                "${GREEN}Klicken zum editieren",
+                "${GREEN}Links klicken zum editieren",
+                "${GREEN}Rechts klicken um es hier her zu verschieben",
+                "",
                 "${GREEN}Shift links klicken zum telportieren",
                 "${RED}Shift rechts klicken zum löschen",
                 ""
@@ -150,9 +152,9 @@ object Setup {
                     val region = gameMap.region
                     addAll(
                         if (region == null) listOf(
-                            "Region is null",
+                            "${TEXT}Region ist nicht gesetzt",
                             "",
-                            "${GREEN}Klicken zum erstellen",
+                            "${GREEN}Kicken zum erstellen (hier)",
                             ""
                         ) else listOf(
                             "${TEXT}World: $IMPORTANT${region.world}",
@@ -167,7 +169,9 @@ object Setup {
                             "$TEXT    Y: $IMPORTANT${region.max.y}",
                             "$TEXT    Z: $IMPORTANT${region.max.z}",
                             "",
-                            "${GREEN}Klicken zum editieren",
+                            "${GREEN}Links klicken um min hier her zu verschieben",
+                            "${GREEN}Rechts klicken um max hier her zu verschieben",
+                            "",
                             "${RED}Shift rechts klicken zum löschen",
                             ""
                         )
@@ -191,8 +195,7 @@ object Setup {
                 "$TEXT    Y: $IMPORTANT${gameMap.spawn.y}",
                 "$TEXT    Z: $IMPORTANT${gameMap.spawn.z}",
                 "",
-                "${GREEN}Klicken zum editieren",
-                "${GREEN}Shift links klicken zum telportieren",
+                "${GREEN}Klicken um es hier her zu verschieben",
                 ""
             ).build()
         ).setItem(
@@ -202,7 +205,7 @@ object Setup {
                         val hologram = gameMap.hologram
                         addAll(
                             if (hologram == null) listOf(
-                                "Hologram is null",
+                                "${TEXT}Hologram ist nicht gesetzt",
                                 "",
                                 "${GREEN}Klicken zum erstellen",
                                 ""
@@ -213,8 +216,8 @@ object Setup {
                                 "$TEXT    Y: $IMPORTANT${hologram.y}",
                                 "$TEXT    Z: $IMPORTANT${hologram.z}",
                                 "",
-                                "${GREEN}Klicken zum editieren",
-                                "${GREEN}Shift links klicken zum telportieren",
+                                "${GREEN}Klicken um es hier her zu verschieben",
+                                "",
                                 "${RED}Shift rechts klicken zum löschen",
                                 ""
                             )
