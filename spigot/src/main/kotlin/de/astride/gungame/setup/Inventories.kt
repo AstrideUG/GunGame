@@ -311,8 +311,10 @@ fun HumanEntity.open(pageID: Int, rawInventory: Inventory, listSize: Int, pageGe
 
     val pages = mutableListOf<Page>().apply {
         for (i in 0 until listSize / 7 + 1) add(pageGetter(i))
-        if (isEmpty()) add(pageGetter(0)) else if (listSize % 7 == 0) removeAt(lastIndex)
     }
+
+    if (listSize % 7 == 0 && pages.size != 1) pages.removeAt(pages.lastIndex)
+
     val page = try {
         pages[pageID].apply { page = pageID }
     } catch (ex: IndexOutOfBoundsException) {
