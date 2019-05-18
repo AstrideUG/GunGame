@@ -4,6 +4,7 @@ import com.google.gson.*
 import de.astride.data.ItemStackSerializer
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.functions.allActions
+import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.messages
 import de.astride.gungame.kits.DefaultKits
 import de.astride.gungame.stats.Action
@@ -22,6 +23,7 @@ import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.toLocation
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.toMap
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.SpigotGsonMessages
@@ -531,8 +533,10 @@ class ConfigService(private val directory: File) {
             jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
         ): Unit = set(id, value, configData, jsonArray, "worldBoarder", "damage", "amount")
 
-        fun save(configData: ConfigData = this.configData, jsonElement: JsonElement = rawMaps): Unit =
-            GsonService.save(configData, jsonElement)
+        fun save(
+            configData: ConfigData = this.configData,
+            jsonElement: JsonElement = JsonArray(configService.maps.maps.map { it.toMap().toJsonObject() })
+        ): Unit = GsonService.save(configData, jsonElement)
 
         private fun set(
             id: Int,
@@ -577,7 +581,6 @@ class ConfigService(private val directory: File) {
         /* Main */
         val configData = ConfigData(directory, config.files.shops)
         private val jsonArray = GsonService.load(configData) as? JsonArray ?: JsonArray()
-        val bukkitGsonConfig = BukkitGsonConfig(configData)
 
         /* Values */
         val locations = jsonArray.mapNotNull {
@@ -585,20 +588,10 @@ class ConfigService(private val directory: File) {
             jsonObject.toMap().toLocation()
         }.toMutableList()
 
-        fun addAndSave(
-            location: Location,
+        fun save(
             configData: ConfigData = this.configData,
-            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
-        ) {
-            add(location, jsonArray)
-            save(configData, jsonArray)
-        }
-
-        fun add(location: Location, jsonArray: JsonArray = loadAs(configData) ?: JsonArray()): Unit =
-            jsonArray.add(JsonObject().apply { bukkitGsonConfig.setLocation(location, this) })
-
-        fun save(configData: ConfigData = this.configData, jsonElement: JsonElement = this.jsonArray): Unit =
-            GsonService.save(configData, jsonElement)
+            jsonElement: JsonElement = JsonArray(locations.map { it.toMap().toJsonObject() })
+        ): Unit = GsonService.save(configData, jsonElement)
 
     }
 

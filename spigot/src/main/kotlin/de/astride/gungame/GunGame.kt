@@ -19,12 +19,9 @@ import de.astride.gungame.shop.ShopListener
 import de.astride.gungame.stats.Actions
 import net.darkdevelopers.darkbedrock.darkness.general.functions.performCraftPluginUpdater
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.listener.EventsListener
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.JsonArray
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.loadBukkitWorld
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.setup
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toJsonObject
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.toBukkitLocation
-import net.darkdevelopers.darkbedrock.darkness.spigot.location.toMap
 import net.darkdevelopers.darkbedrock.darkness.spigot.plugin.DarkPlugin
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.setupWorldBorder
@@ -110,11 +107,8 @@ class GunGame : DarkPlugin() {
     override fun onDisable(): Unit = onDisable {
         logUnregister("setup events") { Events.reset() }
 
-        logSave("shops") {
-            val shops = configService.shops
-            val list = shops.locations.map { it.toMap().toJsonObject() }
-            shops.save(jsonElement = JsonArray(list))
-        }
+        logSave("shops") { configService.shops.save() }
+        logSave("maps") { configService.maps.save() }
 
         @Suppress("LABEL_NAME_CLASH")
         if (isSetup) {

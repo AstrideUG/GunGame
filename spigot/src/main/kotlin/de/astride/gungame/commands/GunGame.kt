@@ -1,7 +1,6 @@
 package de.astride.gungame.commands
 
 import de.astride.gungame.functions.configService
-import de.astride.gungame.functions.edit
 import de.astride.gungame.functions.messages
 import de.astride.gungame.functions.replace
 import de.astride.gungame.setup.*
@@ -18,6 +17,7 @@ import net.darkdevelopers.darkbedrock.darkness.spigot.location.toBukkitLocation
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.toLocation
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.vector.Vector3D
 import net.darkdevelopers.darkbedrock.darkness.spigot.location.vector.copy
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.vector.toVector3D
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.region.Region
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.AnvilGUI
@@ -41,7 +41,7 @@ import java.io.File
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 04.04.2019 18:33.
- * Current Version: 1.0 (04.04.2019 - 07.05.2019)
+ * Current Version: 1.0 (04.04.2019 - 18.05.2019)
  */
 class GunGame(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -49,23 +49,21 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
     permission = config.permission,
     usage = "save actions/kits/shops/maps [<Path>.json]" +
             "|load messages [<Path>.json]" +
-            "|set map <id> name <value> [<Path>.json]" +
-            "|set map <id> world <value> [<Path>.json]" +
-            "|set map <id> worldboarder damage buffer/amount <value> [<Path>.json]" +
-            "|set map <id> worldboarder warning time/distance <value> [<Path>.json]" +
-            "|set map <id> worldboarder size <value> [<Path>.json]" +
-            "|set map <id> worldboarder center [-o] [<Path>.json]" +
-            "|set map <id> spawn/hologram [-o] [<Path>.json]" +
-            "|set map <id> region pos1/pos2 [-o] [<Path>.json]" +
+//            "|set map <id> worldboarder damage buffer/amount <value> [<Path>.json]" +
+//            "|set map <id> worldboarder warning time/distance <value> [<Path>.json]" +
+//            "|set map <id> worldboarder size <value> [<Path>.json]" +
+//            "|set map <id> worldboarder center [-o] [<Path>.json]" +
             "|add shop [-o] [<Path>.json]" +
             "|add map <name> [-o] [<Path>.json]" +
             "|setup help/all/shops/maps" +
-            "|setup shops/maps delete <id>" +
+            "|setup shops delete <id>" +
             "|setup shops teleport <id>" +
+            "|setup shops movehere <id>" +
             "|setup shops edit <id> <world/x/y/z/yaw/pitch> <value>" +
+            "|setup maps delete <id> [region/hologram]" +
             "|setup maps edit <id> name/world <value>" +
-            "|setup maps edit <id> hologram/spawn <world/x/y/z> <value>" +
-            "|setup maps edit <id> region pos1/pos2 <world/x/y/z> <value>" +
+            "|setup maps edit <id> hologram/spawn" +//" <world/x/y/z> <value>" +
+            "|setup maps edit <id> region pos1/pos2" +//" <world/x/y/z> <value>" +
             "|setup reload",
     minLength = 2,
     maxLength = 8,
@@ -83,13 +81,14 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
 
         val toLowerCase = args[1].toLowerCase()
         val maps = configService.maps
+        val shops = configService.shops
         @Suppress("IMPLICIT_CAST_TO_ANY")
         val configData = if (!args.last().endsWith(".json")) when (args[0].toLowerCase()) {
             "save" -> when (toLowerCase) {
                 "actions" -> configService.actions.configData
                 "kits" -> configService.kits.configData
-                "shops" -> configService.shops.configData
-                "maps" -> configService.maps.configData
+                "shops" -> shops.configData
+                "maps" -> maps.configData
                 else -> failed = true
             }
             "load" -> when (toLowerCase) {
@@ -98,8 +97,8 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
             }
             "set" -> if (toLowerCase == "map") maps.bukkitGsonConfig.configData else failed = true
             "add" -> when (toLowerCase) {
-                "shop" -> configService.shops.configData
-                "map" -> configService.maps.configData
+                "shop" -> shops.configData
+                "map" -> maps.configData
                 else -> failed = true
             }
             else -> failed = true
@@ -128,8 +127,8 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                 when (toLowerCase) {
                     "actions" -> configService.actions.save(configData = configData)
                     "kits" -> configService.kits.save(configData = configData)
-                    "shops" -> configService.shops.save(configData = configData)
-                    "maps" -> configService.maps.save(configData = configData)
+                    "shops" -> shops.save(configData = configData)
+                    "maps" -> maps.save(configData = configData)
                     else -> {
                         sendUseMessage(sender)
                         return
@@ -148,13 +147,11 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                     return
                 }
                 when (args[3].toLowerCase()) {
-                    "name" -> isSizeOrHigher(5, sender) { maps.setNameAndSave(id, args[4], configData) }
-                    "world" -> isSizeOrHigher(5, sender) { maps.setWorldAndSave(id, args[4], configData) }
                     "worldboarder" -> isSizeOrHigher(5, sender) {
                         when (args[4].toLowerCase()) {
                             "center" -> sender.isPlayer {
-                                val location = roundLocation(args, it.location)
-                                maps.setWorldBoarderCenterAndSave(id, location, configData)
+                                val location = it.location.round(args)
+                                maps.setWorldBoarderCenterAndSave(id, location.toBukkitLocation(), configData)
                             }
                             "size" -> isSizeOrHigher(6, sender) {
                                 val value = args[5].toDoubleOrNull()
@@ -199,33 +196,15 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                             else -> sendUseMessage(sender)
                         }
                     }
-                    "spawn" -> sender.isPlayer {
-                        val location = roundLocation(args, it.location)
-                        maps.setSpawnAndSave(id, location, configData)
-                    }
-                    "hologram" -> sender.isPlayer {
-                        val location = roundLocation(args, it.location)
-                        maps.setHologramAndSave(id, location, configData)
-                    }
-                    "region" -> sender.isPlayer {
-                        val location = roundLocation(args, it.location)
-                        if (args.size >= 5) when {
-                            args[4].equals("pos1", true) ->
-                                maps.setRegionPos1AndSave(id, location, configData)
-                            args[4].equals("pos2", true) ->
-                                maps.setRegionPos2AndSave(id, location, configData)
-                            else -> sendUseMessage(sender)
-                        } else sendUseMessage(sender)
-                    }
                     else -> sendUseMessage(sender)
                 }
             } else sendUseMessage(sender)
             "add" -> sender.isPlayer { player ->
-                val location = roundLocation(args, player.location)
+                val location = player.location.round(args)
                 when (toLowerCase) {
                     "shop" -> {
-                        configService.shops.addAndSave(location, configData)
-                        if (configData == configService.shops.configData) configService.shops.locations += location.toLocation()
+                        if (configData == shops.configData) shops.locations += location
+                        shops.save(configData)
                     }
                     "map" -> when (args.size) {
                         2 -> {
@@ -240,13 +219,13 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                         3 -> {
                             val gameMap: GameMap = DataGameMap(
                                 args[2],
-                                location.toLocation(),
+                                location,
                                 null,
                                 null,
                                 null
                             )
-                            configService.maps.addAndSave(gameMap, configData)
-                            if (configData == configService.maps.configData) configService.maps.maps += gameMap
+                            maps.addAndSave(gameMap, configData)
+                            if (configData == maps.configData) maps.maps += gameMap
                         }
                         else -> sendUseMessage(sender)
                     }
@@ -286,22 +265,30 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                         val gameMap = maps[id]
                         player.editID = id
                         when (args[1].toLowerCase()) {
-                            "delete" -> {
-                                configService.maps.maps -= gameMap
-                                Bukkit.getConsoleSender().execute("$commandName save maps")
-                            }
+                            "delete" -> if (args.size == 4) when (args[3].toLowerCase()) {
+                                "region" -> gameMap.editTo(maps, id, region = null)
+                                "hologram" -> gameMap.editTo(maps, id, hologram = null)
+                                else -> sendUseMessage(sender)
+                            } else configService.maps.maps -= gameMap
                             "edit" -> when (args.size) {
                                 3 -> player.openInventory(Setup.generateMapsEdit(gameMap))
-                                4 -> if (args[3].toLowerCase() == "name" || args[3].toLowerCase() == "world") {
-                                    AnvilGUI(javaPlugin, player).apply {
-                                        setSlot(
-                                            AnvilGUI.AnvilSlot.INPUT_LEFT,
-                                            ItemBuilder(Material.PAPER).setName("Value").build()
-                                        )
-                                    }.open("GunGame Setup Maps Edit ${args[3]}")
-                                    player.editType = args[3]
-                                    player.anvilType = "setup-maps-edit-4"
-                                } else sendUseMessage(sender)
+                                4 -> when (args[3].toLowerCase()) {
+                                    "name", "world" -> {
+                                        AnvilGUI(javaPlugin, player).apply {
+                                            setSlot(
+                                                AnvilGUI.AnvilSlot.INPUT_LEFT,
+                                                ItemBuilder(Material.PAPER).setName("Value").build()
+                                            )
+                                        }.open("GunGame Setup Maps Edit ${args[3]}")
+                                        player.editType = args[3]
+                                        player.anvilType = "setup-maps-edit-4"
+                                    }
+                                    "hologram" -> gameMap.editTo(
+                                        maps, id, hologram = player.location.toLocation().round()
+                                    )
+                                    "spawn" -> gameMap.editTo(maps, id, spawn = player.location.toLocation().round())
+                                    else -> sendUseMessage(sender)
+                                }
                                 5 -> {
                                     val arg4 = args[4]
                                     when (args[3].toLowerCase()) {
@@ -321,19 +308,26 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                                             )
                                             gameMap.setupWorldBorder()
                                         }
-                                        "hologram" -> player.openInventory(
-                                            Setup.generateMapsEditLocation(gameMap, player, "hologram")
-                                        )
-                                        "spawn" -> player.openInventory(
-                                            Setup.generateMapsEditLocation(gameMap, player, "spawn")
-                                        )
-//                                        "region" -> when (arg4.toLowerCase()) {
-//                                            "pos1" -> {
-//                                            }
-//                                            "pos2" -> {
-//                                            }
-//                                            else -> sendUseMessage(sender)
-//                                        }
+                                        "region" -> {
+                                            val region =
+                                                gameMap.region ?: Region.of("generated", 0.toVector3D(), 0.toVector3D())
+
+                                            val worldName = player.world.name
+                                            val playerVector = player.location.toLocation().vector
+                                            when (arg4.toLowerCase()) {
+                                                "pos1" -> gameMap.editTo(
+                                                    maps,
+                                                    id,
+                                                    region = Region.of(worldName, playerVector.round(), region.max)
+                                                )
+                                                "pos2" -> gameMap.editTo(
+                                                    maps,
+                                                    id,
+                                                    region = Region.of(worldName, region.min, playerVector.round())
+                                                )
+                                                else -> sendUseMessage(sender)
+                                            }
+                                        }
                                         else -> sendUseMessage(sender)
                                     }
                                 }
@@ -360,6 +354,7 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                                     Bukkit.getConsoleSender().execute("$commandName save shops")
                                 }
                                 "teleport" -> player.teleport(location.toBukkitLocation())
+                                "movehere" -> shopLocations.editTo(id, player.location.toLocation().round())
                                 "edit" -> when (args.size) {
                                     3 -> player.openInventory(Setup.generateLocationEdit(location))
                                     4 -> {
@@ -441,14 +436,20 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
     private inline fun Array<String>.isSizeOrHigher(size: Int, sender: CommandSender, block: () -> Unit): Unit =
         if (this.size >= size) block() else sendUseMessage(sender)
 
-    private fun roundLocation(args: Array<String>, location: Location): Location =
-        if (args.isNotEmpty() &&
-            (args.last().equals("-o", true) ||
-                    (args.last().endsWith(".json") &&
-                            args.size >= 2 &&
-                            args.dropLast(1).last().equals("-o", true)))
-        ) location
-        else location.edit(x = location.blockX + 0.5, z = location.blockZ + 0.5)
+    private fun Location.round(args: Array<String>): ReadOnlyLocation = toLocation().round(args)
+
+    private fun ReadOnlyLocation.round(args: Array<String>): ReadOnlyLocation = if (args.isNotEmpty() &&
+        (args.last().equals("-o", true) ||
+                (args.last().endsWith(".json") &&
+                        args.size >= 2 &&
+                        args.dropLast(1).last().equals("-o", true)))
+    ) this else round()
+
+    //TODO darkness
+    private fun ReadOnlyLocation.round(): ReadOnlyLocation = copy(vector = vector.round())
+
+    //TODO darkness
+    private fun Vector3D.round(): Vector3D = copy(x = x.toInt() + 0.5, z = z.toInt() + 0.5)
 
     private fun generatePath(input: String): ConfigData {
         val path = input.split('/')

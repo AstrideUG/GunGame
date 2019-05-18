@@ -32,7 +32,7 @@ fun String.replace(key: String, value: Any): String = replace("@$key@", value.to
  *
  * Current Version: 1.0 (06.05.2019 - 06.05.2019)
  */
-fun Location.edit(
+fun Location.copy(
     world: World? = null,
     x: Double? = null,
     y: Double? = null,
