@@ -449,7 +449,8 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
     private fun ReadOnlyLocation.round(): ReadOnlyLocation = copy(vector = vector.round())
 
     //TODO darkness
-    private fun Vector3D.round(): Vector3D = copy(x = x.toInt() + 0.5, z = z.toInt() + 0.5)
+    private fun Vector3D.round(): Vector3D =
+        copy(x = x.toInt() + if (x < 0) -0.5 else 0.5, z = z.toInt() + if (z < 0) -0.5 else 0.5)
 
     private fun generatePath(input: String): ConfigData {
         val path = input.split('/')
