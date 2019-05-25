@@ -181,6 +181,9 @@ class GunGame : DarkPlugin() {
 
         val rollbar: Rollbar = Rollbar.init(withAccessToken("364c0eca3f6f49e98201dc8dabec501d")
             .codeVersion("1.1.0")
+            .custom {
+                mapOf("DarkFrame-Version" to server.pluginManager.getPlugin("DarkFrame")?.description?.version)
+            }
             .server {
                 Server.Builder().host(InetAddress.getLocalHost().toString()).build()
             }
