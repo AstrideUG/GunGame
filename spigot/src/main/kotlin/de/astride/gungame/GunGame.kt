@@ -13,6 +13,7 @@ import de.astride.gungame.kits.kits
 import de.astride.gungame.listener.InGameEventsTemplate
 import de.astride.gungame.listener.MoneyListener
 import de.astride.gungame.listener.RegionsEventsTemplate
+import de.astride.gungame.listener.TeamsEvents
 import de.astride.gungame.services.ConfigService
 import de.astride.gungame.setup.Events
 import de.astride.gungame.shop.ShopListener
@@ -127,6 +128,7 @@ class GunGame : DarkPlugin() {
     }
 
     private fun initEvents() {
+        TeamsEvents.setup(this)
         InGameEventsTemplate.setup(this)
         RegionsEventsTemplate.setup(this)
         if (Bukkit.getPluginManager().getPlugin("Vault") != null) {

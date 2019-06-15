@@ -4,6 +4,7 @@ import de.astride.gungame.GunGame
 import de.astride.gungame.services.ConfigService
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.GameMap
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 
 /*
  * @author Lars Artmann | LartyHD
@@ -38,6 +39,13 @@ val configService get() = ConfigService.instance
  * Current Version: 1.0 (06.04.2019 - 06.04.2019)
  */
 val messages get() = ConfigService.messagesInstance
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 16.06.2019 01:20.
+ * Current Version: 1.0 (16.06.2019 - 16.06.2019)
+ */
+val teams = mutableMapOf<UUID, MutableSet<UUID>>()
 
 /**
  * @author Lars Artmann | LartyHD
