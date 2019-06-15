@@ -313,17 +313,17 @@ class GunGame(javaPlugin: JavaPlugin) : Command(
                                                 gameMap.region ?: Region.of("generated", 0.toVector3D(), 0.toVector3D())
 
                                             val worldName = player.world.name
-                                            val playerVector = player.location.toLocation().vector
+                                            val playerVector = player.location.toLocation().vector.round()
                                             when (arg4.toLowerCase()) {
                                                 "pos1" -> gameMap.editTo(
                                                     maps,
                                                     id,
-                                                    region = Region.of(worldName, playerVector.round(), region.max)
+                                                    region = Region.of(worldName, playerVector, region.max)
                                                 )
                                                 "pos2" -> gameMap.editTo(
                                                     maps,
                                                     id,
-                                                    region = Region.of(worldName, region.min, playerVector.round())
+                                                    region = Region.of(worldName, region.min, playerVector)
                                                 )
                                                 else -> sendUseMessage(sender)
                                             }
