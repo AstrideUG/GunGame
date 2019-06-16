@@ -49,6 +49,13 @@ val teams = mutableMapOf<UUID, MutableSet<UUID>>()
 
 /**
  * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 16.06.2019 02:56.
+ * Current Version: 1.0 (16.06.2019 - 16.06.2019)
+ */
+val teamRequests = mutableMapOf<UUID, MutableSet<UUID>>()
+
+/**
+ * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 06:37.
  * Current Version: 1.0 (27.03.2019 - 06.04.2019)
  */

@@ -37,7 +37,7 @@ import kotlin.random.Random
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:27.
- * Current Version: 1.0 (17.02.2018 - 12.05.2019)
+ * Current Version: 1.0 (17.02.2018 - 16.06.2019)
  */
 class GunGame : DarkPlugin() {
 
@@ -182,7 +182,7 @@ class GunGame : DarkPlugin() {
         throwable.printStackTrace()
 
         val rollbar: Rollbar = Rollbar.init(withAccessToken("364c0eca3f6f49e98201dc8dabec501d")
-            .codeVersion("1.1.0")
+            .codeVersion("1.2.0")
             .custom {
                 mapOf("DarkFrame-Version" to server.pluginManager.getPlugin("DarkFrame")?.description?.version)
             }

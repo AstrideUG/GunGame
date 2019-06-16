@@ -1,15 +1,13 @@
 package de.astride.gungame.commands
 
-import de.astride.gungame.functions.allowTeams
-import de.astride.gungame.functions.configService
-import de.astride.gungame.functions.replace
-import de.astride.gungame.functions.sendScoreBoard
+import de.astride.gungame.functions.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.commands.Command
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendSubTitle
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTimings
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTitle
 import net.darkdevelopers.darkbedrock.darkness.spigot.functions.sendTo
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Utils
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Utils.players
 import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
@@ -17,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 19.08.2017 14:30.
- * Current Version: 1.0 (27.03.2019 - 06.04.2019)
+ * Current Version: 1.0 (27.03.2019 - 16.06.2019)
  */
 class Teams(javaPlugin: JavaPlugin) : Command(
     javaPlugin,
@@ -41,7 +39,7 @@ class Teams(javaPlugin: JavaPlugin) : Command(
 
             allowTeams = !allowTeams
 
-            Utils.goThroughAllPlayers { player ->
+            players.forEach { player ->
                 player.playSound(player.location, Sound.ENDERDRAGON_DEATH, 100f, 1f)
                 player.sendTitle(messages.title)
                 player.sendSubTitle(messages.subTitle.replace("allowed", allowTeams.asString))
@@ -49,6 +47,8 @@ class Teams(javaPlugin: JavaPlugin) : Command(
                 player.sendScoreBoard()
                 player.sendMessage(messages.successfully.replace("allowed", allowTeams.asString))
             }
+
+            if (!allowTeams.result) teams.clear()
 
         }
 

@@ -737,6 +737,17 @@ class ConfigService(private val directory: File) {
                                 "commands.statsreset.failed.self.nothing-to-reset" to commands.statsReset.failedSelfNothing.toJsonArray()
                                 "commands.statsreset.failed.target.nothing-to-reset" to commands.statsReset.failedTargetNothing.toJsonArray()
                                 "commands.team.failed.teams-not-allowed" to commands.team.failedTeamsNotAllowed.toJsonArray()
+                                "commands.team.team-player-disconnected" to commands.team.teamPlayerDisconnected.toJsonArray()
+                                "commands.team.player-already-in-team" to commands.team.playerAlreadyInTeam.toJsonArray()
+                                "commands.team.player-now-you-are-in-a-team-with" to commands.team.playerNowYouAreInATeamWith.toJsonArray()
+                                "commands.team.target-now-you-are-in-a-team-with" to commands.team.targetAreNoInATeamWithYou.toJsonArray()
+                                "commands.team.player-now-you-are-not-in-a-team-with" to commands.team.playerNowYouAreNotInATeamWith.toJsonArray()
+                                "commands.team.target-now-you-are-not-in-a-team-with" to commands.team.targetNowYouAreNotInATeamWith.toJsonArray()
+                                "commands.team.target-are-no-in-a-team-with-you" to commands.team.targetAreNoInATeamWithYou.toJsonArray()
+                                "commands.team.team-request-to-player" to commands.team.teamRequestToPlayer.toJsonArray()
+                                "commands.team.team-request-to-target" to commands.team.teamRequestToTarget.toJsonArray()
+                                "commands.team.team-request-to-target-hover" to commands.team.teamRequestToTargetHover
+                                "commands.team.no-requests-known" to commands.team.noRequestsKnown.toJsonArray()
                                 "commands.teams.successfully" to commands.teams.successfully
                                 "commands.teams.title" to commands.teams.title
                                 "commands.teams.sub-title" to commands.teams.subTitle
@@ -911,11 +922,53 @@ class ConfigService(private val directory: File) {
             inner class Team internal constructor() {
 
                 private val prefix get() = "${commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
-
                 /* Values */
                 val failedTeamsNotAllowed by lazy {
                     available["${prefix}failed.teams-not-allowed"]
                         ?: listOf("%Prefix.Warning%Teams sind grade verboten!")
+                }
+                val teamPlayerDisconnected by lazy {
+                    available["${prefix}team-player-disconnected"]
+                        ?: listOf("%Prefix.Text%%player% ist nicht mehr mit dir in einem Team.")
+                }
+                val playerAlreadyInTeam by lazy {
+                    available["${prefix}player-already-in-team"]
+                        ?: listOf("%Prefix.Text%Der Spieler %Colors.IMPORTANT%@target@%Colors.$TEXT% ist schon mit dir im Team")
+                }
+                val playerNowYouAreInATeamWith by lazy {
+                    available["${prefix}player-now-you-are-in-a-team-with"]
+                        ?: listOf("%Prefix.Text%Du bist jetzt mit @target@ in einem Team")
+                }
+                val targetNowYouAreInATeamWith by lazy {
+                    available["${prefix}target-now-you-are-in-a-team-with"]
+                        ?: listOf("%Prefix.Text%Du bist jetzt mit @player@ in einem Team")
+                }
+                val playerNowYouAreNotInATeamWith by lazy {
+                    available["${prefix}player-now-you-are-not-in-a-team-with"]
+                        ?: listOf("%Prefix.Text%Du bist jetzt nicht mehr mit @target@ in einem Team")
+                }
+                val targetNowYouAreNotInATeamWith by lazy {
+                    available["${prefix}target-now-you-are-not-in-a-team-with"]
+                        ?: listOf("%Prefix.Text%Du bist jetzt nicht mehr mit @player@ in einem Team")
+                }
+                val targetAreNoInATeamWithYou by lazy {
+                    available["${prefix}target-are-no-in-a-team-with-you"]
+                        ?: listOf("%Prefix.Text%Der Spieler %Colors.IMPORTANT%@target@%Colors.TEXT% ist nicht mit dir in einem Team")
+                }
+                val teamRequestToPlayer by lazy {
+                    available["${prefix}team-request-to-player"]
+                        ?: listOf("%Prefix.Text%Du hast dem Spieler %Colors.IMPORTANT%@target@%Colors.TEXT% eine Team Gründungsanfrage gesendet")
+                }
+                val teamRequestToTarget by lazy {
+                    available["${prefix}team-request-to-target"]
+                        ?: listOf("%Prefix.Text%Der Spieler %Colors.IMPORTANT%@player@%Colors.TEXT% will mit dir ein Team gründen")
+                }
+                val teamRequestToTargetHover: String by lazy {
+                    available["${prefix}team-request-to-target-hover"]?.firstOrNull() ?: "%Colors.IMPORTANT%Accept!"
+                }
+                val noRequestsKnown by lazy {
+                    available["${prefix}no-requests-known"]
+                        ?: listOf("%Prefix.Warning%Du hast keine Anfrage von @player@ erhalten")
                 }
 
             }
