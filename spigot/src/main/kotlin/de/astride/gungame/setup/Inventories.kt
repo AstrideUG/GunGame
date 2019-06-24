@@ -280,28 +280,6 @@ object Setup {
 
 }
 
-fun HumanEntity.openShops(pageID: Int, rawInventory: Inventory = Setup.shops) {
-
-    val inventory = InventoryBuilder(rawInventory.size, rawInventory.title).build().apply {
-        contents = rawInventory.contents
-    }
-
-    val pages = mutableListOf<Page>().apply {
-        for (i in 0 until configService.shops.locations.size / 7 + 1) add(ShopPage(i))
-        if (isEmpty()) add(ShopPage(0)) else if (configService.shops.locations.size % 7 == 0) removeAt(lastIndex)
-    }
-    val page = try {
-        pages[pageID].apply { page = pageID }
-    } catch (ex: IndexOutOfBoundsException) {
-        (this as? Player)?.playSound(location, Sound.ANVIL_LAND, 1f, 1f)
-        return
-    }
-
-    page.setItems(inventory)
-    openInventory(inventory)
-
-}
-
 fun HumanEntity.openMaps(pageID: Int): Unit = open(pageID, Setup.maps, configService.maps.maps.size) { MapsPage(it) }
 fun HumanEntity.openShops(pageID: Int): Unit =
     open(pageID, Setup.shops, configService.shops.locations.size) { ShopPage(it) }
