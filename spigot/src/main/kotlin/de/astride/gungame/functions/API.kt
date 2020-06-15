@@ -3,7 +3,7 @@ package de.astride.gungame.functions
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 06.04.2019 04:08.
- * Current Version: 1.0 (06.04.2019 - 06.04.2019)
+ * Current Version: 1.0 (06.04.2019 - 06.05.2019)
  */
 
 /**

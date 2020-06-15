@@ -1,13 +1,8 @@
 package de.astride.data
 
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
-import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.Server
-import org.bukkit.inventory.ItemFactory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.ItemMeta
 import org.junit.Before
 import org.junit.Test
 
@@ -35,17 +30,17 @@ class InventoriesTest {
 
     @Before
     fun before() {
-        Bukkit.setServer(mock<Server>().apply {
-            whenever(logger).thenReturn(mock())
-            whenever(itemFactory).thenReturn(mock<ItemFactory>().apply {
-                whenever(equals(null, null)).then {
-                    val itemMeta: ItemMeta = it.getArgument(0)
-                    val itemMeta1: ItemMeta = it.getArgument(1)
-
-                    itemMeta.displayName == itemMeta1.displayName && itemMeta.lore == itemMeta1.lore && itemMeta.itemFlags == itemMeta1.itemFlags
-                }
-            })
-        })
+//        Bukkit.setServer(mock<Server>().apply {
+//            whenever(logger).thenReturn(mock())
+//            whenever(itemFactory).thenReturn(mock<ItemFactory>().apply {
+//                whenever(equals(null, null)).then {
+//                    val itemMeta: ItemMeta = it.getArgument(0)
+//                    val itemMeta1: ItemMeta = it.getArgument(1)
+//
+//                    itemMeta.displayName == itemMeta1.displayName && itemMeta.lore == itemMeta1.lore && itemMeta.itemFlags == itemMeta1.itemFlags
+//                }
+//            })
+//        })
     }
 
     @Test

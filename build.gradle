@@ -5,7 +5,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 buildscript {
     ext {
-        kotlinVersion = '1.3.21'
+        kotlinVersion = '1.3.31'
     }
     repositories {
         mavenCentral()
@@ -63,11 +63,11 @@ subprojects {
         compileOnly "org.jetbrains.kotlin:kotlin-reflect"
         compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1"
         compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.10.0"
+        jarLibs 'com.rollbar:rollbar-java:1.+'
 
         testCompile "org.jetbrains.kotlin:kotlin-test"
         testCompile "org.jetbrains.kotlin:kotlin-test-junit"
         testCompile group: 'junit', name: 'junit', version: '4.13-beta-2'
-//        testCompileOnly "org.junit.jupiter:junit-jupiter-api:5.3.1"
         testCompile "com.github.nhaarman:mockito-kotlin:2.1.0"
         testCompile 'io.mockk:mockk:1.9'
 
@@ -82,8 +82,6 @@ subprojects {
     processResources {
         from(sourceSets.main.resources.srcDirs) {
             filter ReplaceTokens, tokens: [version: version, group: pluginGroup, name: rootProject.name, lowerName: rootProject.name.toLowerCase()]
-//            filter ReplaceTokens, tokens: [group: group]
-//            filter ReplaceTokens, tokens: [name: name]
         }
     }
 

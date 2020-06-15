@@ -1,17 +1,21 @@
 /*
  * © Copyright - Lars Artmann | LartyHD 2018.
  */
-package de.astride.ffa.listener
+package de.astride.gungame.listener
 
-import de.astride.ffa.functions.*
-import de.astride.ffa.stats.Action
+import de.astride.gungame.functions.*
+import de.astride.gungame.kits.downgrade
+import de.astride.gungame.kits.setKit
+import de.astride.gungame.kits.upgrade
+import de.astride.gungame.stats.Action
 import net.darkdevelopers.darkbedrock.darkness.spigot.events.PlayerDisconnectEvent
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.cancel
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.events.cancel
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.randomLook
 import net.darkdevelopers.darkbedrock.darkness.spigot.listener.game.InGameListener
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.*
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Messages
 import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Items
-import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Utils
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Utils.players
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -24,15 +28,24 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.*
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 17.02.2018 15:32.
- * Current Version: 1.0 (17.02.2018 - 19.04.2019)
+ * Current Version: 1.0 (17.02.2018 - 07.04.2019)
  */
 class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
+
+    @EventHandler
+    override fun onPlayerMoveEvent(event: PlayerMoveEvent) {
+        super.onPlayerMoveEvent(event)
+        if (event.player.health <= 0.0) return
+        val types = arrayOf(Material.WATER, Material.STATIONARY_WATER, Material.LAVA, Material.STATIONARY_LAVA)
+        if (types.any { it == event.to.block.type }) event.player.health = 0.0
+    }
 
     @EventHandler
     override fun onPlayerJoinEvent(event: PlayerJoinEvent) {
@@ -51,14 +64,9 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
             level = 0
             gameMode = GameMode.ADVENTURE
             health = maxHealth
-            teleport(gameMap.spawn/*.randomLook()*/)
+            teleport(gameMap.spawn.randomLook())
 
-            event.player.inventory.apply {
-                val kit = configService.kit.kit
-                armorContents = kit.take(4).asReversed().toTypedArray()
-                addItem(*kit.drop(4).toTypedArray())
-            }
-
+            setKit()
             sendScoreBoard()
             showAll()
             gameMap.sendHologram(event.player)
@@ -87,10 +95,10 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
     @EventHandler
     override fun onPlayerRespawnEvent(event: PlayerRespawnEvent) {
 
-        event.respawnLocation = gameMap.spawn/*.randomLook()*/
+        event.respawnLocation = gameMap.spawn.randomLook()
         event.player.apply player@{
 
-            this@InGameListener.killer[uniqueId]?.apply {
+            this@InGameListener.killer[uniqueId].apply {
 
                 if (this@player.uniqueId == uniqueId) return
 
@@ -100,14 +108,16 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
                 )
 
                 playSound(location, Sound.ENDERMAN_HIT, 2f, 1f)
-//                broadcastKillStreak(killStreak++, this) TODO: Add broadcastKillStreak
+                //                broadcastKillStreak(killStreak++, this) TODO: Add broadcastKillStreak
                 sendScoreBoard()
+                upgrade()
                 heal()
                 gameMap.sendHologram(this)
 
             }
 
             playSound(location, Sound.GHAST_DEATH, 2f, 1f)
+            downgrade()
             sendScoreBoard()
             gameMap.sendHologram(this)
 
@@ -130,7 +140,8 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
     @EventHandler
     fun onInventoryClickEvent(event: InventoryClickEvent) {
         if (event.clickedInventory == event.whoClicked.openInventory.bottomInventory)
-            if (event.slot == 8) event.cancel()
+            if (event.slotType == InventoryType.SlotType.ARMOR || event.slot == 0)
+                event.cancel()
     }
 
     @EventHandler
@@ -154,10 +165,12 @@ class InGameListener(javaPlugin: JavaPlugin) : InGameListener(javaPlugin) {
     fun onFoodLevelChangeEvent(event: FoodLevelChangeEvent) = event.cancel()
 
 
-    private fun Player.showAll() = Utils.goThroughAllPlayers {
-        if (name.equals(it.name, ignoreCase = true)) return@goThroughAllPlayers
-        it.hidePlayer(this)
-        it.showPlayer(this)
+    private fun Player.showAll() = players.forEach {
+        ({
+            if (name.equals(it.name, ignoreCase = true)) return@goThroughAllPlayers
+            it.hidePlayer(this)
+            it.showPlayer(this)
+        })()
     }
 
     private fun broadcastKillStreak(killStreak: Int, killer: Player) {

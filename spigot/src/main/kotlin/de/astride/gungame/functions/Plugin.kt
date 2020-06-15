@@ -2,14 +2,22 @@ package de.astride.gungame.functions
 
 import de.astride.gungame.GunGame
 import de.astride.gungame.services.ConfigService
-import net.darkdevelopers.darkbedrock.darkness.spigot.utils.Map
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.GameMap
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 
 /*
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 09:17.
- * Current Version: 1.0 (27.03.2019 - 06.04.2019)
+ * Current Version: 1.0 (27.03.2019 - 07.05.2019)
  */
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 07.05.2019 15:23.
+ * Current Version: 1.0 (07.05.2019 - 07.05.2019)
+ */
+var isSetup: Boolean = false
 
 /**
  * @author Lars Artmann | LartyHD
@@ -34,6 +42,20 @@ val messages get() = ConfigService.messagesInstance
 
 /**
  * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 16.06.2019 01:20.
+ * Current Version: 1.0 (16.06.2019 - 16.06.2019)
+ */
+val teams = mutableMapOf<UUID, MutableSet<UUID>>()
+
+/**
+ * @author Lars Artmann | LartyHD
+ * Created by Lars Artmann | LartyHD on 16.06.2019 02:56.
+ * Current Version: 1.0 (16.06.2019 - 16.06.2019)
+ */
+val teamRequests = mutableMapOf<UUID, MutableSet<UUID>>()
+
+/**
+ * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 27.03.2019 06:37.
  * Current Version: 1.0 (27.03.2019 - 06.04.2019)
  */
@@ -44,7 +66,7 @@ lateinit var allowTeams: AllowTeams
  * Created by Lars Artmann | LartyHD on 27.03.2019 06:47.
  * Current Version: 1.0 (27.03.2019 - 27.03.2019)
  */
-lateinit var gameMap: Map
+lateinit var gameMap: GameMap
 
 /**
  * @author Lars Artmann | LartyHD
@@ -54,7 +76,7 @@ lateinit var gameMap: Map
 sealed class AllowTeams {
 
     abstract val result: Boolean
-    val type: String get() = javaClass.simpleName!!
+    val type: String get() = javaClass.simpleName
     val asString: String get() = if (result) messages.teamsAllow else messages.teamsDisAllow
 
     object Random : AllowTeams() {

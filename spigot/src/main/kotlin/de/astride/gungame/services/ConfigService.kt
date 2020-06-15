@@ -1,21 +1,19 @@
 package de.astride.gungame.services
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
+import com.google.gson.*
 import de.astride.data.ItemStackSerializer
-import de.astride.data.UUIDSerializer
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.functions.allActions
+import de.astride.gungame.functions.configService
 import de.astride.gungame.functions.messages
 import de.astride.gungame.kits.DefaultKits
 import de.astride.gungame.stats.Action
+import de.astride.gungame.stats.toAction
+import de.astride.gungame.stats.toMap
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.context.getOrDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.json
 import kotlinx.serialization.list
-import kotlinx.serialization.map
 import kotlinx.serialization.stringify
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonConfig
@@ -23,11 +21,17 @@ import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService.loadAs
 import net.darkdevelopers.darkbedrock.darkness.general.functions.asString
 import net.darkdevelopers.darkbedrock.darkness.spigot.configs.gson.BukkitGsonConfig
-import net.darkdevelopers.darkbedrock.darkness.spigot.functions.toMaterial
+import net.darkdevelopers.darkbedrock.darkness.spigot.functions.*
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.toLocation
+import net.darkdevelopers.darkbedrock.darkness.spigot.location.toMap
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.SECONDARY
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.Colors.TEXT
 import net.darkdevelopers.darkbedrock.darkness.spigot.messages.SpigotGsonMessages
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.GameMap
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.toGameMap
+import net.darkdevelopers.darkbedrock.darkness.spigot.utils.map.toMap
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.io.File
@@ -38,7 +42,7 @@ import de.astride.gungame.kits.kits as allKits
 /**
  * @author Lars Artmann | LartyHD
  * Created by Lars Artmann | LartyHD on 29.03.2019 13:42.
- * Current Version: 1.0 (29.03.2019 - 14.04.2019)
+ * Current Version: 1.0 (29.03.2019 - 09.05.2019)
  */
 class ConfigService(private val directory: File) {
 
@@ -60,7 +64,7 @@ class ConfigService(private val directory: File) {
 
         /* Values */
         val allowTeams by lazy { AllowTeams.byName(jsonObject["allow-teams"]?.asString()) }
-        val rewards: Map<String, Double>  by lazy {
+        val rewards: Map<String, Double> by lazy {
             (jsonObject["rewards"] as? JsonObject)?.entrySet()?.mapNotNull {
                 try {
                     it.key to it.value.asDouble
@@ -382,26 +386,212 @@ class ConfigService(private val directory: File) {
 
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     inner class Maps internal constructor() {
 
         /* Main */
-        private val configData = ConfigData(directory, config.files.maps)
-        val maps = GsonService.load(configData) as? JsonArray ?: JsonArray()
+        val configData = ConfigData(directory, config.files.maps)
+        val rawMaps = GsonService.load(configData) as? JsonArray ?: JsonArray()
+        val maps = rawMaps.mapNotNull {
+            val jsonObject = it as? JsonObject ?: return@mapNotNull null
+            jsonObject.toMap().toGameMap()
+        }.toMutableList()
 
         /* Values */
         val bukkitGsonConfig = BukkitGsonConfig(configData)
 
+        /*fun load()= MapsUtils.getMapsAndLoad(bukkitGsonConfig) { player, holograms, map ->
+           val uuid = player.uniqueId
+           holograms[uuid] =
+               Holograms(messages.hologram.withReplacements(uuid).mapNotNull { it }.toTypedArray(), map.hologram)
+           holograms[uuid]?.show(player)
+       }*/
+
+        fun addAndSave(
+            gameMap: GameMap,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ) {
+            add(gameMap, jsonArray)
+            save(configData, jsonArray)
+        }
+
+        fun add(gameMap: GameMap, jsonArray: JsonArray = loadAs(configData) ?: JsonArray()): Unit =
+            jsonArray.add(gameMap.toMap().toJsonObject())
+
+        fun setLocation(location: Location, jsonObject: JsonObject = JsonObject()): JsonObject =
+            jsonObject.apply { bukkitGsonConfig.setLocation(location, jsonObject) }
+
+        fun setLocationWithOutYawAndPitch(location: Location, jsonObject: JsonObject = JsonObject()): JsonObject =
+            jsonObject.apply { bukkitGsonConfig.setLocationWithOutYawAndPitch(location, jsonObject) }
+
+        fun setNameAndSave(
+            id: Int,
+            value: String,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ) {
+            jsonArray.getJsonObject(id).addProperty("name", value)
+            save(configData, jsonArray)
+        }
+
+        fun setWorldAndSave(
+            id: Int,
+            value: String,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ) {
+            jsonArray.getJsonObject(id).addProperty("world", value)
+            save(configData, jsonArray)
+        }
+
+        fun setRegionPos1AndSave(
+            id: Int,
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ): Unit = set(id, configData, jsonArray, "region", "pos1") {
+            bukkitGsonConfig.setLocationWithOutYawAndPitch(location, it)
+        }
+
+        fun setRegionPos2AndSave(
+            id: Int,
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ): Unit = set(id, configData, jsonArray, "region", "pos2") {
+            bukkitGsonConfig.setLocationWithOutYawAndPitch(location, it)
+        }
+
+        fun setHologramAndSave(
+            id: Int,
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ) {
+            jsonArray.getJsonObject(id).add("hologram", setLocationWithOutYawAndPitch(location))
+            save(configData, jsonArray)
+        }
+
+        fun setSpawnAndSave(
+            id: Int,
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ) {
+            jsonArray.getJsonObject(id).add("spawn", setLocation(location))
+            save(configData, jsonArray)
+        }
+
+        fun setWorldBoarderSizeAndSave(
+            id: Int,
+            value: Double,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ) {
+            val jsonObject = jsonArray.getJsonObject(id)
+            val worldBoarder = jsonObject.getJsonObject("worldBoarder")
+            worldBoarder.addProperty("size", value)
+            jsonObject.add("worldBoarder", worldBoarder)
+            save(configData, jsonArray)
+        }
+
+        fun setWorldBoarderCenterAndSave(
+            id: Int,
+            location: Location,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ): Unit = set(id, configData, jsonArray, "worldBoarder", "center") {
+            setLocationWithOutYawAndPitch(location, it)
+        }
+
+        fun setWorldBoarderWarningTimeAndSave(
+            id: Int,
+            value: Int,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ): Unit = set(id, value, configData, jsonArray, "worldBoarder", "warning", "time")
+
+        fun setWorldBoarderWarningDistanceAndSave(
+            id: Int,
+            value: Int,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ): Unit = set(id, value, configData, jsonArray, "worldBoarder", "warning", "distance")
+
+        fun setWorldBoarderDamageBufferAndSave(
+            id: Int,
+            value: Double,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ): Unit = set(id, value, configData, jsonArray, "worldBoarder", "damage", "buffer")
+
+        fun setWorldBoarderDamageAmountAndSave(
+            id: Int,
+            value: Double,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray()
+        ): Unit = set(id, value, configData, jsonArray, "worldBoarder", "damage", "amount")
+
+        fun save(
+            configData: ConfigData = this.configData,
+            jsonElement: JsonElement = JsonArray(configService.maps.maps.map { it.toMap().toJsonObject() })
+        ): Unit = GsonService.save(configData, jsonElement)
+
+        private fun set(
+            id: Int,
+            value: Number,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray(),
+            key1: String,
+            key2: String,
+            key3: String
+        ) = set(id, configData, jsonArray, key1, key2) { it.addProperty(key3, value) }
+
+        private fun set(
+            id: Int,
+            configData: ConfigData = this.configData,
+            jsonArray: JsonArray = loadAs(configData) ?: JsonArray(),
+            key1: String,
+            key2: String,
+            block: (JsonObject) -> Unit
+        ) {
+            val jsonObject = jsonArray.getJsonObject(id)
+            val o1 = jsonObject.getJsonObject(key1)
+            val o2 = o1.getJsonObject(key2)
+            block(o2)
+            o1.add(key2, o2)
+            jsonObject.add(key1, o1)
+            save(configData, jsonArray)
+        }
+
+        private fun JsonArray.getJsonObject(id: Int): JsonObject = try {
+            this[id] as? JsonObject ?: JsonObject().apply { add(this) }
+        } catch (ex: IndexOutOfBoundsException) {
+            JsonObject().apply { add(this) }
+        }
+
+        private fun JsonObject.getJsonObject(key: String): JsonObject = this[key] as? JsonObject ?: JsonObject()
+
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     inner class Shops internal constructor() {
 
         /* Main */
-        private val configData = ConfigData(directory, config.files.shops)
+        val configData = ConfigData(directory, config.files.shops)
         private val jsonArray = GsonService.load(configData) as? JsonArray ?: JsonArray()
-        private val bukkitGsonConfig = BukkitGsonConfig(configData)
 
         /* Values */
-        val locations = jsonArray.map { bukkitGsonConfig.getLocation(it.asJsonObject) }
+        val locations = jsonArray.mapNotNull {
+            val jsonObject = it as? JsonObject ?: return@mapNotNull null
+            jsonObject.toMap().toLocation()
+        }.toMutableList()
+
+        fun save(
+            configData: ConfigData = this.configData,
+            jsonElement: JsonElement = JsonArray(locations.map { it.toMap().toJsonObject() })
+        ): Unit = GsonService.save(configData, jsonElement)
 
     }
 
@@ -409,20 +599,36 @@ class ConfigService(private val directory: File) {
 
         /* Main */
         val configData: ConfigData = ConfigData(directory, config.files.actions)
-        private val kSerializer: KSerializer<Map<UUID, List<Action>>> =
-            (UUIDSerializer to Json.context.getOrDefault(Action::class).list).map
 
         /* Values */
         fun load(configData: ConfigData = this.configData): MutableMap<UUID, MutableList<Action>> {
-            val string = configData.file.readText()
-            return if (string.isEmpty()) mutableMapOf() else Json.parse(
-                kSerializer,
-                string
-            ).map { it.key to it.value.toMutableList() }.toMap().toMutableMap()
+
+            val jsonObject = GsonService.load(configData) as? JsonObject ?: JsonObject()
+
+            val map = jsonObject.toMap().mapNotNull {
+                (UUID.fromString(it.key) to it.value).toFirstNotNull()
+            }
+
+            return map.mapNotNull { (key, value) ->
+                val jsonArray = value.toJsonElement() as? JsonArray ?: return@mapNotNull null
+                key to jsonArray.actions()
+            }.toMap().toMutableMap()
+
         }
 
-        fun save(input: MutableMap<UUID, MutableList<Action>> = allActions, configData: ConfigData = this.configData) =
-            GsonService.save(configData, Json.indented.stringify(kSerializer, input))
+        private fun JsonArray.actions() = mapNotNull {
+            val action = it as? JsonObject ?: return@mapNotNull null
+            action.toMap().toAction()
+        }.toMutableList()
+
+        fun save(
+            input: MutableMap<UUID, MutableList<Action>> = allActions,
+            configData: ConfigData = this.configData
+        ): Unit = GsonService.save(
+            configData,
+            input.map { (key, value) -> key to value.map { it.toMap().toJsonObject() } }.toJsonElement()
+                ?: JsonNull.INSTANCE
+        )
 
     }
 
@@ -531,6 +737,17 @@ class ConfigService(private val directory: File) {
                                 "commands.statsreset.failed.self.nothing-to-reset" to commands.statsReset.failedSelfNothing.toJsonArray()
                                 "commands.statsreset.failed.target.nothing-to-reset" to commands.statsReset.failedTargetNothing.toJsonArray()
                                 "commands.team.failed.teams-not-allowed" to commands.team.failedTeamsNotAllowed.toJsonArray()
+                                "commands.team.team-player-disconnected" to commands.team.teamPlayerDisconnected.toJsonArray()
+                                "commands.team.player-already-in-team" to commands.team.playerAlreadyInTeam.toJsonArray()
+                                "commands.team.player-now-you-are-in-a-team-with" to commands.team.playerNowYouAreInATeamWith.toJsonArray()
+                                "commands.team.target-now-you-are-in-a-team-with" to commands.team.targetAreNoInATeamWithYou.toJsonArray()
+                                "commands.team.player-now-you-are-not-in-a-team-with" to commands.team.playerNowYouAreNotInATeamWith.toJsonArray()
+                                "commands.team.target-now-you-are-not-in-a-team-with" to commands.team.targetNowYouAreNotInATeamWith.toJsonArray()
+                                "commands.team.target-are-no-in-a-team-with-you" to commands.team.targetAreNoInATeamWithYou.toJsonArray()
+                                "commands.team.team-request-to-player" to commands.team.teamRequestToPlayer.toJsonArray()
+                                "commands.team.team-request-to-target" to commands.team.teamRequestToTarget.toJsonArray()
+                                "commands.team.team-request-to-target-hover" to commands.team.teamRequestToTargetHover
+                                "commands.team.no-requests-known" to commands.team.noRequestsKnown.toJsonArray()
                                 "commands.teams.successfully" to commands.teams.successfully
                                 "commands.teams.title" to commands.teams.title
                                 "commands.teams.sub-title" to commands.teams.subTitle
@@ -576,8 +793,8 @@ class ConfigService(private val directory: File) {
 
         inner class Commands internal constructor() {
 
-            internal val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
-            internal val Any.prefix get() = "${commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+            internal val prefix get() = "${javaClass.simpleName}.".toLowerCase()
+            internal val Any.prefix get() = "${commands.prefix}${javaClass.simpleName}.".toLowerCase()
 
             /* SubClass */
             val gungame by lazy { GunGame() }
@@ -704,12 +921,55 @@ class ConfigService(private val directory: File) {
 
             inner class Team internal constructor() {
 
-                private val prefix get() = "${commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+                private val prefix get() = "${commands.prefix}${javaClass.simpleName}.".toLowerCase()
 
                 /* Values */
                 val failedTeamsNotAllowed by lazy {
                     available["${prefix}failed.teams-not-allowed"]
                         ?: listOf("%Prefix.Warning%Teams sind grade verboten!")
+                }
+                val teamPlayerDisconnected by lazy {
+                    available["${prefix}team-player-disconnected"]
+                        ?: listOf("%Prefix.Text%%player% ist nicht mehr mit dir in einem Team.")
+                }
+                val playerAlreadyInTeam by lazy {
+                    available["${prefix}player-already-in-team"]
+                        ?: listOf("%Prefix.Text%Der Spieler %Colors.IMPORTANT%@target@%Colors.$TEXT% ist schon mit dir im Team")
+                }
+                val playerNowYouAreInATeamWith by lazy {
+                    available["${prefix}player-now-you-are-in-a-team-with"]
+                        ?: listOf("%Prefix.Text%Du bist jetzt mit @target@ in einem Team")
+                }
+                val targetNowYouAreInATeamWith by lazy {
+                    available["${prefix}target-now-you-are-in-a-team-with"]
+                        ?: listOf("%Prefix.Text%Du bist jetzt mit @player@ in einem Team")
+                }
+                val playerNowYouAreNotInATeamWith by lazy {
+                    available["${prefix}player-now-you-are-not-in-a-team-with"]
+                        ?: listOf("%Prefix.Text%Du bist jetzt nicht mehr mit @target@ in einem Team")
+                }
+                val targetNowYouAreNotInATeamWith by lazy {
+                    available["${prefix}target-now-you-are-not-in-a-team-with"]
+                        ?: listOf("%Prefix.Text%Du bist jetzt nicht mehr mit @player@ in einem Team")
+                }
+                val targetAreNoInATeamWithYou by lazy {
+                    available["${prefix}target-are-no-in-a-team-with-you"]
+                        ?: listOf("%Prefix.Text%Der Spieler %Colors.IMPORTANT%@target@%Colors.TEXT% ist nicht mit dir in einem Team")
+                }
+                val teamRequestToPlayer by lazy {
+                    available["${prefix}team-request-to-player"]
+                        ?: listOf("%Prefix.Text%Du hast dem Spieler %Colors.IMPORTANT%@target@%Colors.TEXT% eine Team Gründungsanfrage gesendet")
+                }
+                val teamRequestToTarget by lazy {
+                    available["${prefix}team-request-to-target"]
+                        ?: listOf("%Prefix.Text%Der Spieler %Colors.IMPORTANT%@player@%Colors.TEXT% will mit dir ein Team gründen")
+                }
+                val teamRequestToTargetHover: String by lazy {
+                    available["${prefix}team-request-to-target-hover"]?.firstOrNull() ?: "%Colors.IMPORTANT%Accept!"
+                }
+                val noRequestsKnown by lazy {
+                    available["${prefix}no-requests-known"]
+                        ?: listOf("%Prefix.Warning%Du hast keine Anfrage von @player@ erhalten")
                 }
 
             }
@@ -722,7 +982,7 @@ class ConfigService(private val directory: File) {
                         ?: listOf("%Prefix.Warning%Teams kann nur alle %Colors.IMPORTANT%@delay@ %Colors.TEXT%genutzt werden (%Colors.IMPORTANT%@remaining@%Colors.TEXT%)")
                 }
 
-                val title: String  by lazy {
+                val title: String by lazy {
                     available["${prefix}title"]?.firstOrNull() ?: "%Colors.IMPORTANT%Teams"
                 }
 
@@ -763,8 +1023,8 @@ class ConfigService(private val directory: File) {
 
         inner class Shop internal constructor() {
 
-            private val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
-            internal val Any.prefix get() = "${shop.prefix}${javaClass.simpleName!!}.".toLowerCase()
+            private val prefix get() = "${javaClass.simpleName}.".toLowerCase()
+            internal val Any.prefix get() = "${shop.prefix}${javaClass.simpleName}.".toLowerCase()
 
             /* Values */
             val entityName by lazy { available["${prefix}entity-name"]?.firstOrNull() ?: "%Colors.SECONDARY%Shop" }
@@ -827,8 +1087,8 @@ class ConfigService(private val directory: File) {
 
         inner class Regions internal constructor() {
 
-            private val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
-            private val Any.prefix get() = "${regions.prefix}${javaClass.simpleName!!}.".toLowerCase()
+            private val prefix get() = "${javaClass.simpleName}.".toLowerCase()
+            private val Any.prefix get() = "${regions.prefix}${javaClass.simpleName}.".toLowerCase()
 
             /* Values */
             val damageInTarget by lazy {
