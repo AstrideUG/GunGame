@@ -1,7 +1,6 @@
 package de.astride.gungame.services
 
 import com.google.gson.*
-import de.astride.data.ItemStackSerializer
 import de.astride.gungame.functions.AllowTeams
 import de.astride.gungame.functions.allActions
 import de.astride.gungame.functions.configService
@@ -10,11 +9,8 @@ import de.astride.gungame.kits.DefaultKits
 import de.astride.gungame.stats.Action
 import de.astride.gungame.stats.toAction
 import de.astride.gungame.stats.toMap
-import kotlinx.serialization.KSerializer
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.json
-import kotlinx.serialization.list
-import kotlinx.serialization.stringify
 import net.darkdevelopers.darkbedrock.darkness.general.configs.ConfigData
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonConfig
 import net.darkdevelopers.darkbedrock.darkness.general.configs.gson.GsonService
@@ -38,6 +34,8 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 import de.astride.gungame.kits.kits as allKits
+
+private val json = Json { prettyPrint = true }
 
 /**
  * @author Lars Artmann | LartyHD
@@ -64,7 +62,7 @@ class ConfigService(private val directory: File) {
 
         /* Values */
         val allowTeams by lazy { AllowTeams.byName(jsonObject["allow-teams"]?.asString()) }
-        val rewards: Map<String, Double>  by lazy {
+        val rewards: Map<String, Double> by lazy {
             (jsonObject["rewards"] as? JsonObject)?.entrySet()?.mapNotNull {
                 try {
                     it.key to it.value.asDouble
@@ -103,7 +101,7 @@ class ConfigService(private val directory: File) {
 
                 GsonService.save(configData, JsonObject().apply {
                     addProperty("allow-teams", allowTeams.type)
-                    add("rewards", JsonObject().apply { rewards.forEach { key, value -> addProperty(key, value) } })
+                    add("rewards", JsonObject().apply { rewards.forEach { (key, value) -> addProperty(key, value) } })
                     add(Files::class.simpleName, JsonObject().apply {
                         addProperty("maps", files.maps)
                         addProperty("shops", files.shops)
@@ -692,87 +690,89 @@ class ConfigService(private val directory: File) {
         val shop by lazy { Shop() }
         val regions by lazy { Regions() }
 
+        private val defaultData = mapOf(
+            "Messages" to mapOf(
+                "language" to "de_DE",
+                "languages" to mapOf(
+                    "de_DE" to mapOf(
+                        "Colors.PRIMARY" to "\u0026b",
+                        "Colors.SECONDARY" to "\u00269",
+                        "Colors.IMPORTANT" to "\u0026f",
+                        "Colors.TEXT" to "\u00267",
+                        "Colors.EXTRA" to "\u0026l",
+                        "Colors.DESIGN" to "\u0026m",
+                        "Colors.RESET" to "\u0026r",
+                        "Colors.WARNING" to "\u0026c",
+                        "name" to name,
+                        "prefix" to prefix,
+                        "Prefix.Text" to "%prefix%%Colors.TEXT%",
+                        "Prefix.Important" to "%prefix%%Colors.IMPORTANT%",
+                        "Prefix.Warning" to "%prefix%%Colors.WARNING%",
+                        "Separator.Line" to "%Prefix.Text%%Colors.DESIGN%                                                               ",
+                        "Separator.Stats" to "%Colors.IMPORTANT%: %Colors.PRIMARY%",
+                        "GunGame.Stats" to "%Colors.IMPORTANT%GunGame Stats%Colors.TEXT%",
+                        "GunGame.Stats.By" to "von %Colors.IMPORTANT%@sender@%Colors.TEXT%",
+                        "teams-allow" to teamsAllow,
+                        "teams-dis-allow" to teamsDisAllow,
+                        "scoreboard-displayname" to scoreboardDisplayName,
+                        "scoreboard-scores" to scoreboardScores.toJsonArray(),
+                        "hologram" to hologram.toJsonArray(),
+                        "add-action" to addAction.toJsonArray(),
+                        "commands.gungame.successfully.saved" to commands.gungame.successfullySaved.toJsonArray(),
+                        "commands.gungame.successfully.loaded" to commands.gungame.successfullyLoaded.toJsonArray(),
+                        "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray(),
+                        "commands.stats.successfully" to commands.stats.successfully.toJsonArray(),
+                        "commands.statsreset.info.confirm" to commands.statsReset.infoConfirm.toJsonArray(),
+                        "commands.statsreset.successfully.self.stats-were-reset" to commands.statsReset.successfullySelf.toJsonArray(),
+                        "commands.statsreset.successfully.self.by.stats-were-reset" to commands.statsReset.successfullySelfBy.toJsonArray(),
+                        "commands.statsreset.successfully.target.stats-were-reset" to commands.statsReset.successfullyTarget.toJsonArray(),
+                        "commands.statsreset.failed.use-this-if-you-are-not-a-player" to commands.statsReset.failedPlayer.toJsonArray(),
+                        "commands.statsreset.failed.self.nothing-to-reset" to commands.statsReset.failedSelfNothing.toJsonArray(),
+                        "commands.statsreset.failed.target.nothing-to-reset" to commands.statsReset.failedTargetNothing.toJsonArray(),
+                        "commands.team.failed.teams-not-allowed" to commands.team.failedTeamsNotAllowed.toJsonArray(),
+                        "commands.team.team-player-disconnected" to commands.team.teamPlayerDisconnected.toJsonArray(),
+                        "commands.team.player-already-in-team" to commands.team.playerAlreadyInTeam.toJsonArray(),
+                        "commands.team.player-now-you-are-in-a-team-with" to commands.team.playerNowYouAreInATeamWith.toJsonArray(),
+                        "commands.team.target-now-you-are-in-a-team-with" to commands.team.targetAreNoInATeamWithYou.toJsonArray(),
+                        "commands.team.player-now-you-are-not-in-a-team-with" to commands.team.playerNowYouAreNotInATeamWith.toJsonArray(),
+                        "commands.team.target-now-you-are-not-in-a-team-with" to commands.team.targetNowYouAreNotInATeamWith.toJsonArray(),
+                        "commands.team.target-are-no-in-a-team-with-you" to commands.team.targetAreNoInATeamWithYou.toJsonArray(),
+                        "commands.team.team-request-to-player" to commands.team.teamRequestToPlayer.toJsonArray(),
+                        "commands.team.team-request-to-target" to commands.team.teamRequestToTarget.toJsonArray(),
+                        "commands.team.team-request-to-target-hover" to commands.team.teamRequestToTargetHover,
+                        "commands.team.no-requests-known" to commands.team.noRequestsKnown.toJsonArray(),
+                        "commands.teams.successfully" to commands.teams.successfully,
+                        "commands.teams.title" to commands.teams.title,
+                        "commands.teams.sub-title" to commands.teams.subTitle,
+                        "commands.teams.failed.delay" to commands.teams.failedDelay.toJsonArray(),
+                        "commands.top.success" to commands.top.success.toJsonArray(),
+                        "commands.top.successfully" to commands.top.successfully.toJsonArray(),
+                        "commands.top.entry" to commands.top.entry.toJsonArray(),
+                        "shop.entity-name" to shop.entityName,
+                        "shop.name" to shop.name,
+                        "shop.delayed" to shop.delayed.toJsonArray(),
+                        "shop.price-lore" to shop.priceLore.toJsonArray(),
+                        "shop.max-count" to shop.maxCount.toJsonArray(),
+                        "shop.max-health" to shop.maxHealth.toJsonArray(),
+                        "shop.max-level" to shop.maxLevel.toJsonArray(),
+                        "shop.money.successfully" to shop.money.successfully.toJsonArray(),
+                        "shop.money.failed" to shop.money.failed.toJsonArray(),
+                        "shop.keepinventory.successfully" to shop.keepInventory.successfully.toJsonArray(),
+                        "shop.keepinventory.failed" to shop.keepInventory.failed.toJsonArray(),
+                        "regions.damage-in-player" to regions.damageInPlayer.toJsonArray(),
+                        "regions.damage-in-target" to regions.damageInTarget.toJsonArray(),
+                        "regions.launch-arrow" to regions.launchArrow.toJsonArray()
+                    )
+                )
+            )
+        )
+
         init {
             messagesInstance = this
 
             //Very bad code but it works!
             if (available.isEmpty()) {
-                GsonService.save(configData, Json.indented.stringify(json {
-                    "Messages" to json {
-                        "language" to "de_DE"
-                        "languages" to json {
-                            "de_DE" to json {
-                                "Colors.PRIMARY" to "\u0026b"
-                                "Colors.SECONDARY" to "\u00269"
-                                "Colors.IMPORTANT" to "\u0026f"
-                                "Colors.TEXT" to "\u00267"
-                                "Colors.EXTRA" to "\u0026l"
-                                "Colors.DESIGN" to "\u0026m"
-                                "Colors.RESET" to "\u0026r"
-                                "Colors.WARNING" to "\u0026c"
-                                "name" to name
-                                "prefix" to prefix
-                                "Prefix.Text" to "%prefix%%Colors.TEXT%"
-                                "Prefix.Important" to "%prefix%%Colors.IMPORTANT%"
-                                "Prefix.Warning" to "%prefix%%Colors.WARNING%"
-                                "Separator.Line" to "%Prefix.Text%%Colors.DESIGN%                                                               "
-                                "Separator.Stats" to "%Colors.IMPORTANT%: %Colors.PRIMARY%"
-                                "GunGame.Stats" to "%Colors.IMPORTANT%GunGame Stats%Colors.TEXT%"
-                                "GunGame.Stats.By" to "von %Colors.IMPORTANT%@sender@%Colors.TEXT%"
-                                "teams-allow" to teamsAllow
-                                "teams-dis-allow" to teamsDisAllow
-                                "scoreboard-displayname" to scoreboardDisplayName
-                                "scoreboard-scores" to scoreboardScores.toJsonArray()
-                                "hologram" to hologram.toJsonArray()
-                                "add-action" to addAction.toJsonArray()
-                                "commands.gungame.successfully.saved" to commands.gungame.successfullySaved.toJsonArray()
-                                "commands.gungame.successfully.loaded" to commands.gungame.successfullyLoaded.toJsonArray()
-                                "commands.stats.failed.use-this-if-you-are-not-a-player" to commands.stats.failedPlayer.toJsonArray()
-                                "commands.stats.successfully" to commands.stats.successfully.toJsonArray()
-                                "commands.statsreset.info.confirm" to commands.statsReset.infoConfirm.toJsonArray()
-                                "commands.statsreset.successfully.self.stats-were-reset" to commands.statsReset.successfullySelf.toJsonArray()
-                                "commands.statsreset.successfully.self.by.stats-were-reset" to commands.statsReset.successfullySelfBy.toJsonArray()
-                                "commands.statsreset.successfully.target.stats-were-reset" to commands.statsReset.successfullyTarget.toJsonArray()
-                                "commands.statsreset.failed.use-this-if-you-are-not-a-player" to commands.statsReset.failedPlayer.toJsonArray()
-                                "commands.statsreset.failed.self.nothing-to-reset" to commands.statsReset.failedSelfNothing.toJsonArray()
-                                "commands.statsreset.failed.target.nothing-to-reset" to commands.statsReset.failedTargetNothing.toJsonArray()
-                                "commands.team.failed.teams-not-allowed" to commands.team.failedTeamsNotAllowed.toJsonArray()
-                                "commands.team.team-player-disconnected" to commands.team.teamPlayerDisconnected.toJsonArray()
-                                "commands.team.player-already-in-team" to commands.team.playerAlreadyInTeam.toJsonArray()
-                                "commands.team.player-now-you-are-in-a-team-with" to commands.team.playerNowYouAreInATeamWith.toJsonArray()
-                                "commands.team.target-now-you-are-in-a-team-with" to commands.team.targetAreNoInATeamWithYou.toJsonArray()
-                                "commands.team.player-now-you-are-not-in-a-team-with" to commands.team.playerNowYouAreNotInATeamWith.toJsonArray()
-                                "commands.team.target-now-you-are-not-in-a-team-with" to commands.team.targetNowYouAreNotInATeamWith.toJsonArray()
-                                "commands.team.target-are-no-in-a-team-with-you" to commands.team.targetAreNoInATeamWithYou.toJsonArray()
-                                "commands.team.team-request-to-player" to commands.team.teamRequestToPlayer.toJsonArray()
-                                "commands.team.team-request-to-target" to commands.team.teamRequestToTarget.toJsonArray()
-                                "commands.team.team-request-to-target-hover" to commands.team.teamRequestToTargetHover
-                                "commands.team.no-requests-known" to commands.team.noRequestsKnown.toJsonArray()
-                                "commands.teams.successfully" to commands.teams.successfully
-                                "commands.teams.title" to commands.teams.title
-                                "commands.teams.sub-title" to commands.teams.subTitle
-                                "commands.teams.failed.delay" to commands.teams.failedDelay.toJsonArray()
-                                "commands.top.success" to commands.top.success.toJsonArray()
-                                "commands.top.successfully" to commands.top.successfully.toJsonArray()
-                                "commands.top.entry" to commands.top.entry.toJsonArray()
-                                "shop.entity-name" to shop.entityName
-                                "shop.name" to shop.name
-                                "shop.delayed" to shop.delayed.toJsonArray()
-                                "shop.price-lore" to shop.priceLore.toJsonArray()
-                                "shop.max-count" to shop.maxCount.toJsonArray()
-                                "shop.max-health" to shop.maxHealth.toJsonArray()
-                                "shop.max-level" to shop.maxLevel.toJsonArray()
-                                "shop.money.successfully" to shop.money.successfully.toJsonArray()
-                                "shop.money.failed" to shop.money.failed.toJsonArray()
-                                "shop.keepinventory.successfully" to shop.keepInventory.successfully.toJsonArray()
-                                "shop.keepinventory.failed" to shop.keepInventory.failed.toJsonArray()
-                                "regions.damage-in-player" to regions.damageInPlayer.toJsonArray()
-                                "regions.damage-in-target" to regions.damageInTarget.toJsonArray()
-                                "regions.launch-arrow" to regions.launchArrow.toJsonArray()
-                            }
-                        }
-                    }
-                }))
+                GsonService.save(configData, json.encodeToString(defaultData))
 
                 Messages()
 
@@ -793,8 +793,8 @@ class ConfigService(private val directory: File) {
 
         inner class Commands internal constructor() {
 
-            internal val prefix get() = "${javaClass.simpleName!!}.".toLowerCase()
-            internal val Any.prefix get() = "${commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+            internal val prefix get() = "${javaClass.simpleName}.".lowercase(Locale.getDefault())
+            internal val Any.prefix get() = "${commands.prefix}${javaClass.simpleName}.".lowercase(Locale.getDefault())
 
             /* SubClass */
             val gungame by lazy { GunGame() }
@@ -922,6 +922,7 @@ class ConfigService(private val directory: File) {
             inner class Team internal constructor() {
 
                 private val prefix get() = "${commands.prefix}${javaClass.simpleName!!}.".toLowerCase()
+
                 /* Values */
                 val failedTeamsNotAllowed by lazy {
                     available["${prefix}failed.teams-not-allowed"]
@@ -981,7 +982,7 @@ class ConfigService(private val directory: File) {
                         ?: listOf("%Prefix.Warning%Teams kann nur alle %Colors.IMPORTANT%@delay@ %Colors.TEXT%genutzt werden (%Colors.IMPORTANT%@remaining@%Colors.TEXT%)")
                 }
 
-                val title: String  by lazy {
+                val title: String by lazy {
                     available["${prefix}title"]?.firstOrNull() ?: "%Colors.IMPORTANT%Teams"
                 }
 
@@ -1113,23 +1114,21 @@ class ConfigService(private val directory: File) {
 
         /* Main */
         val configData = ConfigData(directory, config.files.kits)
-        private val kSerializer: KSerializer<List<List<ItemStack>>> = ItemStackSerializer.list.list
 
         /* Values */
+        @Suppress("JSON_FORMAT_REDUNDANT")
         fun load(configData: ConfigData = this.configData): List<List<ItemStack?>> {
             val string = configData.file.readText()
             return if (string.isEmpty()) DefaultKits.values().map {
                 listOf(it.helmet, it.chestplate, it.leggins, it.boots, it.item)
-            } else Json.nonstrict.parse(kSerializer, string).map {
+            } else Json {ignoreUnknownKeys = true}.decodeFromString<List<List<ItemStack>>>(string).map {
                 it.map { itemStack -> if (itemStack.type == Material.AIR) null else itemStack }
             }
         }
 
         fun save(input: List<List<ItemStack?>> = allKits, configData: ConfigData = this.configData) = GsonService.save(
             configData,
-            Json.indented.stringify(
-                kSerializer,
-                input.map { it.mapNotNull { itemStack -> itemStack ?: ItemStack(Material.AIR) } })
+            json.encodeToString(input.map { it.mapNotNull { itemStack -> itemStack ?: ItemStack(Material.AIR) } })
         )
 
     }

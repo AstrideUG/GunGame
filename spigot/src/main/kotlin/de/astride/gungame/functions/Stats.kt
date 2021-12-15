@@ -1,8 +1,10 @@
 package de.astride.gungame.functions
 
+import de.astride.gungame.services.replaced
 import de.astride.gungame.stats.Action
 import de.astride.gungame.stats.Actions
 import net.darkdevelopers.darkbedrock.darkness.general.minecraft.fetcher.Fetcher
+import org.bukkit.Bukkit
 import java.util.*
 
 /*
@@ -138,5 +140,8 @@ fun List<String?>.withReplacements(uuid: UUID): List<String?> = map { line ->
         if (key in line) result = result.replace(key, func(uuid))
     }
 
-    result
+    val player = Bukkit.getPlayer(uuid)
+    if(player != null)
+        result?.replaced(player)
+    else result
 }
