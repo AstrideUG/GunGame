@@ -2,6 +2,9 @@
 This software is an extension (plugin) that can be installed on spigot-servers.
 With this extension of Minecraft you can play the all known MiniGame GunGame on your own Server.
 
+## GERMAN YT VIDEO SHOWING THE PLUGIN
+[![GERMAN YT VIDEO SHOWING THE PLUGIN](https://img.youtube.com/vi/PTf017b6zxs/0.jpg)](https://www.youtube.com/watch?v=PTf017b6zxs)
+
 Authors:
 -
 Lars Artmann (LartyHD)
