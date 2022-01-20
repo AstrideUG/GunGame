@@ -5,7 +5,7 @@ With this extension of Minecraft you can play the all known MiniGame GunGame on 
 ## GERMAN YT VIDEO SHOWING THE PLUGIN
 [![GERMAN YT VIDEO SHOWING THE PLUGIN](https://img.youtube.com/vi/PTf017b6zxs/0.jpg)](https://www.youtube.com/watch?v=PTf017b6zxs)
 
-##Git visualization until 20th of Jan 2022
+## Git visualization until 20th of Jan 2022
 [![Git visualization until 20th of Jan 2022](https://img.youtube.com/vi/LGt1i_AE8u8/0.jpg)](https://youtu.be/LGt1i_AE8u8)
 
 Authors:
